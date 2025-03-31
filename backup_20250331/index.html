@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/styles.css">
   <style>
     body { font-family: Arial, sans-serif; background: #f0f4f8; color: #333; margin: 0; padding: 0; }
-    header { background: linear-gradient(to right, #4a148c, #6a1b9a, #8e24aa); color: white; padding: 1em; text-align: center; }
+    header { background: #2c3e50; color: white; padding: 1em; text-align: center; }
     .top-tabs { background: #34495e; padding: 0.5em; }
     .tab-btn { background: #465c71; color: white; border: none; padding: 0.8em 1.5em; margin: 0 0.2em; cursor: pointer; }
     .tab-btn.active { background: #1abc9c; }
@@ -119,7 +119,7 @@
       <div class="form-group">
         <label for="auth-method">Authentication Method:</label>
         <select id="auth-method" name="auth_method">
-          <option value="dot1x-mab">802.1X with MAB Fallback (Sequential)</option>
+          <option value="dot1x-mab">802.1X with MAB Fallback</option>
           <option value="concurrent">802.1X and MAB Concurrent</option>
           <option value="dot1x-only">802.1X Only</option>
           <option value="mab-only">MAC Authentication Only</option>
@@ -127,16 +127,16 @@
       </div>
       <div class="form-group">
         <label>Authentication Mode:</label>
-        <input type="radio" name="auth_mode" value="closed" checked> Closed Mode (No access until authentication succeeds)
-        <input type="radio" name="auth_mode" value="open"> Open Mode (Allow limited access before authentication)
+        <input type="radio" name="auth_mode" value="closed" checked> Closed
+        <input type="radio" name="auth_mode" value="open"> Open
       </div>
       <div class="form-group">
         <label for="host-mode">Host Mode:</label>
         <select id="host-mode" name="host_mode">
-          <option value="single-host">Single Host (One device per port)</option>
-          <option value="multi-auth">Multi-Auth (Multiple devices, each authenticated)</option>
-          <option value="multi-domain">Multi-Domain (One voice, one data device)</option>
-          <option value="multi-host">Multi-Host (One auth for all devices)</option>
+          <option value="single-host">Single Host</option>
+          <option value="multi-auth">Multi-Auth</option>
+          <option value="multi-domain">Multi-Domain</option>
+          <option value="multi-host">Multi-Host</option>
         </select>
       </div>
       <div class="nav-buttons">
@@ -536,7 +536,7 @@
   </div>
 
   <!-- Help Tab -->
-  <div class="tab-content" id="help" style="display: none;">
+  <div class="tab-content" id="discovery" style="display: none;">
     <h2>Help</h2>
     <p>Documentation and support resources...</p>
   </div>
