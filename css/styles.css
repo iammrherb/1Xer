@@ -1,279 +1,99 @@
+/* Global Styles */
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #0a0a1a;
-    color: #fff;
-    line-height: 1.6;
-    position: relative;
-    overflow-x: hidden;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f7f7f7;
+  color: #333;
 }
-.circuit-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M0 50 H20 M20 50 V30 M20 30 H40 M40 30 V70 M40 70 H60 M60 70 V50 M60 50 H80 M80 50 V30 M80 30 H100" stroke="rgba(0, 255, 255, 0.2)" stroke-width="1" fill="none"/><circle cx="20" cy="50" r="2" fill="rgba(0, 255, 255, 0.5)"/><circle cx="40" cy="30" r="2" fill="rgba(0, 255, 255, 0.5)"/><circle cx="60" cy="70" r="2" fill="rgba(0, 255, 255, 0.5)"/></svg>') repeat;
-    animation: circuitFlow 20s linear infinite;
-    z-index: -1;
-}
-@keyframes circuitFlow {
-    0% { background-position: 0 0; }
-    100% { background-position: 100px 100px; }
-}
+
+/* Header */
 header {
-    height: 100px;
-    background: rgba(0, 0, 0, 0.8);
-    border-bottom: 1px solid #00d4ff;
-    box-shadow: 0 2px 15px rgba(0, 212, 255, 0.3);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
+  background: #003366;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
 }
 .logo {
-    width: 200px;
-    height: auto;
-    filter: drop-shadow(0 0 10px rgba(0, 212, 255, 0.5));
+  width: 200px; /* Recommended size for main logo */
+  height: auto;
+  margin-right: 15px;
 }
 .title {
-    font-size: 2.5em;
-    font-weight: 900;
-    color: #00d4ff;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-left: 20px;
-    text-shadow: 0 0 10px rgba(0, 212, 255, 0.7), 0 0 20px rgba(0, 212, 255, 0.5);
-    position: relative;
-    animation: glow 1.5s infinite alternate;
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0;
 }
-.title::before,
-.title::after {
-    content: '⚡';
-    position: absolute;
-    font-size: 1.2em;
-    color: #00d4ff;
-    animation: lightning 2s infinite;
+
+/* Top Navigation Tabs */
+.top-tabs {
+  background: #005599;
+  text-align: center;
+  padding: 8px 0;
 }
-.title::before {
-    left: -40px;
-    top: 50%;
-    transform: translateY(-50%);
+.tab-btn {
+  background: #007acc;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 4px;
 }
-.title::after {
-    right: -40px;
-    top: 50%;
-    transform: translateY(-50%);
+.tab-btn.active, .tab-btn:hover {
+  background: #0099ff;
 }
-@keyframes glow {
-    0% { text-shadow: 0 0 10px rgba(0, 212, 255, 0.7), 0 0 20px rgba(0, 212, 255, 0.5); }
-    100% { text-shadow: 0 0 20px rgba(0, 212, 255, 1), 0 0 30px rgba(0, 212, 255, 0.8); }
+
+/* Tab Content Panels */
+.tab-content {
+  padding: 20px;
+  display: none;
 }
-@keyframes lightning {
-    0%, 20%, 50%, 80%, 100% { opacity: 1; }
-    10%, 30%, 60%, 90% { opacity: 0.3; }
+.tab-content:first-of-type {
+  display: block;
 }
-.container {
-    display: flex;
-    margin-top: 100px;
+
+/* Form Styles */
+form label {
+  font-weight: bold;
+  display: block;
+  margin-top: 10px;
 }
-.sidebar {
-    width: 250px;
-    background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 100%);
-    padding: 15px;
-    height: calc(100vh - 100px);
-    position: fixed;
-    top: 100px;
-    left: 0;
-    transition: width 0.3s ease;
-    box-shadow: 2px 0 15px rgba(0, 212, 255, 0.3);
-    overflow-y: auto;
+form input, form select, form textarea {
+  padding: 8px;
+  margin: 5px 0 15px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
-.sidebar::-webkit-scrollbar {
-    width: 8px;
+form button {
+  padding: 10px 15px;
+  background: #007acc;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
 }
-.sidebar::-webkit-scrollbar-track {
-    background: #1a1a3a;
+form button:hover {
+  background: #0099ff;
 }
-.sidebar::-webkit-scrollbar-thumb {
-    background: #00d4ff;
-    border-radius: 4px;
+
+/* Config Output */
+#configOutput {
+  background: #eee;
+  border: 1px solid #ccc;
+  padding: 15px;
+  font-family: "Courier New", monospace;
+  white-space: pre-wrap;
 }
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: #00b0ff;
-}
-.sidebar.collapsed {
-    width: 60px;
-}
-.sidebar.collapsed nav {
-    display: none;
-}
-.menu-btn {
-    width: 100%;
-    padding: 12px;
-    background: #00d4ff;
-    color: #0a0a1a;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-.menu-btn:hover {
-    background: #00b0ff;
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
-    transform: scale(1.05);
-}
-nav ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 10px;
-}
-nav ul li {
-    margin: 8px 0;
-}
-nav ul li a {
-    text-decoration: none;
-    color: #fff;
-    display: block;
-    padding: 12px;
-    border-radius: 5px;
-    background: rgba(0, 212, 255, 0.1);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-nav ul li a:hover, nav ul li a.active {
-    background: linear-gradient(90deg, #00d4ff, #007bff);
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
-    transform: translateX(5px);
-}
-nav ul li a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.3), transparent);
-    transition: 0.5s;
-}
-nav ul li a:hover::before {
-    left: 100%;
-}
-.main-content {
-    margin-left: 250px;
-    padding: 20px;
-    width: calc(100% - 250px);
-    transition: margin-left 0.3s ease, width 0.3s ease;
-}
-.main-content.expanded {
-    margin-left: 60px;
-    width: calc(100% - 60px);
-}
-.section {
-    display: none;
-    background: rgba(255, 255, 255, 0.95);
-    padding: 25px;
-    border: 1px solid #00d4ff;
-    border-radius: 8px;
-    box-shadow: 0 2px 15px rgba(0, 212, 255, 0.3);
-}
-.section.active {
-    display: block;
-}
-.wizard {
-    width: 150px;
-    display: block;
-    margin: 20px auto;
-    animation: dance 2s infinite alternate, glow 1.5s infinite alternate;
-}
-@keyframes dance {
-    0% { transform: translateX(-10px) rotate(2deg); }
-    100% { transform: translateX(10px) rotate(-2deg); }
-}
-@keyframes glow {
-    0% { filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.5)); }
-    100% { filter: drop-shadow(0 0 15px rgba(0, 212, 255, 1)); }
-}
-form {
-    max-width: 600px;
-    margin: 0 auto;
-}
-.server-entry {
-    border: 1px solid #00d4ff;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-}
-label {
-    font-weight: bold;
-    margin-right: 10px;
-    color: #333;
-}
-input, select {
-    padding: 8px;
-    margin-bottom: 15px;
-    width: 250px;
-    border: 1px solid #00d4ff;
-    border-radius: 4px;
-    font-size: 14px;
-    background: #fff;
-    color: #333;
-}
-input:focus, select:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-button {
-    padding: 10px 20px;
-    background: #00d4ff;
-    color: #0a0a1a;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 10px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-}
-button:hover {
-    background: #00b0ff;
-    box-shadow: 0 0 15px rgba(0, 212, 255, 0.7);
-    transform: scale(1.05);
-}
-pre {
-    background: #f1f1f1;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    max-height: 400px;
-    overflow-y: auto;
-    font-family: 'Courier New', monospace;
-    font-size: 13px;
-    color: #333;
-}
-h2 {
-    color: #00d4ff;
-    margin-bottom: 20px;
-}
-h3 {
-    color: #333;
-    margin-top: 10px;
-}
-h4 {
-    color: #00d4ff;
-    margin-top: 10px;
-}
-#platformInfo {
-    background: #e9ecef;
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-    color: #333;
+
+/* Diagrams */
+.diagram {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
 }
