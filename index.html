@@ -1,114 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dot1Xer Supreme Configurator</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dot1xer Supreme Configurator</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <header>
-    <img src="data:image/png;base64,DOT1XER_SUPREME_LOGO_BASE64" alt="Dot1Xer Supreme Logo" class="logo">
-    <h1 class="title">Dot1Xer Supreme Configurator</h1>
-  </header>
-  <!-- Top Navigation Tabs -->
-  <nav class="top-tabs">
-    <button class="tab-btn active" onclick="showTab('configurator', event)">Configurator</button>
-    <button class="tab-btn" onclick="showTab('ai', event)">AI Integration</button>
-    <button class="tab-btn" onclick="showTab('reference', event)">Reference Architecture</button>
-    <button class="tab-btn" onclick="showTab('discovery', event)">Environmental Discovery</button>
-    <button class="tab-btn" onclick="showTab('help', event)">Help</button>
-  </nav>
-  <!-- Tab Content Panels -->
-  <div class="tab-content" id="configurator">
-    <h2>Configurator</h2>
-    <p>Generate advanced AAA/802.1X configuration. Choose your device platform and specify parameters.</p>
-    <form id="configForm">
-      <label for="platform">Select Device Platform:</label>
-      <select id="platform" name="platform" onchange="updatePlatformInfo()">
-        <option value="cisco_iosxe">Cisco IOS-XE (Catalyst)</option>
-        <option value="cisco_ios">Cisco IOS (Classic)</option>
-        <option value="cisco_wlc_9800">Cisco WLC 9800</option>
-        <option value="cisco_radsec">Cisco RADSEC</option>
-        <option value="aruba_aoscx">Aruba AOS-CX</option>
-        <option value="juniper_ex">Juniper EX/QFX</option>
-        <option value="fortinet_fortiswitch">Fortinet FortiSwitch</option>
-        <option value="arista_eos">Arista EOS</option>
-        <option value="extreme_exos">Extreme EXOS</option>
-        <option value="huawei">Huawei VRP</option>
-        <option value="alcatel">Alcatel-Lucent OmniSwitch</option>
-        <option value="ubiquiti">Ubiquiti UniFi</option>
-      </select>
-      <br>
-      <label for="data_vlan">Data VLAN:</label>
-      <input type="number" id="data_vlan" placeholder="e.g., 10" required>
-      <br>
-      <label for="guest_vlan">Guest VLAN:</label>
-      <input type="number" id="guest_vlan" placeholder="e.g., 100">
-      <br>
-      <label for="critical_vlan">Critical/VIP VLAN:</label>
-      <input type="number" id="critical_vlan" placeholder="e.g., 99">
-      <br>
-      <p><em>Additional AAA options (choose one or more):</em></p>
-      <label><input type="checkbox" id="use_radius" checked> RADIUS</label>
-      <label><input type="checkbox" id="use_tacacs"> TACACS+</label>
-      <label><input type="checkbox" id="use_local"> Local AAA</label>
-      <label><input type="checkbox" id="use_radsec"> RADSEC (RADIUS over TLS)</label>
-      <br>
-      <p><em>802.1X Mode:</em></p>
-      <label><input type="radio" name="auth_mode" value="closed" checked> Closed</label>
-      <label><input type="radio" name="auth_mode" value="open"> Open</label>
-      <br>
-      <p><em>MAB Options:</em></p>
-      <label><input type="checkbox" id="use_mab"> Enable MAB fallback</label>
-      <br>
-      <!-- CoA and IBNS advanced options -->
-      <p><em>Advanced Options:</em></p>
-      <label><input type="checkbox" id="use_coa"> Enable CoA (Change of Authorization)</label>
-      <br>
-      <label><input type="checkbox" id="use_ibns"> Enable IBNS 2.0 (Cisco specific)</label>
-      <br>
-      <button type="button" onclick="generateConfig()">Generate Config</button>
-    </form>
-    <pre id="configOutput"></pre>
-  </div>
+    <div class="circuit-bg"></div>
+    <header>
+        <img src="data:image/png;base64,DOT1XER_SUPREME_LOGO_BASE64" alt="Dot1xer Supreme Logo" class="logo">
+        <h1 class="title">Dot1xer Supreme Configurator</h1>
+    </header>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="showSection('PlatformSelection')" class="active">1. Platform Selection</a></li>
+                    <li><a href="#" onclick="showSection('AAASettings')">2. AAA Settings</a></li>
+                    <li><a href="#" onclick="showSection('RADIUSServers')">3. RADIUS Servers</a></li>
+                    <li><a href="#" onclick="showSection('TACACS')">4. TACACS+ Servers</a></li>
+                    <li><a href="#" onclick="showSection('Dot1XSettings')">5. 802.1X Settings</a></li>
+                    <li><a href="#" onclick="showSection('CoA')">6. CoA</a></li>
+                    <li><a href="#" onclick="showSection('DeviceTracking')">7. Device Tracking</a></li>
+                    <li><a href="#" onclick="showSection('PortIntegration')">8. Port Integration</a></li>
+                    <li><a href="#" onclick="showSection('GenerateConfig')">9. Generate Configuration</a></li>
+                    <li><a href="#" onclick="showSection('Help')">10. Help</a></li>
+                </ul>
+            </nav>
+        </div>
 
-  <div class="tab-content" id="ai" style="display:none">
-    <h2>AI Integration</h2>
-    <p>Ask our integrated AI for configuration review, troubleshooting tips, or optimization advice.</p>
-    <div id="aiChat">
-      <textarea placeholder="Type your question here..."></textarea>
-      <button onclick="sendAIQuery()">Send</button>
-      <div id="aiResponse"></div>
+        <!-- Main Content -->
+        <div class="main-content" id="main-content">
+            <section id="PlatformSelection" class="section active">
+                <h2>Platform Selection</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="platformForm">
+                    <label for="platform">Select Platform:</label>
+                    <select id="platform" onchange="updatePlatformInfo()">
+                        <option value="cisco_iosxe">Cisco: IOS-XE (Catalyst)</option>
+                        <option value="cisco_nxos">Cisco: NX-OS (Nexus)</option>
+                        <option value="aruba_arubaos">Aruba: ArubaOS</option>
+                        <option value="juniper_junos">Juniper: Junos</option>
+                        <option value="extreme_exos">Extreme: EXOS</option>
+                        <option value="arista_eos">Arista: EOS</option>
+                        <option value="portnox">Portnox: Switch</option>
+                    </select><br>
+                    <div id="platformInfo">
+                        <p><strong>Cisco: IOS-XE (Catalyst):</strong> Modern Catalyst switches (9000, 3800, etc.) with IBNS 2.0 support.</p>
+                    </div>
+                    <button type="button" onclick="showSection('AAASettings')">Next</button>
+                </form>
+            </section>
+
+            <section id="AAASettings" class="section">
+                <h2>AAA Settings</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="aaaForm">
+                    <label for="aaa_auth_method">Authentication Method:</label>
+                    <select id="aaa_auth_method">
+                        <option value="radius">RADIUS</option>
+                        <option value="tacacs">TACACS+</option>
+                        <option value="local">Local</option>
+                    </select><br>
+                    <label for="aaa_accounting">Enable Accounting:</label>
+                    <input type="checkbox" id="aaa_accounting"><br>
+                    <button type="button" onclick="showSection('RADIUSServers')">Next</button>
+                    <button type="button" onclick="showSection('PlatformSelection')">Previous</button>
+                </form>
+            </section>
+
+            <section id="RADIUSServers" class="section">
+                <h2>RADIUS Servers</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="radiusForm">
+                    <div id="radiusServers">
+                        <div class="server-entry">
+                            <h3>RADIUS Server 1</h3>
+                            <label for="radius_ip_1">RADIUS Server IP:</label>
+                            <input type="text" id="radius_ip_1" placeholder="e.g., 192.168.1.10" required><br>
+                            <label for="radius_key_1">Shared Key:</label>
+                            <input type="text" id="radius_key_1" placeholder="e.g., SecretKey" required><br>
+                            <label for="radius_auth_port_1">Auth Port:</label>
+                            <input type="number" id="radius_auth_port_1" placeholder="e.g., 1812" min="1" max="65535" required><br>
+                            <label for="radius_acct_port_1">Acct Port:</label>
+                            <input type="number" id="radius_acct_port_1" placeholder="e.g., 1813" min="1" max="65535" required><br>
+                            <label for="radius_priority_1">Priority:</label>
+                            <input type="number" id="radius_priority_1" placeholder="e.g., 1" min="1" max="10" required><br>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addRadiusServer()">Add Another RADIUS Server</button><br>
+                    <button type="button" onclick="showSection('TACACS')">Next</button>
+                    <button type="button" onclick="showSection('AAASettings')">Previous</button>
+                </form>
+            </section>
+
+            <section id="TACACS" class="section">
+                <h2>TACACS+ Servers</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="tacacsForm">
+                    <div id="tacacsServers">
+                        <div class="server-entry">
+                            <h3>TACACS+ Server 1</h3>
+                            <label for="tacacs_ip_1">TACACS+ Server IP:</label>
+                            <input type="text" id="tacacs_ip_1" placeholder="e.g., 192.168.1.20"><br>
+                            <label for="tacacs_key_1">Shared Key:</label>
+                            <input type="text" id="tacacs_key_1" placeholder="e.g., SecretKey"><br>
+                            <label for="tacacs_auth_port_1">Auth Port:</label>
+                            <input type="number" id="tacacs_auth_port_1" placeholder="e.g., 49" min="1" max="65535"><br>
+                            <label for="tacacs_priority_1">Priority:</label>
+                            <input type="number" id="tacacs_priority_1" placeholder="e.g., 1" min="1" max="10"><br>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addTacacsServer()">Add Another TACACS+ Server</button><br>
+                    <button type="button" onclick="showSection('Dot1XSettings')">Next</button>
+                    <button type="button" onclick="showSection('RADIUSServers')">Previous</button>
+                </form>
+            </section>
+
+            <section id="Dot1XSettings" class="section">
+                <h2>802.1X Settings</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="dot1xForm">
+                    <label for="dot1x_interface">Interface:</label>
+                    <input type="text" id="dot1x_interface" placeholder="e.g., GigabitEthernet0/1" required><br>
+                    <label for="dot1x_vlan">VLAN ID:</label>
+                    <input type="number" id="dot1x_vlan" placeholder="e.g., 10" min="1" max="4094" required><br>
+                    <label for="dot1x_reauth">Reauth Period (s):</label>
+                    <input type="number" id="dot1x_reauth" placeholder="e.g., 3600" min="60"><br>
+                    <label for="dot1x_tx">TX Period (s):</label>
+                    <input type="number" id="dot1x_tx" placeholder="e.g., 10" min="1"><br>
+                    <!-- Cisco-specific settings -->
+                    <div id="ciscoSettings" style="display: none;">
+                        <label for="dot1x_mode">Authentication Mode:</label>
+                        <select id="dot1x_mode">
+                            <option value="closed">Closed Mode</option>
+                            <option value="open">Open Mode</option>
+                        </select><br>
+                        <label for="ibns_enable">Enable IBNS 2.0:</label>
+                        <input type="checkbox" id="ibns_enable"><br>
+                        <label for="ibns_policy">IBNS Policy Name:</label>
+                        <input type="text" id="ibns_policy" placeholder="e.g., DOT1X_MAB_POLICY"><br>
+                    </div>
+                    <!-- Portnox-specific settings -->
+                    <div id="portnoxSettings" style="display: none;">
+                        <label for="portnox_profile">Portnox Profile Name:</label>
+                        <input type="text" id="portnox_profile" placeholder="e.g., PORTNOX_PROFILE"><br>
+                        <label for="portnox_guest_vlan">Guest VLAN:</label>
+                        <input type="number" id="portnox_guest_vlan" placeholder="e.g., 100" min="1" max="4094"><br>
+                        <label for="portnox_dynamic_vlan">Enable Dynamic VLAN:</label>
+                        <input type="checkbox" id="portnox_dynamic_vlan"><br>
+                    </div>
+                    <button type="button" onclick="showSection('CoA')">Next</button>
+                    <button type="button" onclick="showSection('TACACS')">Previous</button>
+                </form>
+            </section>
+
+            <section id="CoA" class="section">
+                <h2>CoA</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="coaForm">
+                    <label for="coa_enable">Enable CoA:</label>
+                    <input type="checkbox" id="coa_enable"><br>
+                    <label for="coa_port">CoA Port:</label>
+                    <input type="number" id="coa_port" placeholder="e.g., 1700" min="1" max="65535"><br>
+                    <button type="button" onclick="showSection('DeviceTracking')">Next</button>
+                    <button type="button" onclick="showSection('Dot1XSettings')">Previous</button>
+                </form>
+            </section>
+
+            <section id="DeviceTracking" class="section">
+                <h2>Device Tracking</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="deviceTrackingForm">
+                    <label for="device_tracking_enable">Enable Device Tracking:</label>
+                    <input type="checkbox" id="device_tracking_enable"><br>
+                    <label for="device_tracking_policy">Policy Name:</label>
+                    <input type="text" id="device_tracking_policy" placeholder="e.g., IP-TRACKING"><br>
+                    <button type="button" onclick="showSection('PortIntegration')">Next</button>
+                    <button type="button" onclick="showSection('CoA')">Previous</button>
+                </form>
+            </section>
+
+            <section id="PortIntegration" class="section">
+                <h2>Port Integration</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <form id="portIntegrationForm">
+                    <label for="port_mode">Port Mode:</label>
+                    <select id="port_mode">
+                        <option value="access">Access</option>
+                        <option value="trunk">Trunk</option>
+                    </select><br>
+                    <label for="port_host_mode">Host Mode:</label>
+                    <select id="port_host_mode">
+                        <option value="single-host">Single-Host</option>
+                        <option value="multi-auth">Multi-Auth</option>
+                        <option value="multi-domain">Multi-Domain</option>
+                    </select><br>
+                    <button type="button" onclick="showSection('GenerateConfig')">Next</button>
+                    <button type="button" onclick="showSection('DeviceTracking')">Previous</button>
+                </form>
+            </section>
+
+            <section id="GenerateConfig" class="section">
+                <h2>Generated Configuration</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <button type="button" onclick="generateConfig()">Generate Config</button>
+                <button type="button" onclick="downloadConfig()">Download Config</button>
+                <pre id="configOutput"></pre>
+                <button type="button" onclick="showSection('PortIntegration')">Previous</button>
+            </section>
+
+            <section id="Help" class="section">
+                <h2>Help</h2>
+                <img src="data:image/png;base64,CYBER_WIZARD_BASE64" alt="Cyber Wizard" class="wizard">
+                <p>Welcome to the Dot1xer Supreme Configurator! This tool generates advanced AAA configurations based on Wires & Wi-Fi templates (<a href="https://www.wiresandwi.fi/aaa-templates" target="_blank">source</a>).</p>
+                <h3>How to Use</h3>
+                <ul>
+                    <li><strong>Sidebar Navigation</strong>: Click the ☰ button to collapse/expand the sidebar. Select a step to proceed.</li>
+                    <li><strong>Platform Selection</strong>: Choose your platform to proceed with configuration.</li>
+                    <li><strong>Generate Config</strong>: Complete all steps and click to see the output.</li>
+                    <li><strong>Download Config</strong>: Save the generated config as a text file.</li>
+                </ul>
+                <h3>Section Details and Examples</h3>
+                <h4>1. Platform Selection</h4>
+                <p>Select the platform for your device. Example: Choose "Cisco: IOS-XE (Catalyst)" for a Catalyst 9300 switch.</p>
+                <h4>2. AAA Settings</h4>
+                <p>Configure the authentication method and accounting. Example: Select "RADIUS" and enable accounting for tracking user sessions.</p>
+                <h4>3. RADIUS Servers</h4>
+                <p>Add one or more RADIUS servers. Example: Add a server with IP "192.168.1.10", shared key "SecretKey", auth port 1812, acct port 1813, and priority 1.</p>
+                <h4>4. TACACS+ Servers</h4>
+                <p>Add one or more TACACS+ servers. Example: Add a server with IP "192.168.1.20", shared key "TacacsKey", auth port 49, and priority 1.</p>
+                <h4>5. 802.1X Settings</h4>
+                <p>Configure 802.1X settings for the selected platform. Example: For Cisco IOS-XE, set interface "GigabitEthernet0/1", VLAN 10, reauth period 3600s, TX period 10s, mode "Open", and enable IBNS 2.0 with policy "DOT1X_MAB". For Portnox, set profile "PORTNOX_PROFILE", guest VLAN 100, and enable dynamic VLAN.</p>
+                <h4>6. CoA</h4>
+                <p>Enable Change of Authorization (CoA). Example: Enable CoA and set port to 1700.</p>
+                <h4>7. Device Tracking</h4>
+                <p>Enable device tracking for IP tracking. Example: Enable device tracking with policy "IP-TRACKING".</p>
+                <h4>8. Port Integration</h4>
+                <p>Configure port settings. Example: Set port mode to "Access" and host mode to "Multi-Domain".</p>
+                <h4>9. Generate Configuration</h4>
+                <p>Generate and download the configuration. Example: After completing all steps, click "Generate Config" to see the output, then "Download Config" to save it as a .txt file.</p>
+                <p>For support, email <a href="mailto:support@dot1xer.com">support@dot1xer.com</a>.</p>
+            </section>
+        </div>
     </div>
-  </div>
-
-  <div class="tab-content" id="reference" style="display:none">
-    <h2>Reference Architecture</h2>
-    <p>This section contains detailed network diagrams, policy maps, server group configurations, and best practices for AAA/802.1X deployments.</p>
-    <img src="data:image/png;base64,DIAGRAM1_BASE64" alt="Network Architecture Diagram" class="diagram">
-    <p><!-- Detailed architecture reference text goes here --></p>
-  </div>
-
-  <div class="tab-content" id="discovery" style="display:none">
-    <h2>Environmental Discovery</h2>
-    <p>This section will eventually integrate network discovery tools to auto-detect devices and AAA settings.</p>
-    <p><!-- Placeholder for network inventory and discovery info --></p>
-  </div>
-
-  <div class="tab-content" id="help" style="display:none">
-    <h2>Help & Documentation</h2>
-    <p>This tool leverages advanced AAA configuration templates based on industry best practices.</p>
-    <ul>
-      <li><a href="https://www.wiresandwi.fi/aaa-templates" target="_blank">AAA Templates Reference</a></li>
-      <li><a href="https://www.cisco.com" target="_blank">Cisco Documentation</a></li>
-      <li><a href="https://www.arubanetworking.com" target="_blank">Aruba Networking</a></li>
-      <li><a href="https://www.juniper.net" target="_blank">Juniper Networks</a></li>
-      <!-- Additional links as needed -->
-    </ul>
-  </div>
-
-  <script src="js/app.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
