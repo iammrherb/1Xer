@@ -1,214 +1,142 @@
 // Dot1Xer Supreme - Core Functionality
 
-// Current step in the configurator
 let currentStep = 1;
 
-// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all accordions
-    initAccordions();
-    
-    // Initialize all tabs
     initTabs();
-    
-    // Initialize vendor selection and platform options
+    initWizard();
     initVendorOptions();
-    
-    // Initialize network scoping options
-    initNetworkScopingOptions();
-    
-    // Setup authentication method options
-    setupAuthMethodOptions();
-    
-    // Setup API integrations for AI assistance
-    setupAPIIntegrations();
-    
-    // Setup Portnox Cloud integration
-    setupPortnoxIntegration();
-    
-    // Show the first tab by default
+    initAIChat();
     const firstTabBtn = document.querySelector('.tab-btn');
-    if (firstTabBtn) {
-        firstTabBtn.click();
-    }
-    
-    // Show the first discovery tab by default
-    const firstDiscoveryTab = document.querySelector('.discovery-tab');
-    if (firstDiscoveryTab) {
-        firstDiscoveryTab.click();
-    }
-    
-    // Show the first reference tab by default
-    const firstRefTab = document.querySelector('.ref-tab');
-    if (firstRefTab) {
-        firstRefTab.click();
-    }
-    
-    // Show the first server tab by default
-    const firstServerTab = document.querySelector('.tab-control-btn');
-    if (firstServerTab) {
-        firstServerTab.click();
-    }
-    
-    // Show the first Portnox tab by default
-    const firstPortnoxTab = document.querySelector('.portnox-nav-tab');
-    if (firstPortnoxTab) {
-        firstPortnoxTab.click();
-    }
+    if (firstTabBtn) firstTabBtn.click();
 });
 
-// Initialize accordion functionality
-function initAccordions() {
-    const accordionHeaders = document.querySelectorAll('.accordion-header');
-    accordionHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            const icon = this.querySelector('.accordion-icon');
-            const isActive = content.classList.contains('active');
-            
-            // Toggle the active class and visibility
-            if (isActive) {
-                content.classList.remove('active');
-                content.style.display = 'none';
-                this.classList.remove('active');
-                if (icon) icon.textContent = '+';
-            } else {
-                content.classList.add('active');
-                content.style.display = 'block';
-                this.classList.add('active');
-                if (icon) icon.textContent = '-';
+function initTabs() {
+    document.querySelectorAll('.tab-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.display = 'none';
+            });
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+                selectedTab.style.display = 'block';
             }
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            if (tabName === 'configurator') goToStep(1);
         });
     });
 }
-// Replace the existing goToStep function to unlock tabs
+
+function initWizard() {
+    document.querySelectorAll('.step').forEach(step => {
+        step.addEventListener('click', function() {
+            goToStep(parseInt(this.getAttribute('data-step')));
+        });
+    });
+}
+
 function goToStep(step) {
-  document.querySelectorAll('.step-content').forEach(content => content.style.display = 'none');
-  document.getElementById(`step-${step}`).style.display = 'block';
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-  document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+    document.querySelectorAll('.step-content').forEach(content => content.style.display = 'none');
+    document.querySelectorAll('.step').forEach(stepEl => stepEl.classList.remove('active'));
+    const stepContent = document.getElementById(`step-${step}`);
+    if (stepContent) stepContent.style.display = 'block';
+    const stepIndicator = document.querySelector(`.step[data-step="${step}"]`);
+    if (stepIndicator) stepIndicator.classList.add('active');
+    currentStep = step;
 }
 
-// Add function to dynamically add RADIUS servers
-function addRadiusServer() {
-  const container = document.getElementById('radius-servers');
-  const index = container.children.length + 1;
-  const entry = document.createElement('div');
-  entry.className = 'radius-server-entry';
-  entry.dataset.index = index;
-  entry.innerHTML = `
-    <h5>RADIUS Server ${index}</h5>
-    <div class="row">
-      <div class="col">
-        <label for="radius-ip-${index}">Server IP:</label>
-        <input type="text" id="radius-ip-${index}" placeholder="e.g., 10.1.1.100">
-      </div>
-      <div class="col">
-        <label for="radius-key-${index}">Shared Secret:</label>
-        <input type="password" id="radius-key-${index}" placeholder="Shared secret">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <label for="radius-auth-port-${index}">Authentication Port:</label>
-        <input type="number" id="radius-auth-port-${index}" value="1812">
-      </div>
-      <div class="col">
-        <label for="radius-acct-port-${index}">Accounting Port:</label>
-        <input type="number" id="radius-acct-port-${index}" value="1813">
-      </div>
-      <div class="col">
-        <label for="radius-coa-port-${index}">CoA Port:</label>
-        <input type="number" id="radius-coa-port-${index}" value="3799">
-      </div>
-    </div>
-  `;
-  container.appendChild(entry);
-}
-
-// Add function to dynamically add RadSec servers
-function addRadSecServer() {
-  const container = document.getElementById('radsec-servers');
-  const index = container.children.length + 1;
-  const entry = document.createElement('div');
-  entry.className = 'radsec-server-entry';
-  entry.dataset.index = index;
-  entry.innerHTML = `
-    <h5>RadSec Server ${index}</h5>
-    <div class="row">
-      <div class="col">
-        <label for="radsec-ip-${index}">Server IP:</label>
-        <input type="text" id="radsec-ip-${index}" placeholder="e.g., 10.1.1.104">
-      </div>
-      <div class="col">
-        <label for="radsec-key-${index}">Shared Secret:</label>
-        <input type="password" id="radsec-key-${index}" placeholder="Shared secret">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <label for="radsec-port-${index}">TLS Port:</label>
-        <input type="number" id="radsec-port-${index}" value="2083">
-      </div>
-    </div>
-  `;
-  container.appendChild(entry);
-}
-
-// Update generateConfiguration to include all user inputs
-function generateConfiguration() {
-  let config = '';
-  const vendor = document.getElementById('vendor-select').value;
-  const platform = document.getElementById('platform-select').value;
-
-  // RADIUS Servers
-  const radiusServers = document.getElementById('radius-servers').children;
-  for (let i = 0; i < radiusServers.length; i++) {
-    const index = i + 1;
-    const ip = document.getElementById(`radius-ip-${index}`).value;
-    const key = document.getElementById(`radius-key-${index}`).value;
-    const authPort = document.getElementById(`radius-auth-port-${index}`).value;
-    const acctPort = document.getElementById(`radius-acct-port-${index}`).value;
-    const coaPort = document.getElementById(`radius-coa-port-${index}`).value;
-    if (ip && key) {
-      config += `radius-server host ${ip} auth-port ${authPort} acct-port ${acctPort} key ${key}\n`;
-      if (coaPort) config += `radius-server host ${ip} coa-port ${coaPort}\n`;
+function initVendorOptions() {
+    const vendorSelect = document.getElementById('vendor-select');
+    if (vendorSelect) {
+        vendorSelect.addEventListener('change', updatePlatformOptions);
+        updatePlatformOptions();
     }
-  }
-
-  // RadSec Servers
-  const radsecServers = document.getElementById('radsec-servers').children;
-  for (let i = 0; i < radsecServers.length; i++) {
-    const index = i + 1;
-    const ip = document.getElementById(`radsec-ip-${index}`).value;
-    const key = document.getElementById(`radsec-key-${index}`).value;
-    const port = document.getElementById(`radsec-port-${index}`).value;
-    if (ip && key) {
-      config += `radsec-server host ${ip} port ${port} key ${key}\n`;
-    }
-  }
-
-  // Add more configuration based on vendor/platform (extend as needed)
-  document.getElementById('config-output').textContent = config;
 }
 
-// Add Dot1Xer Review function
-function reviewConfiguration() {
-  const config = document.getElementById('config-output').textContent;
-  const reviewOutput = document.getElementById('review-output');
-  const reviewSection = document.getElementById('review-output-section');
-  reviewSection.style.display = 'block';
-  reviewOutput.innerHTML = '<p>Analyzing configuration...</p>';
-  
-  // Simulated AI review (replace with actual AI integration if available)
-  setTimeout(() => {
-    reviewOutput.innerHTML = `
-      <p><strong>Review Results:</strong></p>
-      <ul>
-        <li>Multiple RADIUS servers detected - ensure load balancing is configured if intended.</li>
-        <li>RadSec ports are standard (2083) - verify server compatibility.</li>
-        <li>Configuration syntax appears valid for selected vendor.</li>
-      </ul>
-    `;
-  }, 1000);
+function updatePlatformOptions() {
+    const vendorSelect = document.getElementById('vendor-select');
+    const platformSelect = document.getElementById('platform-select');
+    if (!vendorSelect || !platformSelect) return;
+    platformSelect.innerHTML = '';
+    const vendor = vendorSelect.value;
+    const platforms = {
+        'cisco': ['ios', 'ios-xe', 'nx-os', 'wlc'],
+        'aruba': ['aos-cx', 'aos-switch'],
+        'juniper': ['ex', 'qfx', 'srx'],
+        'fortinet': ['fortiswitch', 'fortigate'],
+        'arista': ['eos', 'cloudvision'],
+        'extreme': ['exos', 'voss', 'xiq'],
+        'huawei': ['vrp', 'agile-controller'],
+        'alcatel': ['omniswitch', 'omnivista'],
+        'ubiquiti': ['unifi', 'edgeswitch'],
+        'hp': ['procurve', 'comware', 'aruba-central'],
+        'dell': ['powerswitch'],
+        'netgear': ['managed'],
+        'ruckus': ['smartzone'],
+        'brocade': ['icx'],
+        'paloalto': ['panos', 'panorama'],
+        'checkpoint': ['gaia', 'r80'],
+        'sonicwall': ['sonicos'],
+        'portnox': ['cloud']
+    };
+    (platforms[vendor] || ['default']).forEach(platform => {
+        const option = document.createElement('option');
+        option.value = platform;
+        option.textContent = platform.toUpperCase();
+        platformSelect.appendChild(option);
+    });
+}
+
+function initAIChat() {
+    const sendButton = document.getElementById('send-ai-query');
+    if (sendButton) {
+        sendButton.addEventListener('click', sendAIQuery);
+    }
+}
+
+function sendAIQuery() {
+    const queryInput = document.getElementById('ai-query');
+    const query = queryInput.value.trim();
+    if (!query) return;
+    addChatMessage(query, 'user');
+    queryInput.value = '';
+    addChatMessage('Analyzing...', 'ai', true);
+    setTimeout(() => {
+        document.querySelector('.ai-message.loading')?.remove();
+        const response = generateAIResponse(query);
+        addChatMessage(response, 'ai');
+    }, 1500);
+}
+
+function addChatMessage(message, type, isLoading = false) {
+    const chatHistory = document.getElementById('chat-history');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `${type}-message${isLoading ? ' loading' : ''}`;
+    const avatarImg = document.createElement('img');
+    avatarImg.src = `assets/images/${type}-avatar.png`;
+    avatarImg.alt = type === 'user' ? 'You' : 'AI';
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.innerHTML = message.replace(/\n/g, '<br>');
+    messageDiv.appendChild(avatarImg);
+    messageDiv.appendChild(contentDiv);
+    chatHistory.appendChild(messageDiv);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+function generateAIResponse(query) {
+    query = query.toLowerCase();
+    if (query.includes('radius')) {
+        return "Radius settings are configured with primary IP and ports (1812 for auth, 1813 for accounting). Ensure your server supports these standards.";
+    } else if (query.includes('report')) {
+        return "Generating an AI-assisted report: Analyzing network scope, vendor configs, and Radius settings. Report ready in POC tab.";
+    } else if (query.includes('poc')) {
+        return "POC generated: Includes vendor templates, Radius config, and deployment steps. Check the POC Generator section.";
+    } else {
+        return "I can assist with Radius settings, vendor configs, or generate reports/POCs. What do you need help with?";
+    }
 }
