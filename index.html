@@ -79,6 +79,450 @@
           <p>Select a vendor to see platform details.</p>
         </div>
       </div>
+      <!-- Vendor-Specific Options -->
+      <div id="vendor-specific-options">
+        <!-- Cisco IOS-XE Options -->
+        <div id="cisco-ios-xe-options" class="vendor-specific" style="display: none;">
+          <h4>Cisco IOS-XE Configuration Options</h4>
+          <div class="form-group">
+            <label for="cisco-ios-xe-command-mode">Command Mode:</label>
+            <select id="cisco-ios-xe-command-mode">
+              <option value="global">Global Configuration</option>
+              <option value="interface">Interface Configuration</option>
+              <option value="both" selected>Both</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="cisco-ios-xe-auth-mode">Authentication Mode:</label>
+            <select id="cisco-ios-xe-auth-mode">
+              <option value="multi-auth">Multi-Auth</option>
+              <option value="multi-domain">Multi-Domain</option>
+              <option value="multi-host">Multi-Host</option>
+              <option value="single-host" selected>Single-Host</option>
+            </select>
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="cisco-ios-xe-ibns"> 
+              Enable IBNS 2.0 Policy Maps
+            </label>
+          </div>
+        </div>
+        <!-- Cisco NX-OS Options -->
+        <div id="cisco-nx-os-options" class="vendor-specific" style="display: none;">
+          <h4>Cisco NX-OS Configuration Options</h4>
+          <div class="form-group">
+            <label for="cisco-nx-os-vrf">VRF for RADIUS:</label>
+            <input type="text" id="cisco-nx-os-vrf" value="default" placeholder="e.g., default">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="cisco-nx-os-eap"> 
+              Enable EAP for MAB
+            </label>
+          </div>
+        </div>
+        <!-- Cisco IOS Options -->
+        <div id="cisco-ios-options" class="vendor-specific" style="display: none;">
+          <h4>Cisco IOS Configuration Options</h4>
+          <div class="form-group">
+            <label for="cisco-ios-auth-mode">Authentication Mode:</label>
+            <select id="cisco-ios-auth-mode">
+              <option value="multi-auth">Multi-Auth</option>
+              <option value="multi-domain">Multi-Domain</option>
+              <option value="multi-host">Multi-Host</option>
+              <option value="single-host" selected>Single-Host</option>
+            </select>
+          </div>
+        </div>
+        <!-- Cisco WLC Options -->
+        <div id="cisco-wlc-options" class="vendor-specific" style="display: none;">
+          <h4>Cisco WLC Configuration Options</h4>
+          <div class="form-group">
+            <label for="cisco-wlc-ssid">SSID for 802.1X:</label>
+            <input type="text" id="cisco-wlc-ssid" placeholder="e.g., Secure-WLAN">
+          </div>
+        </div>
+        <!-- Aruba AOS-CX Options -->
+        <div id="aruba-aos-cx-options" class="vendor-specific" style="display: none;">
+          <h4>Aruba AOS-CX Configuration Options</h4>
+          <div class="form-group">
+            <label for="aruba-aos-cx-auth-mode">Authentication Mode:</label>
+            <select id="aruba-aos-cx-auth-mode">
+              <option value="port-based" selected>Port-Based</option>
+              <option value="user-based">User-Based</option>
+            </select>
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="aruba-aos-cx-mac-auth-first"> 
+              Prioritize MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Aruba AOS-Switch Options -->
+        <div id="aruba-aos-switch-options" class="vendor-specific" style="display: none;">
+          <h4>Aruba AOS-Switch Configuration Options</h4>
+          <div class="form-group">
+            <label for="aruba-aos-switch-auth-mode">Authentication Mode:</label>
+            <select id="aruba-aos-switch-auth-mode">
+              <option value="port-based" selected>Port-Based</option>
+              <option value="client-based">Client-Based</option>
+            </select>
+          </div>
+        </div>
+        <!-- Juniper EX Options -->
+        <div id="juniper-ex-options" class="vendor-specific" style="display: none;">
+          <h4>Juniper EX Configuration Options</h4>
+          <div class="form-group">
+            <label for="juniper-ex-mac-radius">MAC RADIUS Mode:</label>
+            <select id="juniper-ex-mac-radius">
+              <option value="restrict" selected>Restrict</option>
+              <option value="non-restrict">Non-Restrict</option>
+            </select>
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="juniper-ex-reauth"> 
+              Enable Periodic Reauthentication
+            </label>
+          </div>
+        </div>
+        <!-- Juniper QFX Options -->
+        <div id="juniper-qfx-options" class="vendor-specific" style="display: none;">
+          <h4>Juniper QFX Configuration Options</h4>
+          <div class="form-group">
+            <label for="juniper-qfx-mac-radius">MAC RADIUS Mode:</label>
+            <select id="juniper-qfx-mac-radius">
+              <option value="restrict" selected>Restrict</option>
+              <option value="non-restrict">Non-Restrict</option>
+            </select>
+          </div>
+        </div>
+        <!-- Juniper SRX Options -->
+        <div id="juniper-srx-options" class="vendor-specific" style="display: none;">
+          <h4>Juniper SRX Configuration Options</h4>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="juniper-srx-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Fortinet FortiSwitch Options -->
+        <div id="fortinet-fortiswitch-options" class="vendor-specific" style="display: none;">
+          <h4>Fortinet FortiSwitch Configuration Options</h4>
+          <div class="form-group">
+            <label for="fortinet-fortiswitch-vdom">VDOM:</label>
+            <input type="text" id="fortinet-fortiswitch-vdom" value="root" placeholder="e.g., root">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="fortinet-fortiswitch-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Fortinet FortiGate Options -->
+        <div id="fortinet-fortigate-options" class="vendor-specific" style="display: none;">
+          <h4>Fortinet FortiGate Configuration Options</h4>
+          <div class="form-group">
+            <label for="fortinet-fortigate-vdom">VDOM:</label>
+            <input type="text" id="fortinet-fortigate-vdom" value="root" placeholder="e.g., root">
+          </div>
+        </div>
+        <!-- Arista EOS Options -->
+        <div id="arista-eos-options" class="vendor-specific" style="display: none;">
+          <h4>Arista EOS Configuration Options</h4>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="arista-eos-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+          <div class="form-group">
+            <label for="arista-eos-timeout">Timeout (seconds):</label>
+            <input type="number" id="arista-eos-timeout" value="30">
+          </div>
+        </div>
+        <!-- Arista CloudVision Options -->
+        <div id="arista-cloudvision-options" class="vendor-specific" style="display: none;">
+          <h4>Arista CloudVision Configuration Options</h4>
+          <div class="form-group">
+            <label for="arista-cloudvision-profile">Authentication Profile:</label>
+            <input type="text" id="arista-cloudvision-profile" placeholder="e.g., dot1x-profile">
+          </div>
+        </div>
+        <!-- Extreme EXOS Options -->
+        <div id="extreme-exos-options" class="vendor-specific" style="display: none;">
+          <h4>Extreme EXOS Configuration Options</h4>
+          <div class="form-group">
+            <label for="extreme-exos-client-ip">Client IP for RADIUS:</label>
+            <input type="text" id="extreme-exos-client-ip" placeholder="e.g., 192.168.1.1">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="extreme-exos-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Extreme VOSS Options -->
+        <div id="extreme-voss-options" class="vendor-specific" style="display: none;">
+          <h4>Extreme VOSS Configuration Options</h4>
+          <div class="form-group">
+            <label for="extreme-voss-client-ip">Client IP for RADIUS:</label>
+            <input type="text" id="extreme-voss-client-ip" placeholder="e.g., 192.168.1.1">
+          </div>
+        </div>
+        <!-- Extreme XIQ Options -->
+        <div id="extreme-xiq-options" class="vendor-specific" style="display: none;">
+          <h4>ExtremeCloud IQ Configuration Options</h4>
+          <div class="form-group">
+            <label for="extreme-xiq-policy">Policy Name:</label>
+            <input type="text" id="extreme-xiq-policy" placeholder="e.g., dot1x-policy">
+          </div>
+        </div>
+        <!-- Huawei VRP Options -->
+        <div id="huawei-vrp-options" class="vendor-specific" style="display: none;">
+          <h4>Huawei VRP Configuration Options</h4>
+          <div class="form-group">
+            <label for="huawei-vrp-auth-method">Authentication Method:</label>
+            <select id="huawei-vrp-auth-method">
+              <option value="eap" selected>EAP</option>
+              <option value="chap">CHAP</option>
+              <option value="pap">PAP</option>
+            </select>
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="huawei-vrp-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Huawei Agile Controller Options -->
+        <div id="huawei-agile-controller-options" class="vendor-specific" style="display: none;">
+          <h4>Huawei Agile Controller Configuration Options</h4>
+          <div class="form-group">
+            <label for="huawei-agile-controller-profile">Authentication Profile:</label>
+            <input type="text" id="huawei-agile-controller-profile" placeholder="e.g., dot1x-profile">
+          </div>
+        </div>
+        <!-- Alcatel OmniSwitch Options -->
+        <div id="alcatel-omniswitch-options" class="vendor-specific" style="display: none;">
+          <h4>Alcatel-Lucent OmniSwitch Configuration Options</h4>
+          <div class="form-group">
+            <label for="alcatel-omniswitch-client-limit">Client Limit per Port:</label>
+            <input type="number" id="alcatel-omniswitch-client-limit" value="2">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="alcatel-omniswitch-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Alcatel OmniVista Options -->
+        <div id="alcatel-omnivista-options" class="vendor-specific" style="display: none;">
+          <h4>Alcatel-Lucent OmniVista Configuration Options</h4>
+          <div class="form-group">
+            <label for="alcatel-omnivista-policy">Policy Name:</label>
+            <input type="text" id="alcatel-omnivista-policy" placeholder="e.g., dot1x-policy">
+          </div>
+        </div>
+        <!-- Ubiquiti UniFi Options -->
+        <div id="ubiquiti-unifi-options" class="vendor-specific" style="display: none;">
+          <h4>Ubiquiti UniFi Configuration Options</h4>
+          <div class="form-group">
+            <label for="ubiquiti-unifi-ssid">SSID for 802.1X:</label>
+            <input type="text" id="ubiquiti-unifi-ssid" placeholder="e.g., Secure-WLAN">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="ubiquiti-unifi-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Ubiquiti EdgeSwitch Options -->
+        <div id="ubiquiti-edgeswitch-options" class="vendor-specific" style="display: none;">
+          <h4>Ubiquiti EdgeSwitch Configuration Options</h4>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="ubiquiti-edgeswitch-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- HP ProCurve Options -->
+        <div id="hp-procurve-options" class="vendor-specific" style="display: none;">
+          <h4>HP ProCurve Configuration Options</h4>
+          <div class="form-group">
+            <label for="hp-procurve-client-limit">Client Limit per Port:</label>
+            <input type="number" id="hp-procurve-client-limit" value="2">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="hp-procurve-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- HP Comware Options -->
+        <div id="hp-comware-options" class="vendor-specific" style="display: none;">
+          <h4>HP Comware Configuration Options</h4>
+          <div class="form-group">
+            <label for="hp-comware-auth-method">Authentication Method:</label>
+            <select id="hp-comware-auth-method">
+              <option value="eap" selected>EAP</option>
+              <option value="chap">CHAP</option>
+              <option value="pap">PAP</option>
+            </select>
+          </div>
+        </div>
+        <!-- HP Aruba Central Options -->
+        <div id="hp-aruba-central-options" class="vendor-specific" style="display: none;">
+          <h4>HP Aruba Central Configuration Options</h4>
+          <div class="form-group">
+            <label for="hp-aruba-central-policy">Policy Name:</label>
+            <input type="text" id="hp-aruba-central-policy" placeholder="e.g., dot1x-policy">
+          </div>
+        </div>
+        <!-- Dell PowerSwitch Options -->
+        <div id="dell-powerswitch-options" class="vendor-specific" style="display: none;">
+          <h4>Dell PowerSwitch Configuration Options</h4>
+          <div class="form-group">
+            <label for="dell-powerswitch-timeout">Timeout (seconds):</label>
+            <input type="number" id="dell-powerswitch-timeout" value="30">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="dell-powerswitch-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- NETGEAR Managed Options -->
+        <div id="netgear-managed-options" class="vendor-specific" style="display: none;">
+          <h4>NETGEAR Managed Switch Configuration Options</h4>
+          <div class="form-group">
+            <label for="netgear-managed-timeout">Timeout (seconds):</label>
+            <input type="number" id="netgear-managed-timeout" value="30">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="netgear-managed-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Ruckus SmartZone Options -->
+        <div id="ruckus-smartzone-options" class="vendor-specific" style="display: none;">
+          <h4>Ruckus SmartZone Configuration Options</h4>
+          <div class="form-group">
+            <label for="ruckus-smartzone-ssid">SSID for 802.1X:</label>
+            <input type="text" id="ruckus-smartzone-ssid" placeholder="e.g., Secure-WLAN">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="ruckus-smartzone-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Brocade ICX Options -->
+        <div id="brocade-icx-options" class="vendor-specific" style="display: none;">
+          <h4>Brocade ICX Configuration Options</h4>
+          <div class="form-group">
+            <label for="brocade-icx-timeout">Timeout (seconds):</label>
+            <input type="number" id="brocade-icx-timeout" value="30">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="brocade-icx-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Palo Alto PAN-OS Options -->
+        <div id="paloalto-panos-options" class="vendor-specific" style="display: none;">
+          <h4>Palo Alto PAN-OS Configuration Options</h4>
+          <div class="form-group">
+            <label for="paloalto-panos-profile">Authentication Profile:</label>
+            <input type="text" id="paloalto-panos-profile" placeholder="e.g., dot1x-profile">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="paloalto-panos-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Palo Alto Panorama Options -->
+        <div id="paloalto-panorama-options" class="vendor-specific" style="display: none;">
+          <h4>Palo Alto Panorama Configuration Options</h4>
+          <div class="form-group">
+            <label for="paloalto-panorama-policy">Policy Name:</label>
+            <input type="text" id="paloalto-panorama-policy" placeholder="e.g., dot1x-policy">
+          </div>
+        </div>
+        <!-- Check Point Gaia Options -->
+        <div id="checkpoint-gaia-options" class="vendor-specific" style="display: none;">
+          <h4>Check Point Gaia OS Configuration Options</h4>
+          <div class="form-group">
+            <label for="checkpoint-gaia-timeout">Timeout (seconds):</label>
+            <input type="number" id="checkpoint-gaia-timeout" value="30">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="checkpoint-gaia-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Check Point R80 Options -->
+        <div id="checkpoint-r80-options" class="vendor-specific" style="display: none;">
+          <h4>Check Point R80.x Configuration Options</h4>
+          <div class="form-group">
+            <label for="checkpoint-r80-policy">Policy Name:</label>
+            <input type="text" id="checkpoint-r80-policy" placeholder="e.g., dot1x-policy">
+          </div>
+        </div>
+        <!-- SonicWall SonicOS Options -->
+        <div id="sonicwall-sonicos-options" class="vendor-specific" style="display: none;">
+          <h4>SonicWall SonicOS Configuration Options</h4>
+          <div class="form-group">
+            <label for="sonicwall-sonicos-timeout">Timeout (seconds):</label>
+            <input type="number" id="sonicwall-sonicos-timeout" value="30">
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="sonicwall-sonicos-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+        <!-- Portnox Cloud Options -->
+        <div id="portnox-cloud-options" class="vendor-specific" style="display: none;">
+          <h4>Portnox Cloud Configuration Options</h4>
+          <div class="form-group">
+            <label for="portnox-cloud-region">RADIUS Region:</label>
+            <select id="portnox-cloud-region">
+              <option value="us">United States (North America)</option>
+              <option value="eu">Europe (Netherlands)</option>
+              <option value="ap">Asia Pacific (Singapore)</option>
+              <option value="au">Australia</option>
+            </select>
+          </div>
+          <div class="checkbox-group">
+            <label>
+              <input type="checkbox" id="portnox-cloud-mac-auth"> 
+              Enable MAC Authentication
+            </label>
+          </div>
+        </div>
+      </div>
       <div class="nav-buttons">
         <button type="button" class="next-btn" onclick="goToStep(2)">Next</button>
       </div>
@@ -1030,8 +1474,8 @@
       <button class="discovery-tab" data-tab="environment">Environment Profile</button>
       <button class="discovery-tab" data-tab="scoping">Network Scoping</button>
       <button class="discovery-tab" data-tab="portnox">Portnox Cloud</button>
-      <button class="discovery-tab" data-tab="import">Import</button>
-      <button class="discovery-tab" data-tab="analyze">Analyze</button>
+      <button class="discovery-tab" data-tab="import">Import Configuration</button>
+      <button class="discovery-tab" data-tab="analyze">Analysis</button>
       <button class="discovery-tab" data-tab="report">Report</button>
     </div>
     <div class="discovery-content">

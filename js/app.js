@@ -37,39 +37,54 @@ document.addEventListener('DOMContentLoaded', function() {
     if (firstDiscoveryTab) {
         firstDiscoveryTab.click();
     }
+    
+    // Show the first reference tab by default
+    const firstRefTab = document.querySelector('.ref-tab');
+    if (firstRefTab) {
+        firstRefTab.click();
+    }
+    
+    // Show the first server tab by default
+    const firstServerTab = document.querySelector('.tab-control-btn');
+    if (firstServerTab) {
+        firstServerTab.click();
+    }
+    
+    // Show the first Portnox tab by default
+    const firstPortnoxTab = document.querySelector('.portnox-nav-tab');
+    if (firstPortnoxTab) {
+        firstPortnoxTab.click();
+    }
 });
 
 // Initialize accordion functionality
 function initAccordions() {
     const accordionHeaders = document.querySelectorAll('.accordion-header');
-    
     accordionHeaders.forEach(header => {
         header.addEventListener('click', function() {
-            this.classList.toggle('active');
             const content = this.nextElementSibling;
             const icon = this.querySelector('.accordion-icon');
-            if (content.style.display === 'block') {
+            const isActive = content.classList.contains('active');
+            
+            // Toggle the active class and visibility
+            if (isActive) {
+                content.classList.remove('active');
                 content.style.display = 'none';
+                this.classList.remove('active');
                 if (icon) icon.textContent = '+';
             } else {
+                content.classList.add('active');
                 content.style.display = 'block';
+                this.classList.add('active');
                 if (icon) icon.textContent = '-';
             }
         });
-        
-        // Automatically open the first accordion in each group
-        const accordionGroup = header.closest('.accordion-group');
-        if (accordionGroup) {
-            const headers = accordionGroup.querySelectorAll('.accordion-header');
-            if (headers[0] === header) {
-                setTimeout(() => header.click(), 100);
-            }
-        }
     });
 }
 // Dot1Xer Supreme - Tab Navigation
 
 function initTabs() {
+    // Main tabs
     document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -77,6 +92,7 @@ function initTabs() {
         });
     });
     
+    // Discovery tabs
     document.querySelectorAll('.discovery-tab').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -84,6 +100,7 @@ function initTabs() {
         });
     });
     
+    // Server tabs
     document.querySelectorAll('.tab-control-btn').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -91,6 +108,7 @@ function initTabs() {
         });
     });
     
+    // Reference architecture tabs
     document.querySelectorAll('.ref-tab').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -98,6 +116,7 @@ function initTabs() {
         });
     });
     
+    // Portnox tabs
     document.querySelectorAll('.portnox-nav-tab').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -108,10 +127,12 @@ function initTabs() {
 
 function showTab(tabName, button) {
     document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
         tab.style.display = 'none';
     });
     const selectedTab = document.getElementById(tabName);
     if (selectedTab) {
+        selectedTab.classList.add('active');
         selectedTab.style.display = 'block';
     }
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -122,19 +143,31 @@ function showTab(tabName, button) {
 }
 
 function goToStep(step) {
-    document.querySelectorAll('.step-content').forEach(content => content.style.display = 'none');
-    document.querySelectorAll('.step').forEach(stepEl => stepEl.classList.remove('active'));
-    document.getElementById(`step-${step}`).style.display = 'block';
-    document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+    document.querySelectorAll('.step-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    document.querySelectorAll('.step').forEach(stepEl => {
+        stepEl.classList.remove('active');
+    });
+    const stepContent = document.getElementById(`step-${step}`);
+    if (stepContent) {
+        stepContent.style.display = 'block';
+    }
+    const stepIndicator = document.querySelector(`.step[data-step="${step}"]`);
+    if (stepIndicator) {
+        stepIndicator.classList.add('active');
+    }
     currentStep = step;
 }
 
 function showDiscoveryTab(tabName, button) {
     document.querySelectorAll('.discovery-section').forEach(section => {
+        section.classList.remove('active');
         section.style.display = 'none';
     });
     const selectedSection = document.getElementById(`disc-${tabName}`);
     if (selectedSection) {
+        selectedSection.classList.add('active');
         selectedSection.style.display = 'block';
     }
     document.querySelectorAll('.discovery-tab').forEach(btn => {
@@ -145,35 +178,50 @@ function showDiscoveryTab(tabName, button) {
 
 function showServerTab(tabId, button) {
     document.querySelectorAll('.server-tab').forEach(tab => {
+        tab.classList.remove('active');
         tab.style.display = 'none';
     });
+    const selectedTab = document.getElementById(tabId);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+        selectedTab.style.display = 'block';
+    }
     document.querySelectorAll('.tab-control-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.getElementById(tabId).style.display = 'block';
-    button.classList.add('active');
+    if (button) button.classList.add('active');
 }
 
 function showRefTab(tabName, button) {
     document.querySelectorAll('.ref-section').forEach(section => {
+        section.classList.remove('active');
         section.style.display = 'none';
     });
+    const selectedSection = document.getElementById(`ref-${tabName}`);
+    if (selectedSection) {
+        selectedSection.classList.add('active');
+        selectedSection.style.display = 'block';
+    }
     document.querySelectorAll('.ref-tab').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.getElementById(`ref-${tabName}`).style.display = 'block';
-    button.classList.add('active');
+    if (button) button.classList.add('active');
 }
 
 function showPortnoxTab(tabName, button) {
     document.querySelectorAll('.portnox-content').forEach(section => {
+        section.classList.remove('active');
         section.style.display = 'none';
     });
+    const selectedSection = document.getElementById(`portnox-${tabName}`);
+    if (selectedSection) {
+        selectedSection.classList.add('active');
+        selectedSection.style.display = 'block';
+    }
     document.querySelectorAll('.portnox-nav-tab').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.getElementById(`portnox-${tabName}`).style.display = 'block';
-    button.classList.add('active');
+    if (button) button.classList.add('active');
 }
 // Dot1Xer Supreme - Vendor Options
 
@@ -202,7 +250,7 @@ function updatePlatformOptions() {
             addOption(platformSelect, 'ios', 'IOS (Classic)');
             addOption(platformSelect, 'nx-os', 'NX-OS (Nexus)');
             addOption(platformSelect, 'wlc', 'WLC 9800');
-            platformDescription.innerHTML = '<p>Cisco IOS-XE supports IBNS 2.0 with advanced policy maps and both open and closed authentication modes.</p>';
+            platformDescription.innerHTML = '<p>Cisco platforms support a wide range of authentication methods and features.</p>';
             break;
         case 'aruba':
             addOption(platformSelect, 'aos-cx', 'AOS-CX');
@@ -251,6 +299,22 @@ function updatePlatformOptions() {
             addOption(platformSelect, 'comware', 'Comware');
             addOption(platformSelect, 'aruba-central', 'Aruba Central');
             platformDescription.innerHTML = '<p>HP offers multiple switch platforms.</p>';
+            break;
+        case 'dell':
+            addOption(platformSelect, 'powerswitch', 'PowerSwitch');
+            platformDescription.innerHTML = '<p>Dell PowerSwitch supports enterprise-grade authentication.</p>';
+            break;
+        case 'netgear':
+            addOption(platformSelect, 'managed', 'Managed Switches');
+            platformDescription.innerHTML = '<p>NETGEAR managed switches support basic 802.1X authentication.</p>';
+            break;
+        case 'ruckus':
+            addOption(platformSelect, 'smartzone', 'SmartZone');
+            platformDescription.innerHTML = '<p>Ruckus SmartZone provides centralized management for authentication.</p>';
+            break;
+        case 'brocade':
+            addOption(platformSelect, 'icx', 'ICX Series');
+            platformDescription.innerHTML = '<p>Brocade ICX series supports 802.1X and MAB.</p>';
             break;
         case 'paloalto':
             addOption(platformSelect, 'panos', 'PAN-OS');
@@ -1124,7 +1188,9 @@ function setupAPIIntegrations() {
                 showError('Please enter a valid API key.');
                 return;
             }
-            () => {
+            this.textContent = 'Testing...';
+            this.disabled = true;
+            setTimeout(() => {
                 this.textContent = 'Test Connection';
                 this.disabled = false;
                 showSuccess('API connection successful! AI assistance is now enabled.');
@@ -1181,12 +1247,116 @@ function generateConfiguration() {
     }
 
     let config = `! Configuration for ${vendor} ${platform}\n`;
-    if (vendor === 'cisco' && platform === 'nx-os') {
-        config += `feature aaa\nfeature dot1x\nradius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface Ethernet1/1\n switchport access vlan ${dataVlan}\n dot1x pae authenticator\n`;
-        config += `${authMethod.includes('mab') ? 'dot1x mac-auth-bypass\n' : ''}`;
-        config += `dot1x port-control ${authMode === 'closed' ? 'force-authorized' : 'auto'}\n`;
-        if (guestVlan) config += `dot1x guest-vlan ${guestVlan}\n`;
+    if (vendor === 'cisco') {
+        if (platform === 'ios-xe') {
+            config += `aaa new-model\n`;
+            config += `radius server RADIUS-SRV-1\n address ipv4 ${radiusIp1} auth-port 1812 acct-port 1813\n key ${radiusKey1}\n`;
+            config += `aaa group server radius RADIUS-SERVERS\n server name RADIUS-SRV-1\n`;
+            config += `aaa authentication dot1x default group RADIUS-SERVERS\n`;
+            config += `dot1x system-auth-control\n`;
+            config += `interface GigabitEthernet1/0/1\n switchport access vlan ${dataVlan}\n`;
+            config += ` switchport mode access\n authentication port-control auto\n`;
+            config += ` authentication host-mode ${hostMode}\n`;
+            if (authMethod.includes('mab')) config += ` mab\n`;
+            if (guestVlan) config += ` authentication event fail action authorize vlan ${guestVlan}\n`;
+        } else if (platform === 'nx-os') {
+            config += `feature aaa\nfeature dot1x\nradius-server host ${radiusIp1} key ${radiusKey1}\n`;
+            config += `interface Ethernet1/1\n switchport access vlan ${dataVlan}\n dot1x pae authenticator\n`;
+            config += `${authMethod.includes('mab') ? 'dot1x mac-auth-bypass\n' : ''}`;
+            config += `dot1x port-control ${authMode === 'closed' ? 'force-authorized' : 'auto'}\n`;
+            if (guestVlan) config += `dot1x guest-vlan ${guestVlan}\n`;
+        }
+    } else if (vendor === 'aruba') {
+        if (platform === 'aos-cx') {
+            config += `aaa authentication port-access dot1x\n`;
+            config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+            config += `interface 1/1/1\n vlan access ${dataVlan}\n`;
+            config += ` port-access authenticator\n`;
+            if (authMethod.includes('mab')) config += ` authentication precedence mac-auth dot1x\n`;
+            if (guestVlan) config += ` authentication guest-vlan ${guestVlan}\n`;
+        }
+    } else if (vendor === 'juniper') {
+        config += `set protocols dot1x authenticator authentication-profile-name RADIUS-SERVERS\n`;
+        config += `set access radius-server ${radiusIp1} secret ${radiusKey1}\n`;
+        config += `set interfaces ge-0/0/1 unit 0 family ethernet-switching vlan members ${dataVlan}\n`;
+        config += `set protocols dot1x authenticator interface ge-0/0/1\n`;
+        if (authMethod.includes('mab')) config += ` mac-radius\n`;
+        if (guestVlan) config += ` guest-vlan ${guestVlan}\n`;
+    } else if (vendor === 'fortinet') {
+        config += `config system aaa\n edit "RADIUS-SRV-1"\n set server "${radiusIp1}"\n set secret "${radiusKey1}"\n next\nend\n`;
+        config += `config switch-interface\n edit "port1"\n set native-vlan ${dataVlan}\n`;
+        if (authMethod.includes('mab')) config += ` set mac-auth-bypass enable\n`;
+        config += ` set security-mode 802.1X\n next\nend\n`;
+    } else if (vendor === 'arista') {
+        config += `dot1x system-auth-control\n`;
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `interface Ethernet1\n switchport access vlan ${dataVlan}\n dot1x pae authenticator\n`;
+        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
+    } else if (vendor === 'extreme') {
+        config += `configure radius netlogin primary server ${radiusIp1} 1812 client-ip <SWITCH_IP> shared-secret ${radiusKey1}\n`;
+        config += `enable dot1x\n`;
+        config += `configure vlan ${dataVlan} ports 1\n`;
+        config += `configure dot1x netlogin ports 1\n`;
+        if (authMethod.includes('mab')) config += ` mac-auth\n`;
+    } else if (vendor === 'huawei') {
+        config += `dot1x enable\n`;
+        config += `radius-server template RADIUS-SRV-1\n radius-server shared-key cipher ${radiusKey1}\n radius-server ip ${radiusIp1}\n`;
+        config += `interface GigabitEthernet0/0/1\n dot1x authentication-method eap\n`;
+        config += ` port link-type access\n port default vlan ${dataVlan}\n`;
+        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
+    } else if (vendor === 'alcatel') {
+        config += `aaa radius-server "RADIUS-SRV-1" host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `vlan ${dataVlan}\n`;
+        config += `interface port 1/1\n 802.1x enable\n`;
+        if (authMethod.includes('mab')) config += ` 802.1x mac-auth\n`;
+    } else if (vendor === 'ubiquiti') {
+        config += `set service dot1x radius-server ${radiusIp1} key ${radiusKey1}\n`;
+        config += `set interfaces ethernet eth1 vif ${dataVlan}\n`;
+        config += `set interfaces ethernet eth1 dot1x enable\n`;
+        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
+    } else if (vendor === 'hp') {
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `vlan ${dataVlan}\n`;
+        config += `interface 1\n 802.1x authenticator\n`;
+        if (authMethod.includes('mab')) config += ` 802.1x mac-auth\n`;
+    } else if (vendor === 'dell') {
+        config += `aaa authentication dot1x default radius\n`;
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `interface ethernet 1/1/1\n switchport access vlan ${dataVlan}\n dot1x authentication\n`;
+        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
+    } else if (vendor === 'netgear') {
+        config += `dot1x system-auth-control\n`;
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `interface 1/0/1\n dot1x port-control auto\n`;
+        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
+    } else if (vendor === 'ruckus') {
+        config += `aaa authentication dot1x default radius\n`;
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `interface 1/1\n dot1x 802.1x\n`;
+        if (authMethod.includes('mab')) config += ` mac-auth-bypass\n`;
+    } else if (vendor === 'brocade') {
+        config += `aaa authentication dot1x default radius\n`;
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `interface ethernet 1/1\n dot1x-enable\n`;
+        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
+    } else if (vendor === 'paloalto') {
+        config += `set authentication-profile RADIUS-SRV-1 radius server ${radiusIp1} secret ${radiusKey1}\n`;
+        config += `set network vlan ${dataVlan}\n`;
+        config += `set network interface ethernet ethernet1/1 dot1x\n`;
+        if (authMethod.includes('mab')) config += ` mac-auth\n`;
+    } else if (vendor === 'checkpoint') {
+        config += `set radius server ${radiusIp1} secret ${radiusKey1}\n`;
+        config += `set interface eth1 dot1x enable\n`;
+        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
+    } else if (vendor === 'sonicwall') {
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `interface X1\n dot1x enable\n`;
+        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
+    } else if (vendor === 'portnox') {
+        config += `! Portnox Cloud configuration\n`;
+        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
+        config += `interface 1\n dot1x enable\n`;
+        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
     }
     document.getElementById('config-output').textContent = config;
 }

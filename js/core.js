@@ -37,33 +37,47 @@ document.addEventListener('DOMContentLoaded', function() {
     if (firstDiscoveryTab) {
         firstDiscoveryTab.click();
     }
+    
+    // Show the first reference tab by default
+    const firstRefTab = document.querySelector('.ref-tab');
+    if (firstRefTab) {
+        firstRefTab.click();
+    }
+    
+    // Show the first server tab by default
+    const firstServerTab = document.querySelector('.tab-control-btn');
+    if (firstServerTab) {
+        firstServerTab.click();
+    }
+    
+    // Show the first Portnox tab by default
+    const firstPortnoxTab = document.querySelector('.portnox-nav-tab');
+    if (firstPortnoxTab) {
+        firstPortnoxTab.click();
+    }
 });
 
 // Initialize accordion functionality
 function initAccordions() {
     const accordionHeaders = document.querySelectorAll('.accordion-header');
-    
     accordionHeaders.forEach(header => {
         header.addEventListener('click', function() {
-            this.classList.toggle('active');
             const content = this.nextElementSibling;
             const icon = this.querySelector('.accordion-icon');
-            if (content.style.display === 'block') {
+            const isActive = content.classList.contains('active');
+            
+            // Toggle the active class and visibility
+            if (isActive) {
+                content.classList.remove('active');
                 content.style.display = 'none';
+                this.classList.remove('active');
                 if (icon) icon.textContent = '+';
             } else {
+                content.classList.add('active');
                 content.style.display = 'block';
+                this.classList.add('active');
                 if (icon) icon.textContent = '-';
             }
         });
-        
-        // Automatically open the first accordion in each group
-        const accordionGroup = header.closest('.accordion-group');
-        if (accordionGroup) {
-            const headers = accordionGroup.querySelectorAll('.accordion-header');
-            if (headers[0] === header) {
-                setTimeout(() => header.click(), 100);
-            }
-        }
     });
 }

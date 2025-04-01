@@ -52,6 +52,9 @@ header {
 .top-tabs {
     background: #34495e;
     padding: 0.5em;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .tab-btn {
@@ -59,8 +62,14 @@ header {
     color: white;
     border: none;
     padding: 0.8em 1.5em;
-    margin: 0 0.2em;
+    margin: 0.2em;
     cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.tab-btn:hover {
+    background: #5a6f88;
 }
 
 .tab-btn.active {
@@ -69,6 +78,11 @@ header {
 
 .tab-content {
     padding: 1em;
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
 }
 
 .form-group {
@@ -96,6 +110,7 @@ textarea {
     transition: var(--transition);
     background-color: var(--bg-color);
     color: var(--text-color);
+    box-sizing: border-box;
 }
 
 input[type="text"]:focus,
@@ -125,52 +140,114 @@ input[type="checkbox"], input[type="radio"] {
     cursor: pointer;
 }
 
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1em;
+}
+
 .nav-buttons button {
     background: #1abc9c;
     color: white;
     border: none;
     padding: 0.8em 1.5em;
-    margin: 0.5em;
     cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.nav-buttons button:hover {
+    background: #16a085;
 }
 
 .config-output {
     background: #fff;
     padding: 1em;
     border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    white-space: pre-wrap;
+    font-family: monospace;
 }
 
 .ai-chat-container {
     background: #fff;
     padding: 1em;
     border: 1px solid #ddd;
+    border-radius: var(--border-radius);
 }
 
 .chat-history {
     max-height: 400px;
     overflow-y: auto;
+    margin-bottom: 1em;
 }
 
 .ai-message, .user-message {
     margin: 0.5em 0;
     display: flex;
+    align-items: flex-start;
 }
 
 .message-avatar img {
     width: 40px;
     height: 40px;
     margin-right: 0.5em;
+    border-radius: 50%;
 }
 
 .message-content {
     background: #ecf0f1;
     padding: 0.5em;
     border-radius: 5px;
+    flex: 1;
 }
 
 .ai-message .message-content {
     background: #1abc9c;
     color: white;
+}
+
+.chat-input {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.chat-input textarea {
+    flex: 1;
+    resize: vertical;
+}
+
+.chat-input button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5em;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+}
+
+.chat-input button:hover {
+    background: var(--primary-dark);
+}
+
+.suggested-queries {
+    margin-top: 1em;
+}
+
+.suggested-queries button {
+    background: #ecf0f1;
+    color: var(--text-color);
+    border: 1px solid var(--medium-gray);
+    padding: 0.5em 1em;
+    margin: 0.2em;
+    cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.suggested-queries button:hover {
+    background: var(--medium-gray);
 }
 
 .error-message {
@@ -180,11 +257,11 @@ input[type="checkbox"], input[type="radio"] {
 .row {
     display: flex;
     justify-content: space-between;
+    gap: 1em;
 }
 
 .col {
     flex: 1;
-    margin: 0 0.5em;
 }
 
 .checkbox-group {
@@ -205,6 +282,7 @@ input[type="checkbox"], input[type="radio"] {
     display: flex;
     justify-content: space-between;
     margin: 1em 0;
+    flex-wrap: wrap;
 }
 
 .step {
@@ -212,6 +290,15 @@ input[type="checkbox"], input[type="radio"] {
     color: #333;
     padding: 0.5em 1em;
     cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    flex: 1;
+    text-align: center;
+    margin: 0.2em;
+}
+
+.step:hover {
+    background: #a7adb3;
 }
 
 .step.active {
@@ -221,6 +308,9 @@ input[type="checkbox"], input[type="radio"] {
 
 .tab-control {
     margin: 0.5em 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .tab-control-btn {
@@ -228,8 +318,14 @@ input[type="checkbox"], input[type="radio"] {
     color: #333;
     border: none;
     padding: 0.6em 1em;
-    margin: 0 0.2em;
+    margin: 0.2em;
     cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.tab-control-btn:hover {
+    background: #a7adb3;
 }
 
 .tab-control-btn.active {
@@ -247,6 +343,9 @@ input[type="checkbox"], input[type="radio"] {
 
 .reference-nav, .discovery-tabs {
     margin: 0.5em 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .ref-tab, .discovery-tab {
@@ -254,8 +353,14 @@ input[type="checkbox"], input[type="radio"] {
     color: #333;
     border: none;
     padding: 0.6em 1em;
-    margin: 0 0.2em;
+    margin: 0.2em;
     cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.ref-tab:hover, .discovery-tab:hover {
+    background: #a7adb3;
 }
 
 .ref-tab.active, .discovery-tab.active {
@@ -287,6 +392,10 @@ input[type="checkbox"], input[type="radio"] {
     background: var(--medium-gray);
 }
 
+.accordion-header.active {
+    background: linear-gradient(to bottom, var(--light-gray), var(--bg-color));
+}
+
 .accordion-icon {
     font-size: 1.2em;
     transition: transform 0.3s ease;
@@ -300,6 +409,10 @@ input[type="checkbox"], input[type="radio"] {
     padding: 15px;
     display: none;
     background-color: var(--bg-color);
+}
+
+.accordion-content.active {
+    display: block;
 }
 
 .btn, button {
@@ -349,8 +462,10 @@ input[type="checkbox"], input[type="radio"] {
     color: white;
     border: none;
     padding: 0.6em 1em;
-    margin: 0 0.2em;
+    margin: 0.2em;
     cursor: pointer;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
 }
 
 .portnox-nav-tab:hover, .portnox-nav-tab.active {
@@ -515,19 +630,35 @@ input[type="checkbox"], input[type="radio"] {
     color: var(--portnox-purple);
 }
 
-@media (max-width: 768px) {
-    .discovery-tabs {
+@media (max-width: 768px)
+ {
+    .top-tabs, .discovery-tabs, .reference-nav, .tab-control, .portnox-tabs {
         overflow-x: auto;
+        justify-content: flex-start;
     }
-    .discovery-tab {
-        padding: 8px;
+    .tab-btn, .discovery-tab, .ref-tab, .tab-control-btn, .portnox-nav-tab {
         font-size: 12px;
+        padding: 0.6em 1em;
     }
-    .tab-btn {
+    .step {
         font-size: 12px;
-        padding: 10px;
+        padding: 0.4em 0.8em;
+    }
+    .row {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+    .col {
+        margin: 0;
     }
     .poc-templates {
         grid-template-columns: 1fr;
+    }
+    .nav-buttons {
+        flex-direction: column;
+        gap: 0.5em;
+    }
+    .nav-buttons button {
+        width: 100%;
     }
 }

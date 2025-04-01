@@ -1,6 +1,7 @@
 // Dot1Xer Supreme - Tab Navigation
 
 function initTabs() {
+    // Main tabs
     document.querySelectorAll('.tab-btn').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -8,6 +9,7 @@ function initTabs() {
         });
     });
     
+    // Discovery tabs
     document.querySelectorAll('.discovery-tab').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -15,6 +17,7 @@ function initTabs() {
         });
     });
     
+    // Server tabs
     document.querySelectorAll('.tab-control-btn').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -22,6 +25,7 @@ function initTabs() {
         });
     });
     
+    // Reference architecture tabs
     document.querySelectorAll('.ref-tab').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -29,6 +33,7 @@ function initTabs() {
         });
     });
     
+    // Portnox tabs
     document.querySelectorAll('.portnox-nav-tab').forEach(button => {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
@@ -39,10 +44,12 @@ function initTabs() {
 
 function showTab(tabName, button) {
     document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
         tab.style.display = 'none';
     });
     const selectedTab = document.getElementById(tabName);
     if (selectedTab) {
+        selectedTab.classList.add('active');
         selectedTab.style.display = 'block';
     }
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -53,19 +60,31 @@ function showTab(tabName, button) {
 }
 
 function goToStep(step) {
-    document.querySelectorAll('.step-content').forEach(content => content.style.display = 'none');
-    document.querySelectorAll('.step').forEach(stepEl => stepEl.classList.remove('active'));
-    document.getElementById(`step-${step}`).style.display = 'block';
-    document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+    document.querySelectorAll('.step-content').forEach(content => {
+        content.style.display = 'none';
+    });
+    document.querySelectorAll('.step').forEach(stepEl => {
+        stepEl.classList.remove('active');
+    });
+    const stepContent = document.getElementById(`step-${step}`);
+    if (stepContent) {
+        stepContent.style.display = 'block';
+    }
+    const stepIndicator = document.querySelector(`.step[data-step="${step}"]`);
+    if (stepIndicator) {
+        stepIndicator.classList.add('active');
+    }
     currentStep = step;
 }
 
 function showDiscoveryTab(tabName, button) {
     document.querySelectorAll('.discovery-section').forEach(section => {
+        section.classList.remove('active');
         section.style.display = 'none';
     });
     const selectedSection = document.getElementById(`disc-${tabName}`);
     if (selectedSection) {
+        selectedSection.classList.add('active');
         selectedSection.style.display = 'block';
     }
     document.querySelectorAll('.discovery-tab').forEach(btn => {
@@ -76,33 +95,48 @@ function showDiscoveryTab(tabName, button) {
 
 function showServerTab(tabId, button) {
     document.querySelectorAll('.server-tab').forEach(tab => {
+        tab.classList.remove('active');
         tab.style.display = 'none';
     });
+    const selectedTab = document.getElementById(tabId);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+        selectedTab.style.display = 'block';
+    }
     document.querySelectorAll('.tab-control-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.getElementById(tabId).style.display = 'block';
-    button.classList.add('active');
+    if (button) button.classList.add('active');
 }
 
 function showRefTab(tabName, button) {
     document.querySelectorAll('.ref-section').forEach(section => {
+        section.classList.remove('active');
         section.style.display = 'none';
     });
+    const selectedSection = document.getElementById(`ref-${tabName}`);
+    if (selectedSection) {
+        selectedSection.classList.add('active');
+        selectedSection.style.display = 'block';
+    }
     document.querySelectorAll('.ref-tab').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.getElementById(`ref-${tabName}`).style.display = 'block';
-    button.classList.add('active');
+    if (button) button.classList.add('active');
 }
 
 function showPortnoxTab(tabName, button) {
     document.querySelectorAll('.portnox-content').forEach(section => {
+        section.classList.remove('active');
         section.style.display = 'none';
     });
+    const selectedSection = document.getElementById(`portnox-${tabName}`);
+    if (selectedSection) {
+        selectedSection.classList.add('active');
+        selectedSection.style.display = 'block';
+    }
     document.querySelectorAll('.portnox-nav-tab').forEach(btn => {
         btn.classList.remove('active');
     });
-    document.getElementById(`portnox-${tabName}`).style.display = 'block';
-    button.classList.add('active');
+    if (button) button.classList.add('active');
 }

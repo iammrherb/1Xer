@@ -25,7 +25,7 @@ function updatePlatformOptions() {
             addOption(platformSelect, 'ios', 'IOS (Classic)');
             addOption(platformSelect, 'nx-os', 'NX-OS (Nexus)');
             addOption(platformSelect, 'wlc', 'WLC 9800');
-            platformDescription.innerHTML = '<p>Cisco IOS-XE supports IBNS 2.0 with advanced policy maps and both open and closed authentication modes.</p>';
+            platformDescription.innerHTML = '<p>Cisco platforms support a wide range of authentication methods and features.</p>';
             break;
         case 'aruba':
             addOption(platformSelect, 'aos-cx', 'AOS-CX');
@@ -74,6 +74,22 @@ function updatePlatformOptions() {
             addOption(platformSelect, 'comware', 'Comware');
             addOption(platformSelect, 'aruba-central', 'Aruba Central');
             platformDescription.innerHTML = '<p>HP offers multiple switch platforms.</p>';
+            break;
+        case 'dell':
+            addOption(platformSelect, 'powerswitch', 'PowerSwitch');
+            platformDescription.innerHTML = '<p>Dell PowerSwitch supports enterprise-grade authentication.</p>';
+            break;
+        case 'netgear':
+            addOption(platformSelect, 'managed', 'Managed Switches');
+            platformDescription.innerHTML = '<p>NETGEAR managed switches support basic 802.1X authentication.</p>';
+            break;
+        case 'ruckus':
+            addOption(platformSelect, 'smartzone', 'SmartZone');
+            platformDescription.innerHTML = '<p>Ruckus SmartZone provides centralized management for authentication.</p>';
+            break;
+        case 'brocade':
+            addOption(platformSelect, 'icx', 'ICX Series');
+            platformDescription.innerHTML = '<p>Brocade ICX series supports 802.1X and MAB.</p>';
             break;
         case 'paloalto':
             addOption(platformSelect, 'panos', 'PAN-OS');
