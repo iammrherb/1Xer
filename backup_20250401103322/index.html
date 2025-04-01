@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dot1Xer Supreme Configurator</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo-container">
+      <img src="assets/images/logo.png" alt="Dot1Xer Supreme Logo" class="logo">
+    </div>
+    <h1 class="title">Dot1Xer Supreme</h1>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="top-tabs">
+    <button class="tab-btn active" data-tab="configurator">Configurator</button>
+    <button class="tab-btn" data-tab="ai">AI Integration</button>
+    <button class="tab-btn" data-tab="reference">Reference Architecture</button>
+    <button class="tab-btn" data-tab="discovery">Environmental Discovery</button>
+    <button class="tab-btn" data-tab="help">Help</button>
+  </nav>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h3>Configuration Steps</h3>
+    <ul>
+      <li class="step-item active" data-step="1">Platform</li>
+      <li class="step-item" data-step="2">Authentication</li>
+      <li class="step-item" data-step="3">Servers</li>
+      <li class="step-item" data-step="4">VLANs</li>
+      <li class="step-item" data-step="5">Advanced</li>
+      <li class="step-item" data-step="6">Preview</li>
+    </ul>
+    <button class="collapse-btn">Collapse</button>
+  </aside>
+
+  <!-- Main Content Area -->
+  <div class="main-container">
+    <!-- Configurator Tab with Wizard -->
+    <div class="tab-content active" id="configurator">
+      <h2>Configurator</h2>
+      <p>Follow the steps below to generate your advanced AAA/802.1X configuration.</p>
+      <div class="step-indicator">
+        <div class="step active" data-step="1">Platform</div>
+        <div class="step" data-step="2">Authentication</div>
+        <div class="step" data-step="3">Servers</div>
+        <div class="step" data-step="4">VLANs</div>
+        <div class="step" data-step="5">Advanced</div>
+        <div class="step" data-step="6">Preview</div>
+      </div>
+
+      <!-- Step 1: Platform -->
+      <div class="step-content active" id="step-1">
+        <h3>Step 1: Platform</h3>
+        <div class="form-group">
+          <label for="vendor-select">Vendor:</label>
+          <select id="vendor-select">
+            <option value="cisco">Cisco</option>
+            <option value="aruba">Aruba</option>
+          </select>
+          <span class="help-icon" title="Select your network vendor. This determines available platforms and features.">?</span>
+        </div>
+        <div class="form-group">
+          <label for="platform-select">Platform:</label>
+          <select id="platform-select">
+            <option value="ios-xe">IOS-XE (Catalyst 9000)</option>
+            <option value="nx-os">NX-OS</option>
+          </select>
+          <span class="help-icon" title="Choose the specific platform or model for your configuration.">?</span>
+        </div>
+        <button class="next-btn" onclick="showStep(2)">Next</button>
+      </div>
+
+      <!-- Step 2: Authentication -->
+      <div class="step-content" id="step-2">
+        <h3>Step 2: Authentication</h3>
+        <div class="form-group">
+          <label for="auth-method">Method:</label>
+          <select id="auth-method">
+            <option value="dot1x-mab">802.1X with MAB Fallback</option>
+            <option value="dot1x-only">802.1X Only</option>
+          </select>
+          <span class="help-icon" title="Choose the authentication method for your devices.">?</span>
+        </div>
+        <button class="prev-btn" onclick="showStep(1)">Previous</button>
+        <button class="next-btn" onclick="showStep(3)">Next</button>
+      </div>
+
+      <!-- Step 3: Servers -->
+      <div class="step-content" id="step-3">
+        <h3>Step 3: Servers</h3>
+        <div class="form-group">
+          <label for="radius-server">RADIUS Server IP:</label>
+          <input type="text" id="radius-server" placeholder="e.g., 10.1.1.100">
+          <span class="help-icon" title="Enter the IP address of your RADIUS server.">?</span>
+        </div>
+        <div class="form-group">
+          <label for="radius-secret">Shared Secret:</label>
+          <input type="password" id="radius-secret" placeholder="Enter secret">
+          <span class="help-icon" title="Enter the shared secret for RADIUS authentication.">?</span>
+        </div>
+        <button class="prev-btn" onclick="showStep(2)">Previous</button>
+        <button class="next-btn" onclick="showStep(4)">Next</button>
+      </div>
+
+      <!-- Step 4: VLANs -->
+      <div class="step-content" id="step-4">
+        <h3>Step 4: VLANs</h3>
+        <div class="form-group">
+          <label for="data-vlan">Data VLAN:</label>
+          <input type="number" id="data-vlan" placeholder="e.g., 10">
+          <span class="help-icon" title="Enter the VLAN ID for data traffic.">?</span>
+        </div>
+        <div class="form-group">
+          <label for="guest-vlan">Guest VLAN:</label>
+          <input type="number" id="guest-vlan" placeholder="e.g., 100">
+          <span class="help-icon" title="Enter the VLAN ID for guest traffic.">?</span>
+        </div>
+        <button class="prev-btn" onclick="showStep(3)">Previous</button>
+        <button class="next-btn" onclick="showStep(5)">Next</button>
+      </div>
+
+      <!-- Step 5: Advanced -->
+      <div class="step-content" id="step-5">
+        <h3>Step 5: Advanced</h3>
+        <div class="form-group">
+          <label for="timeout">Timeout (seconds):</label>
+          <input type="number" id="timeout" value="5">
+          <span class="help-icon" title="Set the authentication timeout in seconds.">?</span>
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="critical-vlan-enable"> Enable Critical VLAN</label>
+          <span class="help-icon" title="Enable a critical VLAN for fallback if servers are unavailable.">?</span>
+        </div>
+        <button class="prev-btn" onclick="showStep(4)">Previous</button>
+        <button class="next-btn" onclick="showStep(6)">Next</button>
+      </div>
+
+      <!-- Step 6: Preview -->
+      <div class="step-content" id="step-6">
+        <h3>Step 6: Preview</h3>
+        <div class="preview-section">
+          <pre id="config-output">Generated configuration will appear here.</pre>
+        </div>
+        <button class="generate-btn" onclick="generateConfiguration()">Generate</button>
+        <button class="download-btn" onclick="downloadConfiguration()">Download Config</button>
+        <button class="download-poc-btn" onclick="downloadPOCTemplate()">Download POC Template</button>
+      </div>
+    </div>
+
+    <!-- AI Integration Tab -->
+    <div class="tab-content" id="ai">
+      <h2>AI Integration</h2>
+      <textarea id="ai-query" placeholder="Ask the AI about your configuration..."></textarea>
+      <select id="ai-service">
+        <option value="openai">OpenAI</option>
+        <option value="deepseek">DeepSeek</option>
+        <option value="anthropic">Anthropic</option>
+      </select>
+      <button onclick="sendAIQuery()">Send</button>
+      <div id="chat-history"></div>
+    </div>
+
+    <!-- Reference Architecture Tab -->
+    <div class="tab-content" id="reference">
+      <h2>Reference Architecture</h2>
+      <p>View standard configurations and best practices here.</p>
+      <!-- Placeholder for reference content -->
+    </div>
+
+    <!-- Environmental Discovery Tab -->
+    <div class="tab-content" id="discovery">
+      <h2>Environmental Discovery</h2>
+      <div class="form-group">
+        <label for="env-ip">Network IP Range:</label>
+        <input type="text" id="env-ip" placeholder="e.g., 10.1.1.0/24">
+        <span class="help-icon" title="Enter the IP range to scan for devices.">?</span>
+      </div>
+      <button onclick="analyzeEnvironment()">Analyze</button>
+      <div id="env-output">Analysis results will appear here.</div>
+    </div>
+
+    <!-- Help Tab -->
+    <div class="tab-content" id="help">
+      <h2>Help</h2>
+      <p>Find guidance and documentation here.</p>
+      <!-- Placeholder for help content -->
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
