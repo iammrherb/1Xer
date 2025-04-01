@@ -2164,3 +2164,92 @@
   </script>
 </body>
 </html>
+  <!-- Replace the existing step-indicator in the Configurator tab -->
+  <div class="step-indicator">
+    <div class="step active" data-step="1" onclick="goToStep(1)">Platform</div>
+    <div class="step" data-step="2" onclick="goToStep(2)">Authentication</div>
+    <div class="step" data-step="3" onclick="goToStep(3)">Servers</div>
+    <div class="step" data-step="4" onclick="goToStep(4)">VLANs</div>
+    <div class="step" data-step="5" onclick="goToStep(5)">Advanced</div>
+    <div class="step" data-step="6" onclick="goToStep(6)">Preview</div>
+  </div>
+
+  <!-- Replace the existing RADIUS tab content in Step 3 -->
+  <div class="server-tab" id="radius-tab">
+    <h4>RADIUS Servers</h4>
+    <div class="form-group">
+      <label for="radius-server-group">Server Group Name:</label>
+      <input type="text" id="radius-server-group" value="RADIUS-SERVERS" placeholder="e.g., RADIUS-SERVERS">
+      <div id="radius-servers">
+        <div class="radius-server-entry" data-index="1">
+          <h5>RADIUS Server 1</h5>
+          <div class="row">
+            <div class="col">
+              <label for="radius-ip-1">Server IP:</label>
+              <input type="text" id="radius-ip-1" placeholder="e.g., 10.1.1.100">
+            </div>
+            <div class="col">
+              <label for="radius-key-1">Shared Secret:</label>
+              <input type="password" id="radius-key-1" placeholder="Shared secret">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="radius-auth-port-1">Authentication Port:</label>
+              <input type="number" id="radius-auth-port-1" value="1812">
+            </div>
+            <div class="col">
+              <label for="radius-acct-port-1">Accounting Port:</label>
+              <input type="number" id="radius-acct-port-1" value="1813">
+            </div>
+            <div class="col">
+              <label for="radius-coa-port-1">CoA Port:</label>
+              <input type="number" id="radius-coa-port-1" value="3799">
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="addRadiusServer()">Add Another RADIUS Server</button>
+    </div>
+  </div>
+
+  <!-- Replace the existing RadSec tab content in Step 3 -->
+  <div class="server-tab" id="radsec-tab" style="display: none;">
+    <h4>RADIUS over TLS (RadSec) Configuration</h4>
+    <div class="form-group">
+      <div id="radsec-servers">
+        <div class="radsec-server-entry" data-index="1">
+          <h5>RadSec Server 1</h5>
+          <div class="row">
+            <div class="col">
+              <label for="radsec-ip-1">Server IP:</label>
+              <input type="text" id="radsec-ip-1" placeholder="e.g., 10.1.1.104">
+            </div>
+            <div class="col">
+              <label for="radsec-key-1">Shared Secret:</label>
+              <input type="password" id="radsec-key-1" placeholder="Shared secret">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="radsec-port-1">TLS Port:</label>
+              <input type="number" id="radsec-port-1" value="2083">
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" onclick="addRadSecServer()">Add Another RadSec Server</button>
+    </div>
+  </div>
+
+  <!-- Update Step 6 to include Dot1Xer Review button -->
+  <div class="config-actions">
+    <button type="button" id="generate-btn" onclick="generateConfiguration()">Generate Configuration</button>
+    <button type="button" id="review-btn" onclick="reviewConfiguration()">Dot1Xer Review</button>
+    <button type="button" id="download-btn" onclick="downloadConfiguration()">Download</button>
+    <button type="button" id="copy-btn" onclick="copyConfiguration()">Copy to Clipboard</button>
+  </div>
+  <div id="review-output-section" style="display: none;">
+    <h4>Dot1Xer Review</h4>
+    <div id="review-output"></div>
+  </div>

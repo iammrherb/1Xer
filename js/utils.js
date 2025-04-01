@@ -240,3 +240,33 @@ function copyConfiguration() {
         })
         .catch(err => showError('Failed to copy: ' + err));
 }
+// Add AI query function
+function sendAIQuery() {
+  const query = document.getElementById('ai-query').value;
+  const provider = document.getElementById('ai-provider').value;
+  const chatHistory = document.getElementById('chat-history');
+  
+  // Add user message
+  chatHistory.innerHTML += `
+    <div class="user-message">
+      <div class="message-avatar"><img src="assets/images/user-avatar.png" alt="User"></div>
+      <div class="message-content"><p>${query}</p></div>
+    </div>
+  `;
+  
+  // Simulated AI response (replace with actual API call)
+  setTimeout(() => {
+    chatHistory.innerHTML += `
+      <div class="ai-message">
+        <div class="message-avatar"><img src="assets/images/ai-avatar.png" alt="AI"></div>
+        <div class="message-content">
+          <p>Analyzing your query with ${provider}...</p>
+          <p>Sample response: Your configuration looks good, but consider enabling CoA for dynamic updates.</p>
+        </div>
+      </div>
+    `;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+  }, 1000);
+  
+  document.getElementById('ai-query').value = '';
+}
