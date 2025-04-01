@@ -96,7 +96,7 @@ async function sendAIQuery() {
     const response = await fetch('http://localhost:3000/api/proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ service, query, apiKey: 'YOUR_API_KEY_HERE' })
+      body: JSON.stringify({ service, query, apiKey: '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' })
     });
     const data = await response.json();
     history.innerHTML += `<p><strong>AI (${service}):</strong> ${data.choices ? data.choices[0].text : 'Error: No response'}</p>`;
