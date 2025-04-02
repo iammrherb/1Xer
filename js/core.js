@@ -1,3 +1,36 @@
+/* Improved Accordion Initialization */
+function initAccordions() {
+  const headers = document.querySelectorAll('.accordion-header');
+  headers.forEach(header => {
+    header.addEventListener("click", function() {
+      const content = this.nextElementSibling;
+      const icon = this.querySelector(".accordion-icon");
+      // Close all other accordions
+      document.querySelectorAll(".accordion-content").forEach(acc => {
+        if (acc !== content) {
+          acc.classList.remove("active");
+          acc.style.display = "none";
+          const otherHeader = acc.previousElementSibling;
+          if (otherHeader) {
+            otherHeader.classList.remove("active");
+            const otherIcon = otherHeader.querySelector(".accordion-icon");
+            if (otherIcon) otherIcon.textContent = "+";
+          }
+        }
+      });
+      // Toggle current accordion
+      content.classList.toggle("active");
+      this.classList.toggle("active");
+      if (content.classList.contains("active")) {
+        content.style.display = "block";
+        if (icon) icon.textContent = "-";
+      } else {
+        content.style.display = "none";
+        if (icon) icon.textContent = "+";
+      }
+    });
+  });
+}
 // Dot1Xer Supreme - Core Functionality
 
 // Current step in the configurator
@@ -64,29 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Initialize accordion functionality
-function initAccordions() {
-    const accordionHeaders = document.querySelectorAll('.accordion-header');
-    accordionHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            const icon = this.querySelector('.accordion-icon');
-            const isActive = content.classList.contains('active');
-            
-            // Toggle the active class and visibility
-            if (isActive) {
-                content.classList.remove('active');
-                content.style.display = 'none';
-                this.classList.remove('active');
-                if (icon) icon.textContent = '+';
-            } else {
-                content.classList.add('active');
-                content.style.display = 'block';
-                this.classList.add('active');
-                if (icon) icon.textContent = '-';
-            }
-        });
-    });
-}
 
 // Initialize project details section
 function initProjectDetails() {

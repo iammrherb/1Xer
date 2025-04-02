@@ -749,3 +749,15 @@ input[type="checkbox"], input[type="radio"] {
         grid-template-columns: 1fr;
     }
 }
+
+/* Video Banner Styling */
+#main-banner {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
+}
+.banner-container {
+  position: relative;
+  overflow: hidden;
+}
