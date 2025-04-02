@@ -96,10 +96,50 @@ function updateEnvironmentSummary() {
         summary += '<li>Consider Portnox Cloud RADIUS service for simplified deployment and management</li>';
     }
     
+    // Vendor-specific recommendations based on selected infrastructure
+    const vendorSelect = document.getElementById('vendor-select');
+    if (vendorSelect) {
+        const vendor = vendorSelect.value;
+        
+        if (vendor === 'cisco') {
+            summary += '<li>Implement IBNS 2.0 policy maps for advanced authentication control</li>';
+        } else if (vendor === 'aruba') {
+            summary += '<li>Utilize ClearPass integration for comprehensive policy enforcement</li>';
+        } else if (vendor === 'juniper') {
+            summary += '<li>Configure authentication profiles with flexible options for different device types</li>';
+        }
+    }
+    
     summary += '</ul>';
+    
+    // Link to configurator
+    summary += '<div class="config-link">';
+    summary += '<h4>Configuration Integration</h4>';
+    summary += '<p>The environment profile can be used to generate vendor-specific configurations.</p>';
+    summary += '<button type="button" class="btn" onclick="integrateEnvironmentWithConfigurator()">Generate Configurations</button>';
+    summary += '</div>';
     
     summarySection.innerHTML = summary;
     summarySection.style.display = 'block';
+}
+
+function integrateEnvironmentWithConfigurator() {
+    // Switch to configurator tab
+    const configuratorTab = document.querySelector('.tab-btn[data-tab="configurator"]');
+    if (configuratorTab) {
+        configuratorTab.click();
+    }
+    
+    // Enable multi-vendor configuration
+    const multiVendorToggle = document.getElementById('multi-vendor-toggle');
+    if (multiVendorToggle) {
+        multiVendorToggle.checked = true;
+        const event = new Event('change');
+        multiVendorToggle.dispatchEvent(event);
+    }
+    
+    // Populate with environment data
+    // This could be extended with more mappings based on environment profile
 }
 
 function updateMDMOptions() {
@@ -423,8 +463,47 @@ function generateNetworkDiagram() {
             <p class="diagram-note">This diagram represents a high-level view of your 802.1X deployment with Portnox Cloud. Download the full diagram for more details.</p>
             <button class="download-btn" onclick="downloadDiagram()">Download Full Diagram</button>
         </div>`;
+        
+        // Integration with configurator
+        html += `<div class="config-integration">
+            <h4>Generate Configuration Templates</h4>
+            <p>Based on your network scoping, you can generate vendor-specific configuration templates.</p>
+            <div class="vendor-options">
+                <label for="scope-vendor-select">Select Primary Vendor:</label>
+                <select id="scope-vendor-select">
+                    <option value="${diagramData.switchVendor}">${diagramData.switchVendor.charAt(0).toUpperCase() + diagramData.switchVendor.slice(1)}</option>
+                </select>
+            </div>
+            <button class="btn" onclick="generateScopedConfigurations()">Generate Configurations</button>
+        </div>`;
+        
         resultsContainer.innerHTML = html;
     }
+}
+
+function generateScopedConfigurations() {
+    // Switch to configurator tab
+    const configuratorTab = document.querySelector('.tab-btn[data-tab="configurator"]');
+    if (configuratorTab) {
+        configuratorTab.click();
+    }
+    
+    // Set vendor from scoping
+    const scopeVendorSelect = document.getElementById('scope-vendor-select');
+    const vendorSelect = document.getElementById('vendor-select');
+    if (scopeVendorSelect && vendorSelect) {
+        vendorSelect.value = scopeVendorSelect.value;
+        const event = new Event('change');
+        vendorSelect.dispatchEvent(event);
+    }
+    
+    // Set reasonable defaults for other options
+    document.getElementById('auth-method').value = 'dot1x-mab';
+    document.querySelector('input[name="auth_mode"][value="open"]').checked = true;
+    document.getElementById('host-mode').value = 'multi-auth';
+    
+    // Navigate to VLAN step
+    goToStep(4);
 }
 
 function downloadDiagram() {

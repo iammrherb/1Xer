@@ -74,138 +74,6 @@ function showSuccess(message) {
     }
 }
 
-function generateConfiguration() {
-    const vendor = document.getElementById('vendor-select').value;
-    const platform = document.getElementById('platform-select').value;
-    const authMethod = document.getElementById('auth-method').value;
-    const authMode = document.querySelector('input[name="auth_mode"]:checked').value;
-    const hostMode = document.getElementById('host-mode').value;
-    const dataVlan = document.getElementById('data-vlan').value;
-    const voiceVlan = document.getElementById('voice-vlan').value || '';
-    const guestVlan = document.getElementById('guest-vlan').value || '';
-    const radiusIp1 = document.getElementById('radius-ip-1').value;
-    const radiusKey1 = document.getElementById('radius-key-1').value;
-
-    if (!dataVlan || !radiusIp1 || !radiusKey1) {
-        showError('Please complete all required fields (Data VLAN and Primary RADIUS Server)');
-        return;
-    }
-
-    let config = `! Configuration for ${vendor} ${platform}\n`;
-    if (vendor === 'cisco') {
-        if (platform === 'ios-xe') {
-            config += `aaa new-model\n`;
-            config += `radius server RADIUS-SRV-1\n address ipv4 ${radiusIp1} auth-port 1812 acct-port 1813\n key ${radiusKey1}\n`;
-            config += `aaa group server radius RADIUS-SERVERS\n server name RADIUS-SRV-1\n`;
-            config += `aaa authentication dot1x default group RADIUS-SERVERS\n`;
-            config += `dot1x system-auth-control\n`;
-            config += `interface GigabitEthernet1/0/1\n switchport access vlan ${dataVlan}\n`;
-            config += ` switchport mode access\n authentication port-control auto\n`;
-            config += ` authentication host-mode ${hostMode}\n`;
-            if (authMethod.includes('mab')) config += ` mab\n`;
-            if (guestVlan) config += ` authentication event fail action authorize vlan ${guestVlan}\n`;
-        } else if (platform === 'nx-os') {
-            config += `feature aaa\nfeature dot1x\nradius-server host ${radiusIp1} key ${radiusKey1}\n`;
-            config += `interface Ethernet1/1\n switchport access vlan ${dataVlan}\n dot1x pae authenticator\n`;
-            config += `${authMethod.includes('mab') ? 'dot1x mac-auth-bypass\n' : ''}`;
-            config += `dot1x port-control ${authMode === 'closed' ? 'force-authorized' : 'auto'}\n`;
-            if (guestVlan) config += `dot1x guest-vlan ${guestVlan}\n`;
-        }
-    } else if (vendor === 'aruba') {
-        if (platform === 'aos-cx') {
-            config += `aaa authentication port-access dot1x\n`;
-            config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-            config += `interface 1/1/1\n vlan access ${dataVlan}\n`;
-            config += ` port-access authenticator\n`;
-            if (authMethod.includes('mab')) config += ` authentication precedence mac-auth dot1x\n`;
-            if (guestVlan) config += ` authentication guest-vlan ${guestVlan}\n`;
-        }
-    } else if (vendor === 'juniper') {
-        config += `set protocols dot1x authenticator authentication-profile-name RADIUS-SERVERS\n`;
-        config += `set access radius-server ${radiusIp1} secret ${radiusKey1}\n`;
-        config += `set interfaces ge-0/0/1 unit 0 family ethernet-switching vlan members ${dataVlan}\n`;
-        config += `set protocols dot1x authenticator interface ge-0/0/1\n`;
-        if (authMethod.includes('mab')) config += ` mac-radius\n`;
-        if (guestVlan) config += ` guest-vlan ${guestVlan}\n`;
-    } else if (vendor === 'fortinet') {
-        config += `config system aaa\n edit "RADIUS-SRV-1"\n set server "${radiusIp1}"\n set secret "${radiusKey1}"\n next\nend\n`;
-        config += `config switch-interface\n edit "port1"\n set native-vlan ${dataVlan}\n`;
-        if (authMethod.includes('mab')) config += ` set mac-auth-bypass enable\n`;
-        config += ` set security-mode 802.1X\n next\nend\n`;
-    } else if (vendor === 'arista') {
-        config += `dot1x system-auth-control\n`;
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface Ethernet1\n switchport access vlan ${dataVlan}\n dot1x pae authenticator\n`;
-        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
-    } else if (vendor === 'extreme') {
-        config += `configure radius netlogin primary server ${radiusIp1} 1812 client-ip <SWITCH_IP> shared-secret ${radiusKey1}\n`;
-        config += `enable dot1x\n`;
-        config += `configure vlan ${dataVlan} ports 1\n`;
-        config += `configure dot1x netlogin ports 1\n`;
-        if (authMethod.includes('mab')) config += ` mac-auth\n`;
-    } else if (vendor === 'huawei') {
-        config += `dot1x enable\n`;
-        config += `radius-server template RADIUS-SRV-1\n radius-server shared-key cipher ${radiusKey1}\n radius-server ip ${radiusIp1}\n`;
-        config += `interface GigabitEthernet0/0/1\n dot1x authentication-method eap\n`;
-        config += ` port link-type access\n port default vlan ${dataVlan}\n`;
-        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
-    } else if (vendor === 'alcatel') {
-        config += `aaa radius-server "RADIUS-SRV-1" host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `vlan ${dataVlan}\n`;
-        config += `interface port 1/1\n 802.1x enable\n`;
-        if (authMethod.includes('mab')) config += ` 802.1x mac-auth\n`;
-    } else if (vendor === 'ubiquiti') {
-        config += `set service dot1x radius-server ${radiusIp1} key ${radiusKey1}\n`;
-        config += `set interfaces ethernet eth1 vif ${dataVlan}\n`;
-        config += `set interfaces ethernet eth1 dot1x enable\n`;
-        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
-    } else if (vendor === 'hp') {
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `vlan ${dataVlan}\n`;
-        config += `interface 1\n 802.1x authenticator\n`;
-        if (authMethod.includes('mab')) config += ` 802.1x mac-auth\n`;
-    } else if (vendor === 'dell') {
-        config += `aaa authentication dot1x default radius\n`;
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface ethernet 1/1/1\n switchport access vlan ${dataVlan}\n dot1x authentication\n`;
-        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
-    } else if (vendor === 'netgear') {
-        config += `dot1x system-auth-control\n`;
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface 1/0/1\n dot1x port-control auto\n`;
-        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
-    } else if (vendor === 'ruckus') {
-        config += `aaa authentication dot1x default radius\n`;
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface 1/1\n dot1x 802.1x\n`;
-        if (authMethod.includes('mab')) config += ` mac-auth-bypass\n`;
-    } else if (vendor === 'brocade') {
-        config += `aaa authentication dot1x default radius\n`;
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface ethernet 1/1\n dot1x-enable\n`;
-        if (authMethod.includes('mab')) config += ` dot1x mac-auth-bypass\n`;
-    } else if (vendor === 'paloalto') {
-        config += `set authentication-profile RADIUS-SRV-1 radius server ${radiusIp1} secret ${radiusKey1}\n`;
-        config += `set network vlan ${dataVlan}\n`;
-        config += `set network interface ethernet ethernet1/1 dot1x\n`;
-        if (authMethod.includes('mab')) config += ` mac-auth\n`;
-    } else if (vendor === 'checkpoint') {
-        config += `set radius server ${radiusIp1} secret ${radiusKey1}\n`;
-        config += `set interface eth1 dot1x enable\n`;
-        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
-    } else if (vendor === 'sonicwall') {
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface X1\n dot1x enable\n`;
-        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
-    } else if (vendor === 'portnox') {
-        config += `! Portnox Cloud configuration\n`;
-        config += `radius-server host ${radiusIp1} key ${radiusKey1}\n`;
-        config += `interface 1\n dot1x enable\n`;
-        if (authMethod.includes('mab')) config += ` mac-auth enable\n`;
-    }
-    document.getElementById('config-output').textContent = config;
-}
-
 function downloadConfiguration() {
     const config = document.getElementById('config-output').textContent;
     if (!config) {
@@ -214,11 +82,22 @@ function downloadConfiguration() {
     }
     const vendor = document.getElementById('vendor-select').value;
     const platform = document.getElementById('platform-select').value;
+    
+    // Include project details in filename if available
+    let prefix = '';
+    const includeProjectDetails = document.getElementById('project-detail-toggle')?.checked;
+    if (includeProjectDetails) {
+        const companyName = document.getElementById('company-name').value;
+        if (companyName) {
+            prefix = companyName.replace(/[^a-zA-Z0-9]/g, '_') + '_';
+        }
+    }
+    
     const blob = new Blob([config], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${vendor}_${platform}_802.1x_config.txt`;
+    a.download = `${prefix}${vendor}_${platform}_802.1x_config.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -239,4 +118,136 @@ function copyConfiguration() {
             setTimeout(() => copyBtn.textContent = originalText, 2000);
         })
         .catch(err => showError('Failed to copy: ' + err));
+}
+
+// AI query function
+function sendAIQuery() {
+    const query = document.getElementById('ai-query').value;
+    const provider = document.getElementById('ai-provider').value;
+    const chatHistory = document.getElementById('chat-history');
+    if (!query.trim()) return;
+    
+    // Add user message
+    chatHistory.innerHTML += `
+        <div class="user-message">
+            <div class="message-avatar"><img src="assets/images/user-avatar.png" alt="User"></div>
+            <div class="message-content"><p>${query}</p></div>
+        </div>
+    `;
+    
+    // Add thinking indicator
+    chatHistory.innerHTML += `
+        <div class="ai-message thinking">
+            <div class="message-avatar"><img src="assets/images/ai-avatar.png" alt="AI"></div>
+            <div class="message-content"><p>Thinking...</p></div>
+        </div>
+    `;
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+    
+    // Clear input
+    document.getElementById('ai-query').value = '';
+    
+    // Simulate AI response (replace with actual API call in production)
+    setTimeout(() => {
+        const thinkingElement = document.querySelector('.ai-message.thinking');
+        if (thinkingElement) thinkingElement.remove();
+        
+        // Vendor-specific responses
+        let response = '';
+        const vendor = document.getElementById('vendor-select').value;
+        const authMethod = document.getElementById('auth-method').value;
+        
+        if (query.toLowerCase().includes('review') || query.toLowerCase().includes('check')) {
+            response = `I've reviewed your configuration and here are my findings:\n\n`;
+            
+            // Vendor-specific recommendations
+            if (vendor === 'cisco') {
+                response += `1. Your Cisco configuration includes IBNS 2.0 policy maps, which is excellent for granular control.\n\n`;
+                response += `2. Make sure to enable Change of Authorization (CoA) for dynamic policy updates.\n\n`;
+                if (authMethod.includes('mab')) {
+                    response += `3. You've configured MAB which is good for devices that don't support 802.1X natively.\n\n`;
+                }
+                response += `4. Consider adding a critical VLAN for RADIUS server failure scenarios.`;
+            } else if (vendor === 'aruba') {
+                response += `1. Your Aruba configuration looks good with proper port-access authenticator settings.\n\n`;
+                response += `2. Consider using ClearPass for enhanced policy enforcement.\n\n`;
+                if (authMethod.includes('mab')) {
+                    response += `3. The MAC authentication precedence is correctly configured before dot1x.\n\n`;
+                }
+                response += `4. Ensure you have a guest VLAN configured for unauthenticated devices.`;
+            } else {
+                response += `1. Your ${vendor} configuration follows best practices for 802.1X deployment.\n\n`;
+                response += `2. Consider starting with monitor mode before enforcing strict authentication.\n\n`;
+                response += `3. Make sure to test thoroughly with various device types before full deployment.`;
+            }
+        } else if (query.toLowerCase().includes('ibns') || query.toLowerCase().includes('policy')) {
+            response = `IBNS 2.0 (Identity-Based Networking Services) is Cisco's framework for identity-based network access control. It uses policy maps to define authentication and authorization behavior in a more flexible way than traditional 802.1X configurations.\n\n`;
+            response += `Key components include:\n\n`;
+            response += `1. Class maps that match conditions like authentication status\n`;
+            response += `2. Policy maps that define actions based on those conditions\n`;
+            response += `3. Support for multiple authentication methods in priority order\n`;
+            response += `4. Granular control over authentication failure handling`;
+        } else if (query.toLowerCase().includes('coa') || query.toLowerCase().includes('change of authorization')) {
+            response = `Change of Authorization (CoA) allows a RADIUS server to dynamically modify an active session without requiring reauthentication. This is crucial for:\n\n`;
+            response += `1. Posture assessment - moving a device to a remediation VLAN if it fails compliance checks\n\n`;
+            response += `2. Dynamic policy enforcement - applying new policies based on time of day or user behavior\n\n`;
+            response += `3. Session termination - forcibly disconnecting a compromised device\n\n`;
+            response += `For ${vendor} devices, CoA is typically configured through RADIUS server settings with the appropriate CoA port (usually 3799).`;
+        } else if (query.toLowerCase().includes('mac') || query.toLowerCase().includes('mab')) {
+            response = `MAC Authentication Bypass (MAB) is used for devices that don't support 802.1X natively, like printers or IoT devices. When a device connects, the switch:\n\n`;
+            response += `1. Attempts 802.1X authentication first\n\n`;
+            response += `2. After timeout, captures the device's MAC address\n\n`;
+            response += `3. Sends the MAC as both username and password to the RADIUS server\n\n`;
+            response += `4. RADIUS server authorizes or denies based on its MAC database\n\n`;
+            response += `For ${vendor} devices, MAB is configured using ${getMabCommandForVendor(vendor)}`;
+        } else if (query.toLowerCase().includes('radsec')) {
+            response = `RadSec (RADIUS over TLS/DTLS) encrypts RADIUS traffic between the network device and RADIUS server. Benefits include:\n\n`;
+            response += `1. Encryption of sensitive authentication data that would otherwise be sent in cleartext\n\n`;
+            response += `2. More reliable communication using TCP instead of UDP\n\n`;
+            response += `3. Support for mutual authentication using certificates\n\n`;
+            response += `For ${vendor} devices, RadSec is configured using ${getRadSecCommandForVendor(vendor)}`;
+        } else {
+            response = `I can help you with your ${vendor} 802.1X configuration. What specific aspect would you like me to explain or improve? I can assist with:\n\n`;
+            response += `1. Authentication methods (802.1X, MAB, hybrid)\n\n`;
+            response += `2. RADIUS server configuration\n\n`;
+            response += `3. VLAN assignments (data, voice, guest, auth-fail)\n\n`;
+            response += `4. Advanced features like CoA, RadSec, or IBNS 2.0\n\n`;
+            response += `5. Best practices for secure deployment`;
+        }
+        
+        chatHistory.innerHTML += `
+            <div class="ai-message">
+                <div class="message-avatar"><img src="assets/images/ai-avatar.png" alt="AI"></div>
+                <div class="message-content"><p>${response.replace(/\n/g, '<br>')}</p></div>
+            </div>
+        `;
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }, 2000);
+}
+
+function getMabCommandForVendor(vendor) {
+    switch (vendor) {
+        case 'cisco': return '`mab` under interface configuration or in policy maps';
+        case 'aruba': return '`authentication precedence mac-auth dot1x`';
+        case 'juniper': return '`mac-radius` under authenticator interface';
+        case 'fortinet': return '`mac-auth-bypass enable`';
+        default: return 'vendor-specific MAB commands';
+    }
+}
+
+function getRadSecCommandForVendor(vendor) {
+    switch (vendor) {
+        case 'cisco': return '`radius server server-name` and `transport tls`';
+        case 'aruba': return '`radius-server host` with TLS options';
+        case 'juniper': return '`access radsec` and associated TLS settings';
+        default: return 'vendor-specific RadSec commands';
+    }
+}
+
+function useQuerySuggestion(button) {
+    const queryInput = document.getElementById('ai-query');
+    if (queryInput) {
+        queryInput.value = button.textContent;
+        queryInput.focus();
+    }
 }

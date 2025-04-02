@@ -59,24 +59,6 @@ function showTab(tabName, button) {
     if (tabName === 'configurator') goToStep(1);
 }
 
-function goToStep(step) {
-    document.querySelectorAll('.step-content').forEach(content => {
-        content.style.display = 'none';
-    });
-    document.querySelectorAll('.step').forEach(stepEl => {
-        stepEl.classList.remove('active');
-    });
-    const stepContent = document.getElementById(`step-${step}`);
-    if (stepContent) {
-        stepContent.style.display = 'block';
-    }
-    const stepIndicator = document.querySelector(`.step[data-step="${step}"]`);
-    if (stepIndicator) {
-        stepIndicator.classList.add('active');
-    }
-    currentStep = step;
-}
-
 function showDiscoveryTab(tabName, button) {
     document.querySelectorAll('.discovery-section').forEach(section => {
         section.classList.remove('active');

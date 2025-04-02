@@ -43,6 +43,14 @@ function setupPortnoxIntegration() {
                     document.getElementById('radius-acct-port').textContent = '1813';
                     document.getElementById('radius-secret').textContent = generateRandomSecret();
                 }
+                
+                // Add to configurator RADIUS servers
+                const radiusIpField = document.getElementById('radius-ip-1');
+                const radiusKeyField = document.getElementById('radius-key-1');
+                if (radiusIpField && radiusKeyField) {
+                    radiusIpField.value = document.getElementById('radius-ip').textContent;
+                    radiusKeyField.value = document.getElementById('radius-secret').textContent;
+                }
             }, 2000);
         });
     }
@@ -69,6 +77,16 @@ function setupPortnoxIntegration() {
                 addMabAccount(macAddress, deviceName);
                 document.getElementById('portnox-mac-address').value = '';
                 document.getElementById('portnox-device-name').value = '';
+                
+                // Enable MAB in configurator
+                const useMabCheckbox = document.getElementById('use-mab');
+                if (useMabCheckbox) {
+                    useMabCheckbox.checked = true;
+                }
+                const authMethodSelect = document.getElementById('auth-method');
+                if (authMethodSelect && authMethodSelect.value === 'dot1x-only') {
+                    authMethodSelect.value = 'dot1x-mab';
+                }
             }, 1500);
         });
     }
@@ -138,6 +156,21 @@ function setupPortnoxIntegration() {
                 if (downloadPocButton) {
                     downloadPocButton.style.display = 'inline-block';
                 }
+                
+                // Check for configuration integration
+                const includeConfig = document.getElementById('portnox-include-config').checked;
+                if (includeConfig) {
+                    // Generate configurations for all selected vendors
+                    const vendorList = document.getElementById('vendor-list');
+                    if (vendorList && vendorList.children.length > 0) {
+                        // Switch to configurator and generate configs
+                        const configuratorTab = document.querySelector('.tab-btn[data-tab="configurator"]');
+                        if (configuratorTab) {
+                            configuratorTab.click();
+                        }
+                        generateAllVendorConfigs();
+                    }
+                }
             }, 3000);
         });
     }
@@ -166,8 +199,45 @@ function setupPortnoxIntegration() {
                     templatesContainer.style.display = 'block';
                     templatesContainer.innerHTML = generateDeploymentTemplates(environment);
                 }
+                
+                // Add templates to multi-vendor configuration if enabled
+                if (environment.switchVendor) {
+                    const multiVendorToggle = document.getElementById('multi-vendor-toggle');
+                    if (multiVendorToggle) {
+                        multiVendorToggle.checked = true;
+                        const event = new Event('change');
+                        multiVendorToggle.dispatchEvent(event);
+                        
+                        // Add vendor to list if not already there
+                        addVendorToList(environment.switchVendor, getPlatformForVendor(environment.switchVendor));
+                        
+                        if (environment.wirelessVendor && environment.wirelessVendor !== environment.switchVendor) {
+                            addVendorToList(environment.wirelessVendor, getPlatformForVendor(environment.wirelessVendor));
+                        }
+                    }
+                }
             }, 2500);
         });
+    }
+}
+
+function getPlatformForVendor(vendor) {
+    switch (vendor) {
+        case 'cisco': return 'ios-xe';
+        case 'aruba': return 'aos-cx';
+        case 'juniper': return 'ex';
+        case 'fortinet': return 'fortiswitch';
+        case 'arista': return 'eos';
+        case 'extreme': return 'exos';
+        case 'huawei': return 'vrp';
+        case 'alcatel': return 'omniswitch';
+        case 'ubiquiti': return 'unifi';
+        case 'hp': return 'procurve';
+        case 'paloalto': return 'panos';
+        case 'checkpoint': return 'gaia';
+        case 'sonicwall': return 'sonicos';
+        case 'portnox': return 'cloud';
+        default: return 'default';
     }
 }
 
@@ -304,7 +374,7 @@ function generateDeploymentTemplates(environment) {
                     </ul>
                     <div class="docs-links">
                         <a href="https://www.portnox.com/docs/prerequisites" target="_blank" class="doc-link">
-                            <i>??</i> Official Prerequisites Documentation
+                            <i>··</i> Official Prerequisites Documentation
                         </a>
                     </div>
                 </div>
@@ -330,10 +400,10 @@ function generateDeploymentTemplates(environment) {
                     </ol>
                     <div class="docs-links">
                         <a href="https://www.portnox.com/docs/deployment" target="_blank" class="doc-link">
-                            <i>??</i> Deployment Documentation
+                            <i>··</i> Deployment Documentation
                         </a>
                         <a href="https://www.portnox.com/docs/switch-configuration/${switchVendor}" target="_blank" class="doc-link">
-                            <i>??</i> ${switchVendor} Configuration Guide
+                            <i>··</i> ${switchVendor} Configuration Guide
                         </a>
                     </div>
                 </div>
@@ -342,6 +412,74 @@ function generateDeploymentTemplates(environment) {
                 <button class="template-download portnox-btn" data-template="deploy-template" data-type="deployment">Download</button>
             </div>
         </div>`;
+    
+    // Add testing plan with vendor-specific details
+    templates += `
+        <div class="template-card">
+            <div class="template-header">Testing Plan</div>
+            <div class="template-body">
+                <p>Comprehensive testing methodology for validating 802.1X deployment with ${switchVendor} switches and Portnox Cloud.</p>
+                <button class="template-toggle" data-template="test-template">Show Details</button>
+                <div id="test-template" style="display: none; margin-top: 15px;">
+                    <ol>
+                        <li>Initial Open Mode testing</li>
+                        <li>${switchVendor}-specific monitor mode validation</li>
+                        <li>Authentication method verification for all client types</li>
+                        <li>Dynamic VLAN assignment testing</li>
+                        <li>CoA and policy enforcement verification</li>
+                    </ol>
+                    <div class="docs-links">
+                        <a href="https://www.portnox.com/docs/testing" target="_blank" class="doc-link">
+                            <i>··</i> Testing Documentation
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="template-footer">
+                <button class="template-download portnox-btn" data-template="test-template" data-type="testing">Download</button>
+            </div>
+        </div>`;
     templates += '</div>';
+    
+    // Add template toggle functionality
+    setTimeout(() => {
+        document.querySelectorAll('.template-toggle').forEach(button => {
+            button.addEventListener('click', function() {
+                const templateId = this.getAttribute('data-template');
+                const templateContent = document.getElementById(templateId);
+                if (templateContent) {
+                    const isVisible = templateContent.style.display !== 'none';
+                    templateContent.style.display = isVisible ? 'none' : 'block';
+                    this.textContent = isVisible ? 'Show Details' : 'Hide Details';
+                }
+            });
+        });
+        
+        document.querySelectorAll('.template-download').forEach(button => {
+            button.addEventListener('click', function() {
+                const templateType = this.getAttribute('data-type');
+                const templateId = this.getAttribute('data-template');
+                const templateContent = document.getElementById(templateId);
+                
+                let content = '';
+                if (templateContent) {
+                    content = templateContent.textContent;
+                } else {
+                    content = 'Placeholder content for ' + templateType;
+                }
+                
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = templateType + '_template.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+        });
+    }, 500);
+    
     return templates;
 }
