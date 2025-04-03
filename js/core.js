@@ -31,7 +31,6 @@ function initAccordions() {
     });
   });
 }
-/* Improved Accordion Initialization */
 // Dot1Xer Supreme - Core Functionality
 
 // Current step in the configurator

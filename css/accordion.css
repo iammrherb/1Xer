@@ -8,8 +8,8 @@
 }
 
 .accordion-header {
-    background-color: #6300c4;
-    color: white;
+    background-color: #f1f1f1;
+    color: #333;
     cursor: pointer;
     padding: 15px;
     width: 100%;
@@ -27,12 +27,13 @@
 }
 
 .accordion-header:hover {
-    background-color: #4a0091;
+    background-color: #e7e7e7;
 }
 
 .accordion-header.active {
-    background-color: #4a0091;
+    background-color: #4CAF50;
     color: white;
+    border-bottom-color: #4CAF50;
 }
 
 .accordion-content {
@@ -54,7 +55,6 @@
     margin-left: 10px;
     min-width: 20px;
     text-align: center;
-    color: white;
 }
 
 .accordion-header.active .accordion-icon {
@@ -65,6 +65,12 @@
     padding: 15px;
 }
 
+/* Fix for accordion transitions */
+.accordion-content {
+    transition: max-height 0.3s ease-out;
+    overflow: hidden;
+}
+
 /* Improve visibility of accordion state */
 .accordion-header::after {
     content: '';
@@ -73,10 +79,10 @@
     top: 0;
     width: 4px;
     height: 100%;
-    background-color: #2E8B57;
+    background-color: transparent;
     transition: background-color 0.3s ease;
 }
 
 .accordion-header.active::after {
-    background-color: #00b894;
+    background-color: #2E8B57;
 }
