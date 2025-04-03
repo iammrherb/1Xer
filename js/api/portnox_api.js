@@ -34,6 +34,13 @@ function setPortnoxConfig(config) {
         }
         
         console.log("Portnox configuration saved");
+        
+        // Trigger an event to notify listeners that Portnox config has been updated
+        const event = new CustomEvent('portnoxConfigUpdated', { 
+            detail: { configured: isPortnoxConfigured() } 
+        });
+        document.dispatchEvent(event);
+        
         return true;
     } catch (error) {
         console.error(`Error saving Portnox configuration: ${error}`);
@@ -74,14 +81,54 @@ function getPortnoxConfig() {
     return portnoxConfig;
 }
 
+// Check if Portnox API is configured
+function isPortnoxConfigured() {
+    const config = getPortnoxConfig();
+    return config.apiUrl && ((config.useApiKey && config.apiKey) || (!config.useApiKey && config.username && config.password));
+}
+
+// Clear Portnox configuration
+function clearPortnoxConfig() {
+    portnoxConfig.apiUrl = "";
+    portnoxConfig.apiKey = "";
+    portnoxConfig.username = "";
+    portnoxConfig.password = "";
+    portnoxConfig.useApiKey = true;
+    
+    localStorage.removeItem("dot1xer_portnox_config");
+    localStorage.removeItem("dot1xer_portnox_key");
+    localStorage.removeItem("dot1xer_portnox_pwd");
+    
+    console.log("Portnox configuration cleared");
+    
+    // Trigger an event to notify listeners that Portnox config has been updated
+    const event = new CustomEvent('portnoxConfigUpdated', { 
+        detail: { configured: false } 
+    });
+    document.dispatchEvent(event);
+    
+    return true;
+}
+
 // Make authenticated Portnox API call
 async function callPortnoxApi(endpoint, method = "GET", body = null) {
     const config = getPortnoxConfig();
     let token;
     
+    if (!config.apiUrl) {
+        throw new Error("Portnox API URL not configured");
+    }
+    
     if (config.useApiKey) {
+        if (!config.apiKey) {
+            throw new Error("Portnox API key not configured");
+        }
         token = config.apiKey;
     } else {
+        if (!config.username || !config.password) {
+            throw new Error("Portnox credentials not configured");
+        }
+        
         // Get authentication token
         const authResponse = await fetch(`${config.apiUrl}/api/auth/token`, {
             method: "POST",
@@ -133,19 +180,72 @@ async function getEndpoints() {
     return callPortnoxApi("endpoints");
 }
 
+// Get access policies from Portnox
+async function getAccessPolicies() {
+    return callPortnoxApi("access-policies");
+}
+
 // Apply configuration to network device
 async function applyConfiguration(deviceId, config) {
     return callPortnoxApi(`network-devices/${deviceId}/config`, "POST", { config });
 }
 
+// Test Portnox connection
+async function testPortnoxConnection() {
+    try {
+        // Try a simple API call to verify connection
+        await callPortnoxApi("status");
+        return { success: true, message: "Connection successful" };
+    } catch (error) {
+        return { success: false, message: `Connection failed: ${error.message}` };
+    }
+}
+
+// Initialize Portnox config status
+function initPortnoxStatus() {
+    const configured = isPortnoxConfigured();
+    console.log(`Portnox API: ${configured ? 'Configured' : 'Not configured'}`);
+    
+    // Trigger event with status
+    const event = new CustomEvent('portnoxConfigUpdated', { 
+        detail: { configured } 
+    });
+    document.dispatchEvent(event);
+}
+
+// Initialize when module is loaded
+if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initPortnoxStatus);
+    } else {
+        initPortnoxStatus();
+    }
+}
+
 // Export functions for use in other modules
+window.portnoxConfig = portnoxConfig;
+window.setPortnoxConfig = setPortnoxConfig;
+window.getPortnoxConfig = getPortnoxConfig;
+window.isPortnoxConfigured = isPortnoxConfigured;
+window.clearPortnoxConfig = clearPortnoxConfig;
+window.getNetworkDevices = getNetworkDevices;
+window.getEndpoints = getEndpoints;
+window.getAccessPolicies = getAccessPolicies;
+window.applyConfiguration = applyConfiguration;
+window.testPortnoxConnection = testPortnoxConnection;
+
 if (typeof module !== 'undefined') {
     module.exports = {
+        portnoxConfig,
         setPortnoxConfig,
         getPortnoxConfig,
+        isPortnoxConfigured,
+        clearPortnoxConfig,
         callPortnoxApi,
         getNetworkDevices,
         getEndpoints,
-        applyConfiguration
+        getAccessPolicies,
+        applyConfiguration,
+        testPortnoxConnection
     };
 }
