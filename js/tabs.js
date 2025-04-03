@@ -6,6 +6,20 @@ function initTabs() {
         button.addEventListener('click', function() {
             const tabName = this.getAttribute('data-tab');
             showTab(tabName, this);
+            
+            // Show/hide subtabs for Configurator
+            const configuratorSubtabs = document.getElementById('configurator-subtabs');
+            if (configuratorSubtabs) {
+                configuratorSubtabs.style.display = tabName === 'configurator' ? 'flex' : 'none';
+            }
+        });
+    });
+    
+    // Configurator subtabs (Wired/Wireless)
+    document.querySelectorAll('.configurator-subtab').forEach(button => {
+        button.addEventListener('click', function() {
+            const subtabName = this.getAttribute('data-subtab');
+            showConfiguratorSubtab(subtabName, this);
         });
     });
     
@@ -56,7 +70,33 @@ function showTab(tabName, button) {
         btn.classList.remove('active');
     });
     if (button) button.classList.add('active');
-    if (tabName === 'configurator') goToStep(1);
+    
+    // If configurator tab is selected, show first subtab content
+    if (tabName === 'configurator') {
+        // Show first subtab by default
+        const firstSubtab = document.querySelector('.configurator-subtab');
+        if (firstSubtab) {
+            firstSubtab.click();
+        } else {
+            goToStep(1); // Fallback to original behavior
+        }
+    }
+}
+
+function showConfiguratorSubtab(subtabName, button) {
+    document.querySelectorAll('.configurator-subtab-content').forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+    });
+    const selectedContent = document.getElementById(`subtab-${subtabName}`);
+    if (selectedContent) {
+        selectedContent.classList.add('active');
+        selectedContent.style.display = 'block';
+    }
+    document.querySelectorAll('.configurator-subtab').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    if (button) button.classList.add('active');
 }
 
 function showDiscoveryTab(tabName, button) {
