@@ -1,122 +1,85 @@
 /**
  * Dot1Xer Supreme - Templates Module
  * Version: 2.0.0
- * 
- * This file contains functions for loading and managing configuration templates.
- */
-
-/**
- * Load a template for the selected vendor
- * @param {String} vendorId - Vendor identifier
- * @param {String} platform - 'wired' or 'wireless'
- * @param {HTMLElement} container - Container to inject the template into
- * @param {Function} callback - Callback function to execute after template is loaded
  */
 function loadTemplate(vendorId, platform, container, callback) {
-    // Determine the template path
-    let templatePath;
-    
-    if (platform === 'wired') {
-        templatePath = `js/templates/${vendorId}/config_form.html`;
-    } else {
-        templatePath = `js/templates/wireless/${vendorId}/config_form.html`;
-    }
-    
-    // Attempt to load the template
+    let templatePath = platform === 'wired' ? `js/templates/${vendorId}/config_form.html` : `js/templates/wireless/${vendorId}/config_form.html`;
     fetch(templatePath)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to load template: ${response.status} ${response.statusText}`);
-            }
-            return response.text();
-        })
+        .then(response => response.ok ? response.text() : Promise.reject())
         .then(html => {
-            // Inject the template into the container
             container.innerHTML = html;
-            
-            // Initialize any template-specific elements
             initTemplateElements(vendorId, platform);
-            
-            // Execute the callback if provided
-            if (typeof callback === 'function') {
-                callback();
-            }
+            if (typeof callback === 'function') callback();
         })
-        .catch(error => {
-            console.error('Error loading template:', error);
-            
-            // Load a generic template as fallback
-            loadGenericTemplate(vendorId, platform, container, callback);
-        });
+        .catch(() => loadGenericTemplate(vendorId, platform, container, callback));
 }
 
-/**
- * Initialize template-specific elements
- * @param {String} vendorId - Vendor identifier
- * @param {String} platform - 'wired' or 'wireless'
- */
-function initTemplateElements(vendorId, platform) {
-    // Implementation details
-    console.log(`Initializing template elements for ${vendorId} ${platform}`);
-}
-
-/**
- * Load a generic template as fallback
- * @param {String} vendorId - Vendor identifier
- * @param {String} platform - 'wired' or 'wireless'
- * @param {HTMLElement} container - Container to inject the template into
- * @param {Function} callback - Callback function to execute after template is loaded
- */
 function loadGenericTemplate(vendorId, platform, container, callback) {
-    // Implementation details
-    console.log(`Loading generic template for ${vendorId} ${platform}`);
-    
-    // Get vendor details from vendorData
-    let vendor = null;
-    
-    if (platform === 'wired') {
-        vendor = vendorData.wired.find(v => v.id === vendorId);
-    } else {
-        vendor = vendorData.wireless.find(v => v.id === vendorId);
-    }
-    
+    const vendor = (platform === 'wired' ? vendorData.wired : vendorData.wireless).find(v => v.id === vendorId);
     if (!vendor) {
         container.innerHTML = `<div class="alert alert-danger">Vendor information not found for ${vendorId}.</div>`;
         return;
     }
-    
-    // Create a generic form with basic fields
-    container.innerHTML = `
+    container.innerHTML = platform === 'wired' ? generateGenericWiredTemplate(vendor) : generateGenericWirelessTemplate(vendor);
+    initTemplateElements(vendorId, platform);
+    if (typeof callback === 'function') callback();
+}
+
+function generateGenericWiredTemplate(vendor) {
+    return `
         <div class="vendor-form-header">
             <h3>${vendor.name} Configuration</h3>
             <img src="assets/logos/${vendor.logo}" alt="${vendor.name}" class="vendor-logo">
         </div>
-        
         <form id="vendor-config-form">
             <div class="form-group">
-                <label for="device_name">Device Name</label>
-                <input type="text" class="form-control" id="device_name" name="device_name" required>
+                <label for="auth_method">Authentication Method</label>
+                <select class="form-control" id="auth_method" name="auth_method" required>
+                    <option value="dot1x">802.1X</option>
+                    <option value="dot1x_mab" selected>802.1X with MAB Fallback</option>
+                    <option value="mab">MAC Authentication Bypass (MAB) Only</option>
+                </select>
+                <span class="form-hint">Select the authentication method</span>
             </div>
-            
             <div class="form-group">
-                <label for="radius_server">RADIUS Server</label>
-                <input type="text" class="form-control" id="radius_server" name="radius_server" required>
+                <label for="primary_radius">Primary RADIUS Server</label>
+                <input type="text" class="form-control" id="primary_radius" name="primary_radius" required>
             </div>
-            
-            <div class="form-group">
-                <label for="shared_secret">Shared Secret</label>
-                <input type="password" class="form-control" id="shared_secret" name="shared_secret" required>
-            </div>
-            
             <div class="form-actions">
                 <button type="button" class="btn btn-primary" id="generate-config-btn">Generate Configuration</button>
                 <button type="button" class="btn btn-light" id="reset-form-btn">Reset</button>
             </div>
         </form>
     `;
-    
-    // Execute the callback if provided
-    if (typeof callback === 'function') {
-        callback();
-    }
+}
+
+function generateGenericWirelessTemplate(vendor) {
+    return `
+        <div class="vendor-form-header">
+            <h3>${vendor.name} Configuration</h3>
+            <img src="assets/logos/${vendor.logo}" alt="${vendor.name}" class="vendor-logo">
+        </div>
+        <form id="vendor-config-form">
+            <div class="form-group">
+                <label for="ssid_name">SSID Name</label>
+                <input type="text" class="form-control" id="ssid_name" name="ssid_name" required>
+            </div>
+            <div class="form-group">
+                <label for="auth_method">Authentication Method</label>
+                <select class="form-control" id="auth_method" name="auth_method" required>
+                    <option value="wpa2-enterprise" selected>WPA2-Enterprise (802.1X)</option>
+                    <option value="wpa3-enterprise">WPA3-Enterprise</option>
+                    <option value="wpa2-psk">WPA2-Personal</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-primary" id="generate-config-btn">Generate Configuration</button>
+                <button type="button" class="btn btn-light" id="reset-form-btn">Reset</button>
+            </div>
+        </form>
+    `;
+}
+
+function initTemplateElements(vendorId, platform) {
+    // Placeholder for template-specific initialization
 }

@@ -89,26 +89,66 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--text-dark);
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.75rem; }
-h4 { font-size: 1.5rem; }
-h5 { font-size: 1.25rem; }
-h6 { font-size: 1rem; }
+h1 {
+    font-size: 2.5rem;
+}
 
-p { margin-bottom: 1rem; }
+h2 {
+    font-size: 2rem;
+}
 
-.text-muted { color: var(--text-light); }
-.text-primary { color: var(--primary-color); }
-.text-secondary { color: var(--secondary-color); }
-.text-success { color: var(--success-color); }
-.text-warning { color: var(--warning-color); }
-.text-danger { color: var(--danger-color); }
-.text-info { color: var(--info-color); }
+h3 {
+    font-size: 1.75rem;
+}
+
+h4 {
+    font-size: 1.5rem;
+}
+
+h5 {
+    font-size: 1.25rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+.text-muted {
+    color: var(--text-light);
+}
+
+.text-primary {
+    color: var(--primary-color);
+}
+
+.text-secondary {
+    color: var(--secondary-color);
+}
+
+.text-success {
+    color: var(--success-color);
+}
+
+.text-warning {
+    color: var(--warning-color);
+}
+
+.text-danger {
+    color: var(--danger-color);
+}
+
+.text-info {
+    color: var(--info-color);
+}
 
 /*=============================================
   3. Header and Navigation
 =============================================*/
+/* Header Styles */
 .header {
     background-color: var(--primary-color);
     color: white;
@@ -132,6 +172,7 @@ p { margin-bottom: 1rem; }
     opacity: 0.9;
 }
 
+/* Main Navigation */
 .main-nav {
     background-color: var(--nav-bg);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -149,7 +190,9 @@ p { margin-bottom: 1rem; }
     list-style-type: none;
 }
 
-.nav-tabs li { margin: 0; }
+.nav-tabs li {
+    margin: 0;
+}
 
 .nav-tabs a {
     display: block;
@@ -168,6 +211,7 @@ p { margin-bottom: 1rem; }
 /*=============================================
   4. Sections and Containers
 =============================================*/
+/* Section Headers */
 .section-header {
     background-color: var(--primary-color);
     color: white;
@@ -190,6 +234,7 @@ p { margin-bottom: 1rem; }
     box-shadow: var(--box-shadow);
 }
 
+/* Card Styles */
 .card-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -218,7 +263,9 @@ p { margin-bottom: 1rem; }
     font-size: 1.2rem;
 }
 
-.card-body { padding: 1.5rem; }
+.card-body {
+    padding: 1.5rem;
+}
 
 .card-footer {
     background-color: var(--light-gray);
@@ -230,7 +277,10 @@ p { margin-bottom: 1rem; }
 /*=============================================
   5. Forms and Inputs
 =============================================*/
-.form-group { margin-bottom: 1.5rem; }
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
 
 .form-group label {
     display: block;
@@ -260,6 +310,7 @@ p { margin-bottom: 1rem; }
     color: var(--dark-gray);
 }
 
+/* Checkboxes and Radios */
 .checkbox-label, 
 .radio-label {
     display: flex;
@@ -273,6 +324,7 @@ p { margin-bottom: 1rem; }
     margin-right: 0.5rem;
 }
 
+/* Form Actions */
 .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -283,6 +335,7 @@ p { margin-bottom: 1rem; }
 /*=============================================
   6. Buttons
 =============================================*/
+/* Button Styles */
 .btn {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -339,5 +392,12 @@ p { margin-bottom: 1rem; }
     text-decoration: none;
 }
 
-.btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
-.btn-lg { padding: 1rem 2rem; font-size: 1.25rem; }
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+}
