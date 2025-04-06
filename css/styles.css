@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* styles.css for Dot1Xer Supreme */
 :root {
     --primary-color: #6300c4;
@@ -325,4 +326,15 @@
     .device-type-grid {
         grid-template-columns: 1fr;
     }
+=======
+/* Dot1Xer Supreme - Main Stylesheet */
+:root {
+    --primary-color: #6a1b9a;
+    --secondary-color: #14b789;
+    --light-gray: #f8f9fa;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-gray);
+>>>>>>> master
 }
