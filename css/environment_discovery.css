@@ -1,0 +1,110 @@
+/* 
+ * Dot1Xer Supreme - Environment Discovery Stylesheet
+ * Version: 2.0.0
+ *
+ * This file contains styles specific to the network discovery system.
+ */
+
+/*=============================================
+  1. Discovery Components
+=============================================*/
+.scan-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.scan-results-table th,
+.scan-results-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+.scan-results-table th {
+    background-color: var(--light-gray);
+    font-weight: 600;
+}
+
+.scan-results-table tr:hover {
+    background-color: rgba(106, 27, 154, 0.05);
+}
+
+.scan-progress {
+    display: none;
+    margin-bottom: 1.5rem;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background-color: var(--light-gray);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--primary-color);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.scan-progress-text {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    margin-bottom: 1rem;
+}
+
+/*=============================================
+  2. Device Status Indicators
+=============================================*/
+.status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.status-online {
+    background-color: var(--success-color);
+}
+
+.status-offline {
+    background-color: var(--danger-color);
+}
+
+.status-unknown {
+    background-color: var(--warning-color);
+}
+
+.dot1x-supported {
+    color: var(--success-color);
+}
+
+.dot1x-unsupported {
+    color: var(--danger-color);
+}
+
+.dot1x-unknown {
+    color: var(--warning-color);
+}
+
+/*=============================================
+  3. Action Buttons
+=============================================*/
+.device-action-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0.25rem;
+    margin-right: 0.5rem;
+    transition: var(--transition);
+}
+
+.device-action-btn:hover {
+    color: var(--primary-dark);
+}

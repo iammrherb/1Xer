@@ -1,0 +1,140 @@
+/* 
+ * Dot1Xer Supreme - Portnox Integration Stylesheet
+ * Version: 2.0.0
+ *
+ * This file contains styles specific to the Portnox integration system.
+ */
+
+/*=============================================
+  1. Portnox Connection
+=============================================*/
+.portnox-connection {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+}
+
+.portnox-status {
+    flex: 1;
+}
+
+.portnox-status-indicator {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.portnox-connected {
+    background-color: var(--success-color);
+}
+
+.portnox-disconnected {
+    background-color: var(--danger-color);
+}
+
+.portnox-connection-form {
+    margin-top: 1.5rem;
+    display: none;
+}
+
+/*=============================================
+  2. Portnox Dashboard
+=============================================*/
+.portnox-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.portnox-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.portnox-card-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+}
+
+.portnox-card-body {
+    padding: 1rem;
+}
+
+.portnox-metric {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.portnox-metric-value {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.portnox-metric-label {
+    font-size: 0.875rem;
+    color: var(--text-light);
+}
+
+/*=============================================
+  3. Portnox Device List
+=============================================*/
+.portnox-device-list {
+    margin-top: 1.5rem;
+}
+
+.portnox-device-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.portnox-device-table th,
+.portnox-device-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--medium-gray);
+}
+
+.portnox-device-table th {
+    background-color: var(--light-gray);
+    font-weight: 600;
+}
+
+.portnox-device-table tr:hover {
+    background-color: rgba(106, 27, 154, 0.05);
+}
+
+.portnox-device-status {
+    display: inline-flex;
+    align-items: center;
+}
+
+.portnox-device-status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.portnox-device-authenticated {
+    background-color: var(--success-color);
+}
+
+.portnox-device-unauthenticated {
+    background-color: var(--danger-color);
+}
+
+.portnox-device-quarantined {
+    background-color: var(--warning-color);
+}
