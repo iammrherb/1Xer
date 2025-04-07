@@ -1232,129 +1232,106 @@ show aaa servers</pre>
                 <p>On macOS, use the Console app to view system logs for EAP/802.1X events.</p>
             </li>
             <li><strong>Packet Capture</strong>
-                <p>Capture EAP packets between the client and switch to identify where the authentication process is failing.</p>
+                <p>Perform a packet capture on the switch or client to analyze the EAPOL and RADIUS packets. Look for:</p>
+                <ul>
+                    <li>EAPOL-Start packets from client</li>
+                    <li>EAP-Request/Identity from switch</li>
+                    <li>EAP-Response/Identity from client</li>
+                    <li>RADIUS Access-Request and Access-Accept/Reject packets</li>
+                </ul>
             </li>
         </ol>
         
-        <h4>Recommended Solutions</h4>
+        <h4>Common Fixes</h4>
         <ol>
-            <li><strong>Enable Monitor Mode</strong>
-                <pre>interface GigabitEthernet1/0/1
- authentication open</pre>
-                <p>This allows traffic while logging authentication attempts, helping identify issues without blocking users.</p>
+            <li><strong>For Supplicant Issues</strong>
+                <ul>
+                    <li>Verify the client is using the correct EAP method (PEAP, EAP-TLS, etc.)</li>
+                    <li>Ensure certificate validation settings match your environment</li>
+                    <li>Update supplicant software to the latest version</li>
+                </ul>
             </li>
-            <li><strong>Configure Debug Logging</strong>
-                <pre>debug dot1x all
-debug radius authentication
-debug aaa authentication</pre>
-                <p>These commands provide detailed debugging information for 802.1X authentication.</p>
+            <li><strong>For Network Infrastructure</strong>
+                <ul>
+                    <li>Verify switch port is configured for the correct authentication mode</li>
+                    <li>Check if the port is in the correct VLAN</li>
+                    <li>Test RADIUS connectivity from the switch</li>
+                </ul>
             </li>
-            <li><strong>Test Authentication with a Known Good Device</strong>
-                <p>Configure a test port and authenticate with a device known to have correct supplicant settings.</p>
-            </li>
-            <li><strong>Implement MAC Authentication Bypass (MAB)</strong>
-                <pre>interface GigabitEthernet1/0/1
- authentication order dot1x mab
- authentication priority dot1x mab
- mab</pre>
-                <p>This allows devices without 802.1X supplicants to authenticate based on MAC address.</p>
+            <li><strong>For Authentication Server</strong>
+                <ul>
+                    <li>Verify RADIUS shared secret matches between switch and server</li>
+                    <li>Check user accounts and password policies</li>
+                    <li>Ensure server certificates are valid and trusted by clients</li>
+                </ul>
             </li>
         </ol>
         
-        <h4>Long-Term Recommendations</h4>
-        <ul>
-            <li>Implement a phased 802.1X deployment strategy starting with monitor mode</li>
-            <li>Create detailed documentation for both user and IT staff</li>
-            <li>Consider using a NAC solution for easier management and troubleshooting</li>
-            <li>Set up regular auditing of authentication logs to identify recurring issues</li>
-        </ul>
+        <p>If you can provide more specific details about your environment and the exact error messages you're seeing, I can offer more targeted troubleshooting advice.</p>
     `;
 }
 
 /**
  * Simulate AI config conversion
  */
-function simulateConfigConversion(config) {
+function simulateConfigConversion(sourceConfig) {
     // This is a simulation - in a real implementation, this would call an AI API
     return `
         <h3>Configuration Conversion</h3>
         
-        <p>I've converted the provided Cisco IOS configuration to equivalent configurations for other vendors:</p>
+        <p>I've analyzed your source configuration and converted it to the target format. Here's the result:</p>
         
-        <h4>Aruba AOS-CX Equivalent</h4>
-        <pre>radius-server host 10.1.1.100 key Str0ngR@diusK3y!987
-radius-server host 10.1.1.101 key Str0ngB@ckupK3y!456
-radius-server timeout 10
-radius-server retransmit 2
-radius-server dead-time 15
+        <h4>Original Configuration (Cisco IOS)</h4>
+        <pre>! Source Cisco IOS Configuration
+aaa new-model
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
 
-aaa authentication dot1x default radius
-aaa authorization network default radius
-aaa accounting dot1x default start-stop radius
+radius server PRIMARY
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key SecureRadiusKey123
 
-aaa port-access authenticator 1/1/1
-aaa port-access authenticator 1/1/1 auth-server-timeout 60
-aaa port-access authenticator 1/1/1 reauth-period 7200
-aaa port-access authenticator 1/1/1 unauth-vid 30
-aaa port-access authenticator 1/1/1 auth-vid 10
-aaa port-access authenticator 1/1/1 voice-vid 20
-aaa port-access authenticator 1/1/1 critical-vid 999
-aaa port-access authenticator 1/1/1 client-limit 32
-aaa port-access authenticator 1/1/1 enable</pre>
+dot1x system-auth-control
+
+interface GigabitEthernet1/0/1
+ switchport mode access
+ switchport access vlan 10
+ authentication port-control auto
+ dot1x pae authenticator</pre>
         
-        <h4>Juniper EX Series Equivalent</h4>
-        <pre>set system radius-server 10.1.1.100 secret "$9$abcdefghijklmno"
-set system radius-server 10.1.1.100 timeout 10
-set system radius-server 10.1.1.100 retry 2
-set system radius-server 10.1.1.101 secret "$9$pqrstuvwxyz1234"
-set system radius-server 10.1.1.101 timeout 10
-set system radius-server 10.1.1.101 retry 2
+        <h4>Converted Configuration (Aruba AOS-CX)</h4>
+        <pre># Converted to Aruba AOS-CX
+radius-server host 10.1.1.100 key SecureRadiusKey123
+radius-server group dot1x
+ server 10.1.1.100
 
-set access radius-server 10.1.1.100 port 1812
-set access radius-server 10.1.1.100 accounting-port 1813
-set access radius-server 10.1.1.100 secret "$9$abcdefghijklmno"
-set access radius-server 10.1.1.101 port 1812
-set access radius-server 10.1.1.101 accounting-port 1813
-set access radius-server 10.1.1.101 secret "$9$pqrstuvwxyz1234"
+aaa authentication port-access dot1x authenticator
+aaa authentication port-access dot1x enable
 
-set access profile dot1x-profile authentication-order dot1x mac-radius
-set access profile dot1x-profile accounting order radius
-set access profile dot1x-profile radius authentication-server 10.1.1.100
-set access profile dot1x-profile radius authentication-server 10.1.1.101
-set access profile dot1x-profile radius accounting-server 10.1.1.100
-set access profile dot1x-profile radius accounting-server 10.1.1.101
-
-set protocols dot1x authenticator authentication-profile-name dot1x-profile
-set protocols dot1x authenticator interface ge-0/0/1.0 supplicant multiple
-set protocols dot1x authenticator interface ge-0/0/1.0 guest-vlan 30
-set protocols dot1x authenticator interface ge-0/0/1.0 server-fail vlan-name 999
-set protocols dot1x authenticator interface ge-0/0/1.0 mac-radius
-set protocols dot1x authenticator interface ge-0/0/1.0 reauthentication 7200
-set protocols dot1x authenticator interface ge-0/0/1.0 quiet-period 10
-set protocols dot1x authenticator interface ge-0/0/1.0 transmit-period 10
-set protocols dot1x authenticator interface ge-0/0/1.0 maximum-requests 3</pre>
+interface 1/1/1
+ aaa authentication port-access dot1x authenticator
+ aaa authentication port-access dot1x enable
+ vlan access 10
+ spanning-tree port-type admin-edge</pre>
         
-        <h4>HPE Aruba AOS-Switch Equivalent</h4>
-        <pre>radius-server host 10.1.1.100 key Str0ngR@diusK3y!987
-radius-server host 10.1.1.101 key Str0ngB@ckupK3y!456
-radius-server timeout 10
-radius-server retransmit 2
-radius-server dead-time 15
-
-aaa authentication port-access eap-radius
-aaa authentication port-access mac-radius
-aaa port-access authenticator 1/1
-aaa port-access authenticator 1/1 auth-vid 10
-aaa port-access authenticator 1/1 unauth-vid 30
-aaa port-access authenticator 1/1 voice-vid 20
-aaa port-access authenticator 1/1 reauth-period 7200
-aaa port-access authenticator 1/1 tx-period 10
-aaa port-access authenticator 1/1 server-timeout 60
-aaa port-access authenticator 1/1 client-limit 32
-aaa port-access authenticator 1/1 unauth-period 10
-aaa port-access authenticator active</pre>
+        <h4>Conversion Notes</h4>
+        <ul>
+            <li>Aruba AOS-CX uses a different syntax for RADIUS server configuration</li>
+            <li>The authentication commands are different in structure but similar in function</li>
+            <li>Aruba uses "port-access" instead of "authentication port-control"</li>
+            <li>"dot1x pae authenticator" is represented as "dot1x authenticator" in Aruba</li>
+            <li>Added spanning-tree edge port configuration as a best practice equivalent</li>
+        </ul>
         
-        <p>Note that while these configurations provide equivalent 802.1X functionality, there may be vendor-specific features or syntax that require adjustment for your specific environment. Always refer to the vendor documentation for the most accurate configuration guidance.</p>
+        <p>The converted configuration maintains the same functionality as the original, but with syntax appropriate for Aruba AOS-CX switches.</p>
+        
+        <h4>Additional Recommendations</h4>
+        <p>Consider adding these additional configurations to the Aruba switch for improved features:</p>
+        <ul>
+            <li>Configure a backup RADIUS server for redundancy</li>
+            <li>Add critical-voice VLAN for maintaining voice service during RADIUS outages</li>
+            <li>Configure MAC Authentication Bypass (MAB) for devices that don't support 802.1X</li>
+        </ul>
     `;
 }
 
@@ -1363,6 +1340,7 @@ aaa port-access authenticator active</pre>
  */
 function initializeHelpTabs() {
     const helpTopics = document.querySelectorAll('.help-topics li');
+    const helpContent = document.getElementById('help-content');
     
     helpTopics.forEach(topic => {
         topic.addEventListener('click', function() {
@@ -1372,172 +1350,363 @@ function initializeHelpTabs() {
             // Add active class to clicked topic
             this.classList.add('active');
             
-            // Hide all help sections
-            document.querySelectorAll('.help-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show the corresponding help section
+            // Load the appropriate help content
             const topicId = this.getAttribute('data-topic');
-            const helpSection = document.getElementById(`help-${topicId}`);
-            
-            if (helpSection) {
-                helpSection.classList.add('active');
-            }
+            loadHelpContent(topicId);
         });
     });
+    
+    // Initialize with the first topic
+    if (helpTopics.length > 0) {
+        helpTopics[0].click();
+    }
 }
 
 /**
- * Select a template from the template list
- * @param {HTMLElement} templateItem - The template item to select
+ * Load help content based on topic ID
  */
-function selectTemplate(templateItem) {
-    // Remove active class from all template items
-    document.querySelectorAll('.template-item').forEach(item => {
-        item.classList.remove('active');
-    });
+function loadHelpContent(topicId) {
+    const helpContent = document.getElementById('help-content');
     
-    // Add active class to clicked template item
-    templateItem.classList.add('active');
+    // Simulate loading content - in a real app, this would fetch from a file or API
+    let content = '';
     
-    // Update template details
-    document.getElementById('template-title').textContent = templateItem.textContent;
-    
-    // Simulate getting template description and code
-    const templateCategory = templateItem.getAttribute('data-category');
-    let templateDescription = '';
-    let templateCode = '';
-    
-    // Generate a description based on the template name and category
-    if (templateCategory === 'cisco') {
-        templateDescription = `<p>This template provides a configuration for Cisco devices with comprehensive 802.1X implementation including MAB fallback, guest VLAN, and voice VLAN support.</p>
-        <p>Use this template for deploying 802.1X on Cisco switches with support for various authentication scenarios.</p>
-        <h4>Features</h4>
-        <ul>
-            <li>802.1X with MAC Authentication Bypass fallback</li>
-            <li>Guest VLAN for failed authentications</li>
-            <li>Critical VLAN for RADIUS server failures</li>
-            <li>Voice VLAN support for IP phones</li>
-            <li>CoA support for dynamic policy changes</li>
-        </ul>`;
-        
-        templateCode = `! Cisco 802.1X Configuration Template
-! Generated by Dot1Xer Supreme
-! Last Updated: ${new Date().toISOString().split('T')[0]}
-
-aaa new-model
-aaa authentication dot1x default group RADIUS-SERVERS
-aaa authorization network default group RADIUS-SERVERS
-aaa accounting dot1x default start-stop group RADIUS-SERVERS
-
-radius server PRIMARY
- address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
- key SecureRadius123
- timeout 5
- retransmit 3
-
-radius server BACKUP
- address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
- key SecureRadius456
- timeout 5
- retransmit 3
-
-aaa group server radius RADIUS-SERVERS
- server name PRIMARY
- server name BACKUP
- deadtime 10
-
-dot1x system-auth-control
-
-interface GigabitEthernet1/0/1
- switchport mode access
- switchport access vlan 10
- switchport voice vlan 20
- authentication port-control auto
- authentication order dot1x mab
- authentication priority dot1x mab
- authentication event fail action authorize vlan 30
- authentication event server dead action authorize vlan 999
- authentication event server alive action reinitialize
- dot1x pae authenticator
- dot1x timeout tx-period 10
- spanning-tree portfast
- mab
-`;
-    } else {
-        templateDescription = `<p>This is a ${templateCategory} template for deploying 802.1X authentication.</p>
-        <p>Use this template as a starting point for your ${templateCategory} deployment.</p>`;
-        
-        templateCode = `# ${templateCategory.toUpperCase()} 802.1X Configuration Template
-# Generated by Dot1Xer Supreme
-# Last Updated: ${new Date().toISOString().split('T')[0]}
-
-# This is a placeholder for ${templateCategory} configuration.
-# The actual configuration would be based on your specific requirements.
-`;
+    switch (topicId) {
+        case 'getting-started':
+            content = `
+                <h2>Getting Started with Dot1Xer Supreme</h2>
+                <p>Dot1Xer Supreme is a comprehensive tool for configuring, deploying, and managing 802.1X network authentication across multiple vendor platforms.</p>
+                
+                <h3>Quick Start Guide</h3>
+                <ol>
+                    <li><strong>Generate a Configuration</strong>
+                        <p>Navigate to the Configuration tab and follow these steps:</p>
+                        <ul>
+                            <li>Select your network device vendor and platform</li>
+                            <li>Choose an authentication method</li>
+                            <li>Enter your RADIUS server details</li>
+                            <li>Configure VLANs for authenticated users, voice devices, etc.</li>
+                            <li>Click "Generate Configuration" to create your configuration</li>
+                        </ul>
+                    </li>
+                    <li><strong>Save or Deploy Your Configuration</strong>
+                        <p>Once your configuration is generated, you can:</p>
+                        <ul>
+                            <li>Copy it to clipboard</li>
+                            <li>Download it as a text file</li>
+                            <li>Save it as a template for future use</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Multi-Vendor Support</strong> - Generate configurations for Cisco, Aruba, Juniper, and many other vendors</li>
+                    <li><strong>Template Library</strong> - Access pre-configured templates for common deployment scenarios</li>
+                    <li><strong>Network Discovery</strong> - Identify devices on your network and assess 802.1X readiness</li>
+                    <li><strong>Deployment Planning</strong> - Plan your 802.1X deployment with guided strategies</li>
+                    <li><strong>AI Assistance</strong> - Get help with configuration generation, review, and troubleshooting</li>
+                </ul>
+            `;
+            break;
+        case '802.1x-basics':
+            content = `
+                <h2>802.1X Authentication Basics</h2>
+                <p>IEEE 802.1X is a standard for port-based network access control that provides an authentication mechanism for devices connecting to a wired or wireless LAN.</p>
+                
+                <h3>Key Concepts</h3>
+                <ul>
+                    <li><strong>Supplicant</strong> - The client device requesting access to the network</li>
+                    <li><strong>Authenticator</strong> - The network device (switch, access point) that facilitates authentication</li>
+                    <li><strong>Authentication Server</strong> - Typically a RADIUS server that validates credentials</li>
+                </ul>
+                
+                <h3>Authentication Process</h3>
+                <ol>
+                    <li>The client (supplicant) connects to a port on the network device (authenticator)</li>
+                    <li>The authenticator blocks all traffic except EAPOL (EAP over LAN) packets</li>
+                    <li>The authenticator forwards authentication messages between the client and authentication server</li>
+                    <li>If authentication succeeds, the port is opened for normal traffic</li>
+                    <li>If authentication fails, the port remains blocked or is assigned to a restricted VLAN</li>
+                </ol>
+                
+                <h3>Authentication Methods</h3>
+                <ul>
+                    <li><strong>EAP-TLS</strong> - Certificate-based mutual authentication (most secure)</li>
+                    <li><strong>PEAP</strong> - Protected EAP, creates a TLS tunnel for other EAP methods</li>
+                    <li><strong>EAP-TTLS</strong> - Tunneled TLS, similar to PEAP but supports more authentication protocols</li>
+                    <li><strong>EAP-FAST</strong> - Flexible Authentication via Secure Tunneling, developed by Cisco</li>
+                    <li><strong>MAB</strong> - MAC Authentication Bypass, for devices that don't support 802.1X</li>
+                </ul>
+                
+                <h3>Common Deployment Options</h3>
+                <ul>
+                    <li><strong>Monitor Mode</strong> - Authentication is performed but not enforced (useful for testing)</li>
+                    <li><strong>Single-Auth</strong> - One device per port</li>
+                    <li><strong>Multi-Auth</strong> - Multiple devices per port (each authenticated separately)</li>
+                    <li><strong>Multi-Domain</strong> - Separate domains for data and voice on the same port</li>
+                </ul>
+            `;
+            break;
+        case 'configuration':
+            content = `
+                <h2>Configuration Options Explained</h2>
+                
+                <h3>Authentication Methods</h3>
+                <ul>
+                    <li><strong>802.1X Only</strong> - Only 802.1X authentication is used</li>
+                    <li><strong>MAB Only</strong> - Only MAC Authentication Bypass is used</li>
+                    <li><strong>802.1X with MAB Fallback</strong> - 802.1X is tried first, then MAB if 802.1X fails</li>
+                    <li><strong>Multi-Authentication</strong> - Multiple devices can authenticate on a single port</li>
+                </ul>
+                
+                <h3>EAP Methods</h3>
+                <ul>
+                    <li><strong>PEAP</strong> - Protected EAP, commonly used with username/password authentication</li>
+                    <li><strong>EAP-TLS</strong> - Certificate-based authentication, strongest security</li>
+                    <li><strong>EAP-TTLS</strong> - Tunneled TLS, supports legacy authentication methods</li>
+                    <li><strong>EAP-FAST</strong> - Flexible Authentication via Secure Tunneling, developed by Cisco</li>
+                </ul>
+                
+                <h3>Advanced Options</h3>
+                <ul>
+                    <li><strong>RADIUS Change of Authorization (CoA)</strong> - Allows the RADIUS server to dynamically change a session's authorization attributes</li>
+                    <li><strong>Monitor Mode</strong> - Authentication is performed but access is not restricted, useful for testing</li>
+                    <li><strong>RADIUS Accounting</strong> - Sends accounting records to the RADIUS server for session tracking</li>
+                    <li><strong>TACACS+</strong> - For device administration (separate from 802.1X)</li>
+                    <li><strong>RadSec</strong> - Protects RADIUS traffic with TLS encryption</li>
+                </ul>
+                
+                <h3>VLAN Assignments</h3>
+                <ul>
+                    <li><strong>Authentication VLAN</strong> - The VLAN assigned to successfully authenticated devices</li>
+                    <li><strong>Voice VLAN</strong> - Special VLAN for voice traffic, often assigned to IP phones</li>
+                    <li><strong>Guest VLAN</strong> - VLAN assigned to devices that fail authentication</li>
+                    <li><strong>Critical VLAN</strong> - VLAN assigned when RADIUS servers are unreachable</li>
+                </ul>
+                
+                <h3>Host Modes</h3>
+                <ul>
+                    <li><strong>Single-Host</strong> - Only one device allowed per port</li>
+                    <li><strong>Multi-Host</strong> - Multiple hosts allowed, but only one authentication</li>
+                    <li><strong>Multi-Auth</strong> - Each host must authenticate separately</li>
+                    <li><strong>Multi-Domain</strong> - Separate authentication for voice and data domains</li>
+                </ul>
+            `;
+            break;
+        case 'deployment':
+            content = `
+                <h2>Deployment Strategies</h2>
+                
+                <p>Deploying 802.1X requires careful planning and execution. Here are the most common deployment strategies:</p>
+                
+                <h3>Phased Deployment</h3>
+                <p>Roll out 802.1X gradually across your network, starting with less critical areas.</p>
+                <ul>
+                    <li><strong>Benefits:</strong> Lower risk, manageable workload, opportunity to refine processes</li>
+                    <li><strong>Best for:</strong> Large networks, organizations with limited resources</li>
+                    <li><strong>Timeline:</strong> Several weeks to months</li>
+                </ul>
+                
+                <h3>Pilot Deployment</h3>
+                <p>Test 802.1X on a small subset of your network before full deployment.</p>
+                <ul>
+                    <li><strong>Benefits:</strong> Minimal risk, learning opportunity, proof of concept</li>
+                    <li><strong>Best for:</strong> Organizations new to 802.1X, complex environments</li>
+                    <li><strong>Timeline:</strong> 3-6 weeks</li>
+                </ul>
+                
+                <h3>Monitor Mode Deployment</h3>
+                <p>Deploy 802.1X in monitor mode across your network, then switch to enforcement.</p>
+                <ul>
+                    <li><strong>Benefits:</strong> Zero impact during implementation, reveals issues before enforcement</li>
+                    <li><strong>Best for:</strong> Organizations concerned about disruption, networks with unknown devices</li>
+                    <li><strong>Timeline:</strong> 1-2 months</li>
+                </ul>
+                
+                <h3>Full Deployment</h3>
+                <p>Implement 802.1X across your entire network at once.</p>
+                <ul>
+                    <li><strong>Benefits:</strong> Fastest time to security, consistent implementation</li>
+                    <li><strong>Best for:</strong> Small networks, well-prepared organizations with thorough testing</li>
+                    <li><strong>Timeline:</strong> 1-2 weeks</li>
+                </ul>
+                
+                <h3>Key Success Factors</h3>
+                <ol>
+                    <li><strong>Network Readiness Assessment</strong> - Identify and address potential issues before deployment</li>
+                    <li><strong>Proper Authentication Infrastructure</strong> - Ensure RADIUS servers are properly configured and redundant</li>
+                    <li><strong>Device Inventory</strong> - Identify all devices, especially those that might not support 802.1X</li>
+                    <li><strong>Exception Policies</strong> - Create policies for devices that cannot authenticate</li>
+                    <li><strong>User Communication</strong> - Inform users about any changes they might experience</li>
+                    <li><strong>Support Readiness</strong> - Prepare support staff to handle authentication issues</li>
+                </ol>
+            `;
+            break;
+        case 'troubleshooting':
+            content = `
+                <h2>Troubleshooting 802.1X</h2>
+                
+                <h3>Common Issues and Fixes</h3>
+                
+                <h4>Authentication Failures</h4>
+                <ul>
+                    <li><strong>Issue:</strong> Clients cannot authenticate</li>
+                    <li><strong>Troubleshooting Steps:</strong>
+                        <ol>
+                            <li>Verify switch port configuration (show authentication sessions interface)</li>
+                            <li>Check RADIUS server logs for specific failure reasons</li>
+                            <li>Test RADIUS connectivity from the switch (test aaa group radius)</li>
+                            <li>Verify client supplicant configuration (correct EAP method, credentials)</li>
+                        </ol>
+                    </li>
+                </ul>
+                
+                <h4>Intermittent Disconnections</h4>
+                <ul>
+                    <li><strong>Issue:</strong> Clients randomly lose network connectivity</li>
+                    <li><strong>Troubleshooting Steps:</strong>
+                        <ol>
+                            <li>Check reauthentication timer settings</li>
+                            <li>Monitor RADIUS server performance and response times</li>
+                            <li>Look for network instability or port errors</li>
+                            <li>Check for RADIUS server overload during peak times</li>
+                        </ol>
+                    </li>
+                </ul>
+                
+                <h4>VLAN Assignment Issues</h4>
+                <ul>
+                    <li><strong>Issue:</strong> Clients not placed in the correct VLAN</li>
+                    <li><strong>Troubleshooting Steps:</strong>
+                        <ol>
+                            <li>Verify RADIUS server is sending the correct VLAN attributes</li>
+                            <li>Check switch configuration for VLAN override settings</li>
+                            <li>Ensure the VLAN exists on the switch</li>
+                            <li>Check for conflicts with voice VLAN settings</li>
+                        </ol>
+                    </li>
+                </ul>
+                
+                <h4>Slow Authentication</h4>
+                <ul>
+                    <li><strong>Issue:</strong> Authentication takes too long</li>
+                    <li><strong>Troubleshooting Steps:</strong>
+                        <ol>
+                            <li>Check RADIUS server response time</li>
+                            <li>Adjust timeout and retry values on the switch</li>
+                            <li>Look for network latency between switch and RADIUS server</li>
+                            <li>Consider local RADIUS servers for remote sites</li>
+                        </ol>
+                    </li>
+                </ul>
+                
+                <h3>Useful Commands</h3>
+                
+                <h4>Cisco</h4>
+                <pre>
+show authentication sessions interface GigabitEthernet1/0/1
+show dot1x all
+show aaa servers
+debug dot1x all
+debug radius authentication</pre>
+                
+                <h4>Aruba</h4>
+                <pre>
+show port-access authenticator
+show radius
+show port-access clients
+show log auth</pre>
+                
+                <h4>Juniper</h4>
+                <pre>
+show dot1x interface ge-0/0/1 detail
+show subscribers client-session
+show authentication tenant default interface ge-0/0/1
+show radius statistics detail</pre>
+                
+                <h3>Client-Side Troubleshooting</h3>
+                <ul>
+                    <li><strong>Windows:</strong> Use "Network Adapter Troubleshooting" and check Event Viewer</li>
+                    <li><strong>macOS:</strong> Check Console logs, use Network Utility for packet capture</li>
+                    <li><strong>Linux:</strong> Use wpa_supplicant logs, journalctl -u wpa_supplicant</li>
+                </ul>
+                
+                <h3>RADIUS Server Troubleshooting</h3>
+                <ul>
+                    <li><strong>FreeRADIUS:</strong> Enable debug mode (radiusd -X)</li>
+                    <li><strong>NPS (Windows):</strong> Check Event Viewer > System and Custom Views > Server Roles > Network Policy and Access Services</li>
+                    <li><strong>Cisco ISE:</strong> Operations > RADIUS > Live Logs</li>
+                </ul>
+            `;
+            break;
+        case 'ai-assist':
+            content = `
+                <h2>AI Assistance Features</h2>
+                
+                <p>The AI Assist function in Dot1Xer Supreme provides intelligent assistance for configuration, troubleshooting, and optimization tasks.</p>
+                
+                <h3>Available AI Providers</h3>
+                <ul>
+                    <li><strong>Built-in AI</strong> - Local AI capabilities for basic tasks (no API key required)</li>
+                    <li><strong>OpenAI</strong> - Uses GPT models for advanced analysis (requires API key)</li>
+                    <li><strong>Azure AI</strong> - Microsoft's AI service for enterprise environments (requires API key)</li>
+                    <li><strong>Claude</strong> - Anthropic's AI assistant (requires API key)</li>
+                </ul>
+                
+                <h3>AI Tasks</h3>
+                <ul>
+                    <li><strong>Generate Configuration</strong> - Create a configuration based on your requirements</li>
+                    <li><strong>Review Configuration</strong> - Analyze an existing configuration for issues and suggest improvements</li>
+                    <li><strong>Optimize Configuration</strong> - Enhance an existing configuration for better security, performance, or usability</li>
+                    <li><strong>Explain Configuration</strong> - Provide a detailed explanation of what a configuration does</li>
+                    <li><strong>Troubleshoot</strong> - Suggest solutions for authentication or deployment issues</li>
+                    <li><strong>Convert Configuration</strong> - Translate a configuration from one vendor format to another</li>
+                </ul>
+                
+                <h3>Using AI Assist</h3>
+                <ol>
+                    <li>Navigate to the AI Assist tab</li>
+                    <li>Select an AI provider (if using an external provider, enter your API key)</li>
+                    <li>Choose the task you want to perform</li>
+                    <li>Enter your prompt or instructions in the text area</li>
+                    <li>Set any additional parameters like detail level or security focus</li>
+                    <li>Click the "Execute" button to run the AI task</li>
+                </ol>
+                
+                <h3>Prompt Tips</h3>
+                <ul>
+                    <li>Be specific about your requirements and constraints</li>
+                    <li>Mention your network environment details when relevant</li>
+                    <li>For troubleshooting, provide error messages and symptoms</li>
+                    <li>When converting configurations, specify both source and target vendor/platform</li>
+                </ul>
+                
+                <h3>Example Prompts</h3>
+                <ul>
+                    <li><strong>Generation:</strong> "Create a Cisco IOS configuration for 802.1X with MAB fallback. I need support for voice VLAN 20 and guest VLAN 30. My RADIUS server is at 10.1.1.100 with secret 'radiusKey123'."</li>
+                    <li><strong>Review:</strong> "Review this Juniper configuration for security issues and best practices compliance." (followed by your configuration)</li>
+                    <li><strong>Optimization:</strong> "Optimize this Aruba configuration for high security in a healthcare environment." (followed by your configuration)</li>
+                    <li><strong>Explanation:</strong> "Explain what this configuration does and how it handles different authentication scenarios." (followed by your configuration)</li>
+                    <li><strong>Troubleshooting:</strong> "I'm seeing 'EAP-TLS handshake failed' errors on Windows clients. The RADIUS server shows 'certificate validation failed'. How can I fix this?"</li>
+                    <li><strong>Conversion:</strong> "Convert this Cisco configuration to Aruba AOS-CX format." (followed by your configuration)</li>
+                </ul>
+            `;
+            break;
+        default:
+            content = `
+                <h2>Documentation</h2>
+                <p>Please select a topic from the sidebar to view its documentation.</p>
+            `;
     }
     
-    document.getElementById('template-description').innerHTML = templateDescription;
-    document.getElementById('template-code').textContent = templateCode;
-    document.getElementById('template-config').classList.remove('hidden');
+    helpContent.innerHTML = content;
 }
 
 /**
  * Initialize Portnox integration
  */
 function initializePortnoxIntegration() {
-    const testConnectionButton = document.getElementById('test-connection');
-    const connectPortnoxButton = document.getElementById('connect-portnox');
-    
-    // Test connection button click handler
-    if (testConnectionButton) {
-        testConnectionButton.addEventListener('click', function() {
-            const portnoxUrl = document.getElementById('portnox-url').value;
-            const portnoxTenant = document.getElementById('portnox-tenant').value;
-            const portnoxKey = document.getElementById('portnox-key').value;
-            
-            if (!portnoxUrl || !portnoxTenant || !portnoxKey) {
-                alert('Please fill in all Portnox connection details.');
-                return;
-            }
-            
-            // Simulate testing connection
-            alert('Testing connection to Portnox Cloud...');
-            
-            // Simulate successful connection after a short delay
-            setTimeout(() => {
-                alert('Connection successful! Portnox Cloud API is reachable.');
-            }, 1500);
-        });
-    }
-    
-    // Connect button click handler
-    if (connectPortnoxButton) {
-        connectPortnoxButton.addEventListener('click', function() {
-            const portnoxUrl = document.getElementById('portnox-url').value;
-            const portnoxTenant = document.getElementById('portnox-tenant').value;
-            const portnoxKey = document.getElementById('portnox-key').value;
-            const portnoxDescription = document.getElementById('portnox-description').value;
-            
-            if (!portnoxUrl || !portnoxTenant || !portnoxKey) {
-                alert('Please fill in all Portnox connection details.');
-                return;
-            }
-            
-            // Simulate connecting
-            alert('Connecting to Portnox Cloud...');
-            
-            // Simulate successful connection after a short delay
-            setTimeout(() => {
-                // Update connection status
-                const portnoxStatus = document.querySelector('.portnox-status');
-                portnoxStatus.textContent = 'Connected';
-                portnoxStatus.classList.remove('disconnected');
-                portnoxStatus.classList.add('connected');
-                
-                alert('Successfully connected to Portnox Cloud!');
-            }, 1500);
-        });
-    }
+    // This is a placeholder for future implementation
+    console.log('Portnox integration initialized');
 }
