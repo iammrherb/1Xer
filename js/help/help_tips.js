@@ -1,231 +1,161 @@
 /**
- * Help tip system for Dot1Xer Supreme
- * Provides detailed explanations of configuration options
+ * Dot1Xer Supreme - Comprehensive Help Tips System
+ * Provides detailed help tips for all configuration options
+ * Version: 3.0.0
  */
 
-// Help tip data store
-const helpTips = {
-    // 802.1X Concepts
-    "dot1x": {
-        "title": "802.1X Authentication",
-        "content": "802.1X is an IEEE standard for port-based Network Access Control (PNAC). It provides an authentication mechanism for devices wishing to connect to a LAN or WLAN. 802.1X authentication involves three parties: a supplicant (client device), an authenticator (network device), and an authentication server (e.g., RADIUS)."
-    },
-    "mab": {
-        "title": "MAC Authentication Bypass (MAB)",
-        "content": "MAB is used for devices that don't support 802.1X. Instead of using EAP, the switch sends the device's MAC address to the authentication server. This allows legacy devices to connect to the network without 802.1X support."
-    },
-    "eap": {
-        "title": "Extensible Authentication Protocol (EAP)",
-        "content": "EAP is an authentication framework frequently used in wireless networks and point-to-point connections. It defines the message format and supports multiple authentication methods like EAP-TLS, PEAP, EAP-FAST, etc."
-    },
-    "radius": {
-        "title": "RADIUS (Remote Authentication Dial-In User Service)",
-        "content": "RADIUS is a networking protocol that provides centralized Authentication, Authorization, and Accounting (AAA) management for users who connect to and use a network service. RADIUS servers are commonly used as the authentication server in 802.1X deployments."
-    },
-    "tacacs": {
-        "title": "TACACS+ (Terminal Access Controller Access-Control System Plus)",
-        "content": "TACACS+ is a protocol developed by Cisco that provides detailed access control for managing device administration. Unlike RADIUS, TACACS+ separates authentication, authorization, and accounting."
-    },
-    
-    // Cisco Specific
-    "ibns": {
-        "title": "Identity-Based Networking Services (IBNS)",
-        "content": "IBNS is Cisco's implementation of 802.1X that provides identity-aware networking. IBNS 2.0 improves upon the original with more flexible authentication policies and better host mode capabilities."
-    },
-    "ise": {
-        "title": "Cisco Identity Services Engine (ISE)",
-        "content": "ISE is Cisco's policy management platform that enables context-aware identity and access control policies. It functions as a RADIUS server and provides advanced features like profiling, posture assessment, and guest services."
-    },
-    
-    // RADIUS Features
-    "coa": {
-        "title": "Change of Authorization (CoA)",
-        "content": "CoA allows a RADIUS server to dynamically change the attributes of an active session. This enables actions like quarantining, session termination, or VLAN reassignment without requiring reauthentication."
-    },
-    "radsec": {
-        "title": "RADIUS over TLS (RadSec)",
-        "content": "RadSec tunnels RADIUS traffic over TLS, providing encryption and mutual authentication between RADIUS clients and servers. This addresses security concerns with traditional RADIUS, which uses UDP and shared secrets."
-    },
-    
-    // Device Tracking
-    "device_tracking": {
-        "title": "IP Device Tracking",
-        "content": "IP Device Tracking monitors attached hosts using ARP and DHCP to maintain an address table. This feature is essential for dynamic security features that depend on knowing the IP addresses of connected devices."
-    },
-    "dhcp_snooping": {
-        "title": "DHCP Snooping",
-        "content": "DHCP snooping is a security feature that filters untrusted DHCP messages and builds a binding database of legitimate IP-to-MAC mappings. This prevents rogue DHCP servers and various DHCP-based attacks."
-    },
-    
-    // Authentication Modes
-    "multi_auth": {
-        "title": "Multi-Auth Mode",
-        "content": "In multi-auth mode, the switch authenticates each host independently, allowing multiple devices on a single port with different authentication results. This is useful for environments with IP phones and computers sharing ports."
-    },
-    "multi_domain": {
-        "title": "Multi-Domain Authentication Mode",
-        "content": "Multi-domain mode allows up to two devices to authenticate per port: one in the voice domain and one in the data domain. This is commonly used for IP phone deployments."
-    },
-    "multi_host": {
-        "title": "Multi-Host Mode",
-        "content": "In multi-host mode, only one host needs to be authenticated for all hosts on the port to gain access. After the first host authentication, other devices can access the network without authentication."
-    },
-    "single_host": {
-        "title": "Single-Host Mode",
-        "content": "Single-host mode only allows one authenticated device per port. If another device is detected, the port will either violate or ignore the new device, depending on the configuration."
-    },
-    
-    // Templates
-    "templates": {
-        "title": "Configuration Templates",
-        "content": "Templates provide pre-configured settings for various device types and deployment scenarios. You can customize these templates by modifying the variables to match your environment."
-    },
-    
-    // Wireless Concepts
-    "wpa2": {
-        "title": "WPA2 (Wi-Fi Protected Access 2)",
-        "content": "WPA2 is a security protocol developed by the Wi-Fi Alliance to secure wireless networks. It implements the mandatory elements of IEEE 802.11i standard and provides enterprise-grade authentication and encryption for wireless networks."
-    },
-    "wpa3": {
-        "title": "WPA3 (Wi-Fi Protected Access 3)",
-        "content": "WPA3 is the next generation of Wi-Fi security, offering improved encryption and authentication methods compared to WPA2. It includes features like Simultaneous Authentication of Equals (SAE) which provides stronger protection against password cracking attacks."
-    },
-    "pmf": {
-        "title": "Protected Management Frames (PMF)",
-        "content": "PMF provides protection for special management frames in Wi-Fi networks, preventing certain types of denial-of-service attacks. It helps ensure that critical management frames are authenticated and can't be spoofed by attackers."
-    },
-    "wids_wips": {
-        "title": "Wireless Intrusion Detection/Prevention System (WIDS/WIPS)",
-        "content": "WIDS/WIPS systems monitor the radio spectrum for unauthorized access points and suspicious activities. They can detect rogue access points, man-in-the-middle attacks, and other wireless security threats."
-    }
-};
+// Initialize help tips when the DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeHelpTips();
+});
 
-// Function to initialize help tips on page load
-function initHelpTips() {
-    // Find all elements with data-help attribute
-    const helpElements = document.querySelectorAll('[data-help]');
+/**
+ * Initialize the help tips system
+ */
+function initializeHelpTips() {
+    const helpTips = document.querySelectorAll('.help-tip');
     
-    helpElements.forEach(element => {
-        // Get the help key from the data attribute
-        const helpKey = element.getAttribute('data-help');
-        
-        // Only proceed if we have help content for this key
-        if (helpTips[helpKey]) {
-            // Create help icon
-            const helpIcon = document.createElement('span');
-            helpIcon.className = 'help-icon';
-            helpIcon.innerHTML = '?';
-            helpIcon.title = 'Click for help';
+    // Add event listeners for mobile devices
+    helpTips.forEach(tip => {
+        // For mobile - toggle visibility on click
+        tip.addEventListener('click', function(e) {
+            e.stopPropagation();
             
-            // Add click event to show help modal
-            helpIcon.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                showHelpModal(helpKey);
+            // Close any other open tooltips
+            helpTips.forEach(otherTip => {
+                if (otherTip !== tip && otherTip.classList.contains('active')) {
+                    otherTip.classList.remove('active');
+                }
             });
             
-            // Add the help icon next to the element
-            element.parentNode.insertBefore(helpIcon, element.nextSibling);
-        }
+            // Toggle active class
+            this.classList.toggle('active');
+        });
+    });
+    
+    // Close tooltips when clicking elsewhere on the document
+    document.addEventListener('click', function() {
+        helpTips.forEach(tip => {
+            tip.classList.remove('active');
+        });
     });
 }
 
-// Function to show the help modal
-function showHelpModal(helpKey) {
-    // Get help content
-    const help = helpTips[helpKey];
-    if (!help) return;
+/**
+ * Help tip content database
+ * Organized by category for easy maintenance
+ */
+const helpTipContent = {
+    // General configuration tips
+    general: {
+        'vendor': 'Select the network equipment manufacturer. This determines the syntax and available features in the generated configuration.',
+        'platform': 'Select the specific operating system or platform version. Different platforms from the same vendor may have different configuration syntax and capabilities.',
+        'auth-method': 'Choose the authentication method to use:\n\n• 802.1X Only: Authenticates devices using 802.1X protocol only\n• MAB Only: Authenticates devices by MAC address only\n• 802.1X + MAB: Tries 802.1X first, then falls back to MAB if 802.1X fails\n• Multi-Auth: Allows multiple authentication methods simultaneously\n• Multi-Domain: Separate authentication for voice and data devices\n• Multi-Host: Authenticate one device and allow multiple others on same port',
+        'eap-method': 'Extensible Authentication Protocol (EAP) method to use:\n\n• PEAP: Protected EAP - tunnels EAP within TLS, common for Windows clients\n• EAP-TLS: Certificate-based, strongest security but requires certificate infrastructure\n• EAP-TTLS: Tunneled TLS, similar to PEAP but more common in non-Windows environments\n• EAP-FAST: Flexible Authentication via Secure Tunneling, developed by Cisco',
+    },
     
-    // Create modal elements
-    const modal = document.createElement('div');
-    modal.className = 'help-modal';
+    // RADIUS configuration tips
+    radius: {
+        'radius-server': 'IP address of the primary RADIUS authentication server. This server will be tried first for all authentication requests.',
+        'radius-port': 'UDP port for RADIUS authentication (default: 1812). Some older servers may use 1645.',
+        'radius-secret': 'Shared secret used to encrypt RADIUS communications. Should be a strong, unique key at least 16 characters long with mixed case, numbers, and special characters.',
+        'backup-server': 'IP address of the backup RADIUS server. Used if the primary server is unreachable.',
+        'backup-port': 'UDP port for backup RADIUS server authentication (default: 1812).',
+        'backup-secret': 'Shared secret for the backup RADIUS server. For security, use a different secret than the primary server.',
+        'accounting-server': 'IP address of the RADIUS accounting server. Accounting records track user session information.',
+        'accounting-port': 'UDP port for RADIUS accounting (default: 1813). Some older servers may use 1646.',
+        'radius-timeout': 'How long (in seconds) to wait for a response from the RADIUS server before retrying or failing over.',
+        'radius-retries': 'Number of times to retry a RADIUS request before considering the server unavailable.',
+        'radius-server-group': 'Logical grouping of RADIUS servers. Allows for organization of servers by function or location.',
+        'enable-accounting': 'Enable RADIUS accounting to track user session information including login/logout times and data usage.',
+    },
     
-    const modalContent = document.createElement('div');
-    modalContent.className = 'help-modal-content';
+    // VLAN configuration tips
+    vlan: {
+        'vlan-auth': 'VLAN ID for successfully authenticated devices. This is the main production VLAN for authorized users.',
+        'vlan-voice': 'VLAN ID for voice devices (IP phones). This allows separate handling of voice traffic for QoS purposes.',
+        'vlan-guest': 'VLAN ID for guest devices or failed authentications. Typically provides limited network access.',
+        'vlan-critical': 'VLAN ID when authentication servers are unreachable. Used to maintain basic network access during outages.',
+        'vlan-auth-name': 'Optional descriptive name for the authenticated devices VLAN.',
+        'vlan-voice-name': 'Optional descriptive name for the voice VLAN.',
+        'vlan-guest-name': 'Optional descriptive name for the guest VLAN.',
+        'vlan-critical-name': 'Optional descriptive name for the critical VLAN.',
+        'dynamic-vlan': 'Enable RADIUS-assigned VLANs, allowing the RADIUS server to dynamically specify which VLAN a device should use.',
+    },
     
-    const closeBtn = document.createElement('span');
-    closeBtn.className = 'help-modal-close';
-    closeBtn.innerHTML = '&times;';
-    closeBtn.title = 'Close';
+    // Advanced features tips
+    advanced: {
+        'enable-coa': 'Change of Authorization (CoA) allows the RADIUS server to dynamically change authorization parameters (like VLAN) during a session.',
+        'enable-monitor': 'Monitor mode allows the switch to perform 802.1X authentication but not enforce it. Useful for testing or gradual deployment.',
+        'enable-radsec': 'RadSec (RADIUS over TLS) encrypts RADIUS traffic over TLS, providing stronger security than the standard RADIUS shared secret.',
+        'enable-tacacs': 'Enable TACACS+ for device administration authentication, providing more detailed control than RADIUS for admin access.',
+        'enable-mab-auth-failure': 'Allow MAC Authentication Bypass if 802.1X fails. Useful for devices that don\'t support 802.1X.',
+        'enable-webauth': 'Enable web authentication as a fallback method, presenting users with a captive portal for credentials.',
+        'enable-device-tracking': 'Track devices connecting to the network, monitoring their presence and activity for security purposes.',
+        'ibns-policy': 'Cisco Identity-Based Networking Services policies for advanced control of authentication and authorization.',
+    },
     
-    const title = document.createElement('h3');
-    title.textContent = help.title;
+    // Authentication timers and settings
+    timers: {
+        'auth-timer-restart': 'How long (in seconds) to wait before restarting authentication after a failure.',
+        'auth-timer-reauthenticate': 'How often (in seconds) to reauthenticate already authenticated clients. Recommended values: 3600-86400 (1-24 hours).',
+        'tx-period': 'How often (in seconds) the switch transmits EAP Request Identity frames to clients that haven\'t responded.',
+        'quiet-period': 'How long (in seconds) to wait after an authentication failure before trying again.',
+        'supplicant-timeout': 'How long (in seconds) to wait for the client to respond to an EAP request.',
+        'server-timeout': 'How long (in seconds) to wait for the authentication server to respond to a request.',
+    },
     
-    const content = document.createElement('div');
-    content.innerHTML = help.content;
+    // Security settings
+    security: {
+        'auth-fail-max': 'Maximum number of authentication failures before taking action (like moving to guest VLAN).',
+        'auth-control-direction': 'Direction to apply authentication control:\n\n• Both: Block traffic in both directions until authenticated\n• In: Block incoming traffic but allow outgoing traffic',
+        'auth-violation-mode': 'Action to take when unauthorized devices attempt to connect:\n\n• Protect: Drop packets from unauthorized MAC addresses\n• Restrict: Drop packets and generate SNMP trap\n• Shutdown: Error-disable the port',
+        'mab-violation-mode': 'Action to take when a MAC address is not authorized during MAB:\n\n• Restrict: Allow limited access\n• Shutdown: Error-disable the port',
+        'critical-recovery-delay': 'Time (in seconds) to wait before trying to recover from critical authentication failure.',
+        'critical-auth': 'Authentication behavior when RADIUS servers are unreachable:\n\n• Ignore: Fail all authentication attempts\n• Authorize: Allow access to critical VLAN',
+    },
     
-    // Assemble the modal
-    modalContent.appendChild(closeBtn);
-    modalContent.appendChild(title);
-    modalContent.appendChild(content);
-    modal.appendChild(modalContent);
-    document.body.appendChild(modal);
+    // Cisco-specific settings
+    cisco: {
+        'dot1x-pae': 'Port Access Entity role:\n\n• Authenticator: Switch acts as authenticator\n• Supplicant: Switch acts as client (rare)',
+        'ibns-policy-map': 'Cisco Identity-Based Networking Services policy map for advanced authentication control.',
+        'periodic-reauthentication': 'Enable or disable periodic reauthentication of clients.',
+        'port-control': 'Port authorization state:\n\n• Auto: Port based authentication\n• Force-authorized: Disable authentication\n• Force-unauthorized: Block all traffic',
+        'aaa-new-model': 'Enable the AAA (Authentication, Authorization, Accounting) access control model.',
+        'aaa-authentication': 'Configure authentication method lists for various access types.',
+        'aaa-authorization': 'Configure authorization method lists for various service types.',
+        'aaa-accounting': 'Configure accounting method lists to track user activity.',
+    },
     
-    // Show the modal
-    setTimeout(() => {
-        modal.style.opacity = '1';
-    }, 10);
+    // Aruba-specific settings
+    aruba: {
+        'aaa-authentication': 'Configure authentication settings for the Aruba device.',
+        'auth-server': 'Configure RADIUS server for authentication on Aruba devices.',
+        'server-group': 'Define a group of authentication servers on Aruba devices.',
+        'aaa-profile': 'Configure AAA profile for wireless networks on Aruba devices.',
+        'ssid-profile': 'Configure SSID settings for wireless networks on Aruba devices.',
+    },
     
-    // Close button event
-    closeBtn.addEventListener('click', () => {
-        closeHelpModal(modal);
-    });
+    // Juniper-specific settings
+    juniper: {
+        'authentication-profile': 'Define authentication settings on Juniper devices.',
+        'access-profile': 'Configure access profile for authentication on Juniper devices.',
+        'dot1x-authenticator': 'Configure 802.1X authenticator settings on Juniper devices.',
+        'interface-settings': 'Configure interface-specific settings for authentication on Juniper devices.',
+    },
     
-    // Close when clicking outside the modal
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeHelpModal(modal);
-        }
-    });
+    // HP-specific settings
+    hp: {
+        'radius-server-host': 'Configure RADIUS server settings on HP devices.',
+        'dot1x-authenticator': 'Configure 802.1X authenticator settings on HP devices.',
+        'auth-profile': 'Configure authentication profile on HP devices.',
+    },
     
-    // Close with ESC key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeHelpModal(modal);
-        }
-    });
-}
-
-// Function to close the help modal
-function closeHelpModal(modal) {
-    modal.style.opacity = '0';
-    setTimeout(() => {
-        document.body.removeChild(modal);
-    }, 300);
-}
-
-// Add help tips to elements dynamically
-function addHelpTip(element, helpKey) {
-    if (!helpTips[helpKey]) return;
-    
-    element.setAttribute('data-help', helpKey);
-    
-    // Create help icon
-    const helpIcon = document.createElement('span');
-    helpIcon.className = 'help-icon';
-    helpIcon.innerHTML = '?';
-    helpIcon.title = 'Click for help';
-    
-    // Add click event to show help modal
-    helpIcon.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        showHelpModal(helpKey);
-    });
-    
-    // Add the help icon next to the element
-    element.parentNode.insertBefore(helpIcon, element.nextSibling);
-}
-
-// Initialize help tips on page load
-document.addEventListener('DOMContentLoaded', initHelpTips);
-
-// Export functions for use in other modules
-if (typeof module !== 'undefined') {
-    module.exports = {
-        helpTips,
-        initHelpTips,
-        showHelpModal,
-        addHelpTip
-    };
-}
+    // Deployment recommendations
+    deployment: {
+        'phased-deployment': 'Implement 802.1X in phases across your network. Start with a small segment, validate, then expand gradually.',
+        'monitor-mode': 'Deploy in monitor mode first to identify potential issues without impacting network access.',
+        'mixed-auth': 'Use a combination of authentication methods (802.1X, MAB, WebAuth) to accommodate different device types.',
+        'migration-strategy': 'Plan a smooth migration from your current access control to 802.1X with minimal disruption.',
+    }
+};

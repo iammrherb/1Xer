@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to 802.1X</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #1a3a5f;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1a3a5f;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #0077cc;
+        }
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0077cc;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff8e1;
+            border-left: 4px solid #f57f17;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: #f5f5f5;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        pre {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        ul, ol {
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f7fa;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Introduction to 802.1X Authentication</h1>
+    
+    <h2>What is 802.1X?</h2>
+    <p>IEEE 802.1X is a standard for port-based network access control (PNAC) that provides an authentication mechanism for devices wishing to connect to a LAN or WLAN. 802.1X authenticates network clients by requiring them to provide credentials before they can access network resources.</p>
+    
+    <div class="note">
+        <strong>Key Point:</strong> 802.1X operates at Layer 2 (the data link layer) of the OSI model, allowing authentication to occur before the client receives an IP address or can access higher-layer network services.
+    </div>
+    
+    <h2>Why Implement 802.1X?</h2>
+    <p>There are several compelling reasons to implement 802.1X in your network:</p>
+    
+    <ul>
+        <li><strong>Security:</strong> Prevent unauthorized devices from connecting to your network</li>
+        <li><strong>Compliance:</strong> Meet regulatory requirements such as PCI-DSS, HIPAA, and others</li>
+        <li><strong>Granular Control:</strong> Apply different network policies to different users and devices</li>
+        <li><strong>Dynamic VLAN Assignment:</strong> Automatically place users in the appropriate VLAN</li>
+        <li><strong>Device Profiling:</strong> Identify device types and apply appropriate policies</li>
+        <li><strong>Centralized Management:</strong> Manage authentication centrally rather than on each switch</li>
+        <li><strong>Auditing:</strong> Track who accessed the network, when, and for how long</li>
+    </ul>
+    
+    <h2>How 802.1X Works</h2>
+    <p>802.1X authentication involves three main components:</p>
+    
+    <ol>
+        <li><strong>Supplicant:</strong> The client device requesting access to the network</li>
+        <li><strong>Authenticator:</strong> The network device (switch, wireless access point) that enforces authentication</li>
+        <li><strong>Authentication Server:</strong> The server (typically RADIUS) that validates credentials</li>
+    </ol>
+    
+    <h3>Authentication Process</h3>
+    <p>The authentication process follows these steps:</p>
+    
+    <ol>
+        <li>The client (supplicant) attempts to connect to the network</li>
+        <li>The switch port (authenticator) begins in an unauthorized state, blocking all traffic except 802.1X</li>
+        <li>The switch requests identity information from the client</li>
+        <li>The client sends identity information (username/password, certificate, etc.)</li>
+        <li>The switch forwards this information to the authentication server</li>
+        <li>The authentication server validates the credentials</li>
+        <li>The authentication server sends an accept or reject message to the switch</li>
+        <li>If accepted, the switch transitions the port to an authorized state</li>
+        <li>The client can now access network resources</li>
+    </ol>
+    
+    <h2>Authentication Methods</h2>
+    <p>802.1X supports various authentication methods:</p>
+    
+    <h3>Extensible Authentication Protocol (EAP) Methods</h3>
+    <table>
+        <tr>
+            <th>EAP Method</th>
+            <th>Description</th>
+            <th>Security Level</th>
+            <th>Common Use Cases</th>
+        </tr>
+        <tr>
+            <td>EAP-TLS</td>
+            <td>Uses certificates for both client and server authentication</td>
+            <td>Very High</td>
+            <td>Enterprise environments with PKI infrastructure</td>
+        </tr>
+        <tr>
+            <td>PEAP</td>
+            <td>Protected EAP - creates a TLS tunnel for other EAP methods</td>
+            <td>High</td>
+            <td>Windows environments, username/password authentication</td>
+        </tr>
+        <tr>
+            <td>EAP-TTLS</td>
+            <td>Tunneled TLS - similar to PEAP but more flexible</td>
+            <td>High</td>
+            <td>Mixed OS environments</td>
+        </tr>
+        <tr>
+            <td>EAP-FAST</td>
+            <td>Flexible Authentication via Secure Tunneling</td>
+            <td>High</td>
+            <td>Cisco environments, credential-based authentication</td>
+        </tr>
+        <tr>
+            <td>EAP-MD5</td>
+            <td>Simple password-based method</td>
+            <td>Low</td>
+            <td>Legacy systems (not recommended for new deployments)</td>
+        </tr>
+    </table>
+    
+    <div class="warning">
+        <strong>Security Warning:</strong> EAP-MD5 is considered insecure for modern networks as it does not provide mutual authentication and is vulnerable to man-in-the-middle attacks.
+    </div>
+    
+    <h3>Other Authentication Methods</h3>
+    <p>While not strictly part of 802.1X, these methods are often used alongside or as fallbacks:</p>
+    
+    <ul>
+        <li><strong>MAC Authentication Bypass (MAB):</strong> Authenticates devices based on MAC address when they cannot support 802.1X</li>
+        <li><strong>Web Authentication:</strong> Redirects users to a web portal for authentication</li>
+        <li><strong>Multi-factor Authentication:</strong> Combines multiple authentication methods for stronger security</li>
+    </ul>
+    
+    <h2>Infrastructure Requirements</h2>
+    <p>To implement 802.1X, you need:</p>
+    
+    <ul>
+        <li><strong>Network Access Devices:</strong> Switches or wireless access points that support 802.1X</li>
+        <li><strong>Authentication Server:</strong> RADIUS server (FreeRADIUS, Cisco ISE, Microsoft NPS, etc.)</li>
+        <li><strong>Client Support:</strong> Operating systems or software that support 802.1X (most modern OS do)</li>
+        <li><strong>Certificate Infrastructure:</strong> For EAP-TLS, you need PKI for certificate management</li>
+    </ul>
+    
+    <h2>Common Challenges</h2>
+    <p>Implementing 802.1X can present several challenges:</p>
+    
+    <ul>
+        <li><strong>Legacy Devices:</strong> Some devices don't support 802.1X (printers, IoT devices, etc.)</li>
+        <li><strong>Deployment Complexity:</strong> Configuration can be complex across diverse infrastructure</li>
+        <li><strong>User Experience:</strong> Authentication can cause delays and potential connection issues</li>
+        <li><strong>Troubleshooting:</strong> Authentication failures can be difficult to diagnose</li>
+        <li><strong>High Availability:</strong> Authentication servers must be highly available</li>
+    </ul>
+    
+    <h2>Best Practices</h2>
+    <p>Consider these best practices when implementing 802.1X:</p>
+    
+    <ul>
+        <li><strong>Phased Deployment:</strong> Start with a pilot group and expand gradually</li>
+        <li><strong>Monitor Mode:</strong> Deploy in monitor mode first to identify potential issues</li>
+        <li><strong>Multiple Authentication Methods:</strong> Use 802.1X with MAB or WebAuth as fallbacks</li>
+        <li><strong>Guest and Critical VLANs:</strong> Configure these for failed authentications and RADIUS unavailability</li>
+        <li><strong>RADIUS Server Redundancy:</strong> Deploy multiple RADIUS servers for high availability</li>
+        <li><strong>User Education:</strong> Train users on what to expect and how to troubleshoot basic issues</li>
+        <li><strong>Device Profiling:</strong> Implement profiling to automatically identify and authorize device types</li>
+        <li><strong>Regular Auditing:</strong> Review authentication logs regularly</li>
+    </ul>
+    
+    <div class="note">
+        <strong>Deployment Tip:</strong> Start with monitor mode to gather statistics on which devices would pass or fail authentication before enforcing 802.1X. This helps identify potential issues without disrupting network access.
+    </div>
+    
+    <h2>Next Steps</h2>
+    <p>Now that you understand the basics of 802.1X, you can proceed to:</p>
+    
+    <ul>
+        <li>Assess your network readiness for 802.1X</li>
+        <li>Select appropriate authentication methods for your environment</li>
+        <li>Plan your deployment strategy</li>
+        <li>Configure your RADIUS server</li>
+        <li>Set up test configurations on your network devices</li>
+        <li>Use Dot1Xer Supreme to generate and manage your configurations</li>
+    </ul>
+    
+    <p>Explore the other guides in this Help section to learn more about specific aspects of 802.1X implementation.</p>
+</body>
+</html>
