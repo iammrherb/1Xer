@@ -1,12 +1,14 @@
 /**
  * Dot1Xer Supreme - Main JavaScript
  * Core functionality for the Dot1Xer Supreme application
+ * Version: 3.0.0
  */
 
 // Initialize the application when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     initializeTabs();
     initializeVendorPlatforms();
+    initializeAuthMethods();
     initializeUIHandlers();
     initializeHelpTips();
     
@@ -16,6 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Copy configuration on button click
     document.getElementById('copy-config').addEventListener('click', function() {
         copyToClipboard('config-result');
+    });
+    
+    // Download configuration on button click
+    document.getElementById('download-config').addEventListener('click', function() {
+        downloadConfiguration();
     });
     
     // Save as template on button click
@@ -35,6 +42,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize Help tabs
     initializeHelpTabs();
+    
+    // Initialize the Portnox integration
+    initializePortnoxIntegration();
 });
 
 /**
@@ -138,6 +148,10 @@ function initializeVendorPlatforms() {
         ],
         sonicwall: [
             {value: 'sonicOS', text: 'SonicOS'}
+        ],
+        portnox: [
+            {value: 'cloud', text: 'Portnox Cloud'},
+            {value: 'clear', text: 'Portnox CLEAR'}
         ]
     };
     
@@ -165,6 +179,26 @@ function initializeVendorPlatforms() {
 }
 
 /**
+ * Initialize authentication method options
+ */
+function initializeAuthMethods() {
+    const authMethodSelect = document.getElementById('auth-method');
+    const eapMethodSelect = document.getElementById('eap-method');
+    
+    // Show/hide EAP method select based on auth method
+    authMethodSelect.addEventListener('change', function() {
+        const authMethod = this.value;
+        
+        // Show EAP method select for 802.1X-related auth methods
+        if (authMethod === 'dot1x-only' || authMethod === 'dot1x-mab' || authMethod === 'multi-auth') {
+            eapMethodSelect.parentElement.style.display = '';
+        } else {
+            eapMethodSelect.parentElement.style.display = 'none';
+        }
+    });
+}
+
+/**
  * Initialize UI event handlers
  */
 function initializeUIHandlers() {
@@ -176,20 +210,52 @@ function initializeUIHandlers() {
         // Placeholder for future implementation
     });
     
-    // Toggle MAB options
-    const enableMAB = document.getElementById('enable-mab');
+    // Toggle TACACS+ options
+    const enableTACACS = document.getElementById('enable-tacacs');
     
-    enableMAB.addEventListener('change', function() {
-        // This would show/hide additional MAB options
-        // Placeholder for future implementation
+    enableTACACS.addEventListener('change', function() {
+        if (this.checked) {
+            // Find and open the TACACS+ accordion if it exists
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            for (let i = 0; i < accordionHeaders.length; i++) {
+                if (accordionHeaders[i].textContent.includes('TACACS+')) {
+                    openAccordion(i);
+                    break;
+                }
+            }
+        }
     });
     
-    // Toggle critical VLAN options
-    const enableCritical = document.getElementById('enable-critical');
+    // Toggle RadSec options
+    const enableRadSec = document.getElementById('enable-radsec');
     
-    enableCritical.addEventListener('change', function() {
-        // This would show/hide critical VLAN options
-        // Placeholder for future implementation
+    enableRadSec.addEventListener('change', function() {
+        if (this.checked) {
+            // Find and open the RadSec accordion if it exists
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            for (let i = 0; i < accordionHeaders.length; i++) {
+                if (accordionHeaders[i].textContent.includes('RadSec')) {
+                    openAccordion(i);
+                    break;
+                }
+            }
+        }
+    });
+    
+    // Toggle CoA options
+    const enableCoA = document.getElementById('enable-coa');
+    
+    enableCoA.addEventListener('change', function() {
+        if (this.checked) {
+            // Find and open the RADIUS accordion if it exists
+            const accordionHeaders = document.querySelectorAll('.accordion-header');
+            for (let i = 0; i < accordionHeaders.length; i++) {
+                if (accordionHeaders[i].textContent.includes('RADIUS')) {
+                    openAccordion(i);
+                    break;
+                }
+            }
+        }
     });
 }
 
@@ -197,8 +263,7 @@ function initializeUIHandlers() {
  * Initialize help tips hover behavior
  */
 function initializeHelpTips() {
-    // This function is a placeholder
-    // Actual implementation could add event listeners or initialize tooltips
+    // This is now a placeholder - the CSS handles the tooltip display
 }
 
 /**
@@ -209,133 +274,293 @@ function generateConfiguration() {
     const vendor = document.getElementById('vendor').value;
     const platform = document.getElementById('platform').value;
     const authMethod = document.getElementById('auth-method').value;
+    const eapMethod = document.getElementById('eap-method').value;
     const radiusServer = document.getElementById('radius-server').value;
     const radiusSecret = document.getElementById('radius-secret').value;
     const backupServer = document.getElementById('backup-server').value;
     const backupSecret = document.getElementById('backup-secret').value;
     const vlanAuth = document.getElementById('vlan-auth').value;
-    const vlanUnauth = document.getElementById('vlan-unauth').value;
+    const vlanVoice = document.getElementById('vlan-voice').value;
     const vlanGuest = document.getElementById('vlan-guest').value;
+    const vlanCritical = document.getElementById('vlan-critical').value;
+    const interface = document.getElementById('interface').value;
     
     // Check if required fields are filled
-    if (!vendor || !platform || !authMethod || !radiusServer || !radiusSecret || !vlanAuth || !vlanUnauth) {
+    if (!vendor || !platform || !authMethod || !radiusServer || !radiusSecret || !vlanAuth) {
         alert('Please fill in all required fields.');
         return;
     }
     
     // Get checkbox values
-    const enableMAB = document.getElementById('enable-mab').checked;
+    const enableCoA = document.getElementById('enable-coa').checked;
     const enableMonitor = document.getElementById('enable-monitor').checked;
-    const enableCritical = document.getElementById('enable-critical').checked;
-    const enableVoice = document.getElementById('enable-voice').checked;
     const enableAccounting = document.getElementById('enable-accounting').checked;
+    const enableTACACS = document.getElementById('enable-tacacs').checked;
+    const enableRadSec = document.getElementById('enable-radsec').checked;
     
     // Generate configuration based on selected vendor and options
     let config = '';
     
-    switch (vendor) {
-        case 'cisco':
-            config = generateCiscoConfig(platform, authMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanUnauth, vlanGuest, enableMAB, enableMonitor, enableCritical, enableVoice, enableAccounting);
+    // Determine which configuration template to use based on auth method
+    let templateType = '';
+    
+    switch (authMethod) {
+        case 'dot1x-only':
+            templateType = 'dot1x_only';
             break;
-        case 'aruba':
-            config = generateArubaConfig(platform, authMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanUnauth, vlanGuest, enableMAB, enableMonitor, enableCritical, enableVoice, enableAccounting);
+        case 'mab-only':
+            templateType = 'mab_only';
             break;
-        case 'juniper':
-            config = generateJuniperConfig(platform, authMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanUnauth, vlanGuest, enableMAB, enableMonitor, enableCritical, enableVoice, enableAccounting);
+        case 'dot1x-mab':
+            templateType = 'dot1x_mab';
             break;
         default:
-            config = 'Configuration generation for the selected vendor is not implemented yet.';
+            templateType = 'dot1x_mab'; // Default to most comprehensive option
     }
     
-    // Display the generated configuration
-    document.getElementById('config-result').textContent = config;
+    try {
+        // Try to fetch the appropriate template from the templates directory
+        fetch(`templates/${vendor}/${platform}/${templateType}.conf`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Template not found: templates/${vendor}/${platform}/${templateType}.conf`);
+                }
+                return response.text();
+            })
+            .then(template => {
+                // Generate the configuration by replacing placeholders in the template
+                config = processTemplate(template, {
+                    RADIUS_IP_PRIMARY: radiusServer,
+                    RADIUS_KEY_PRIMARY: radiusSecret,
+                    RADIUS_IP_SECONDARY: backupServer || '',
+                    RADIUS_KEY_SECONDARY: backupSecret || '',
+                    DATA_VLAN: vlanAuth,
+                    VOICE_VLAN: vlanVoice || '',
+                    GUEST_VLAN: vlanGuest || '',
+                    CRITICAL_VLAN: vlanCritical || '',
+                    INTERFACE: interface || '<INTERFACE>',
+                    SWITCH_IP: getSwitchIP(),
+                    EAP_METHOD: eapMethod || 'peap'
+                });
+                
+                // Display the generated configuration
+                document.getElementById('config-result').textContent = config;
+            })
+            .catch(error => {
+                console.error('Error fetching template:', error);
+                
+                // Fallback to generating configuration programmatically
+                switch (vendor) {
+                    case 'cisco':
+                        config = generateCiscoConfig(platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec);
+                        break;
+                    case 'aruba':
+                        config = generateArubaConfig(platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec);
+                        break;
+                    case 'juniper':
+                        config = generateJuniperConfig(platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec);
+                        break;
+                    default:
+                        config = generateGenericConfig(vendor, platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec);
+                }
+                
+                // Display the generated configuration
+                document.getElementById('config-result').textContent = config;
+            });
+    } catch (error) {
+        console.error('Error generating configuration:', error);
+        
+        // Fallback to generating Cisco configuration
+        config = generateCiscoConfig(platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec);
+        
+        // Display the generated configuration
+        document.getElementById('config-result').textContent = config;
+    }
+}
+
+/**
+ * Process a configuration template by replacing placeholders
+ * @param {string} template - The template string
+ * @param {object} values - The values to replace in the template
+ * @returns {string} The processed template
+ */
+function processTemplate(template, values) {
+    let result = template;
+    
+    // Replace all placeholders in the template
+    for (const [key, value] of Object.entries(values)) {
+        const placeholder = new RegExp(`<${key}>`, 'g');
+        result = result.replace(placeholder, value);
+    }
+    
+    // Handle empty optional values
+    // Remove lines containing empty placeholders
+    result = result.split('\n')
+        .filter(line => !line.includes('<') || !line.includes('>'))
+        .join('\n');
+    
+    return result;
+}
+
+/**
+ * Get the IP address to use as the switch IP
+ * @returns {string} The IP address
+ */
+function getSwitchIP() {
+    // This would normally get the IP from the form or from a predefined value
+    // For this example, return a placeholder value
+    return '<SWITCH_IP>';
 }
 
 /**
  * Generate Cisco configuration
  */
-function generateCiscoConfig(platform, authMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanUnauth, vlanGuest, enableMAB, enableMonitor, enableCritical, enableVoice, enableAccounting) {
+function generateCiscoConfig(platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec) {
     // Basic configuration structure
     let config = `! Cisco ${platform.toUpperCase()} 802.1X Configuration\n`;
     config += `! Generated by Dot1Xer Supreme on ${new Date().toISOString()}\n\n`;
     
+    // Global settings
+    config += `! Global Configuration\n`;
+    config += `aaa new-model\n`;
+    config += `dot1x system-auth-control\n`;
+    
     // RADIUS server configuration
-    config += `! RADIUS Server Configuration\n`;
+    config += `\n! RADIUS Server Configuration\n`;
     config += `radius server PRIMARY\n`;
     config += ` address ipv4 ${radiusServer} auth-port 1812 acct-port 1813\n`;
     config += ` key ${radiusSecret}\n`;
+    config += ` timeout 5\n`;
+    config += ` retransmit 3\n`;
     
     if (backupServer) {
         config += `radius server BACKUP\n`;
         config += ` address ipv4 ${backupServer} auth-port 1812 acct-port 1813\n`;
         config += ` key ${backupSecret}\n`;
+        config += ` timeout 5\n`;
+        config += ` retransmit 3\n`;
     }
     
-    config += `!\n`;
-    config += `aaa new-model\n`;
-    config += `aaa authentication dot1x default group radius\n`;
+    // RADIUS server group
+    config += `\naaa group server radius RADIUS-SERVERS\n`;
+    config += ` server name PRIMARY\n`;
+    if (backupServer) {
+        config += ` server name BACKUP\n`;
+    }
+    config += ` deadtime 10\n`;
+    
+    // AAA configuration
+    config += `\n! AAA Configuration\n`;
+    config += `aaa authentication dot1x default group RADIUS-SERVERS\n`;
+    config += `aaa authorization network default group RADIUS-SERVERS\n`;
     
     if (enableAccounting) {
-        config += `aaa accounting dot1x default start-stop group radius\n`;
+        config += `aaa accounting dot1x default start-stop group RADIUS-SERVERS\n`;
     }
     
-    config += `!\n`;
-    config += `dot1x system-auth-control\n`;
-    config += `!\n`;
-    
-    // Interface configuration
-    config += `! Interface Configuration Example (apply to appropriate interfaces)\n`;
-    config += `interface GigabitEthernet1/0/1\n`;
-    config += ` switchport mode access\n`;
-    config += ` switchport access vlan ${vlanAuth}\n`;
-    
-    if (enableVoice) {
-        config += ` switchport voice vlan 100\n`; // Example voice VLAN
-        config += ` mls qos trust cos\n`;
+    // TACACS+ configuration
+    if (enableTACACS) {
+        config += `\n! TACACS+ Configuration\n`;
+        config += `tacacs server TACACS-SERVER\n`;
+        config += ` address ipv4 10.1.1.200\n`;
+        config += ` key TACACS-KEY\n`;
+        config += ` timeout 5\n`;
+        config += `aaa group server tacacs+ TACACS-SERVERS\n`;
+        config += ` server name TACACS-SERVER\n`;
+        config += `aaa authentication login default group TACACS-SERVERS local\n`;
+        config += `aaa authorization exec default group TACACS-SERVERS local\n`;
+        config += `aaa accounting exec default start-stop group TACACS-SERVERS\n`;
     }
     
-    config += ` authentication event fail action authorize vlan ${vlanUnauth}\n`;
+    // RadSec configuration
+    if (enableRadSec) {
+        config += `\n! RadSec Configuration\n`;
+        config += `radius server RADSEC-SERVER\n`;
+        config += ` address ipv4 10.1.1.300 auth-port 2083 acct-port 2083\n`;
+        config += ` key RADSEC-KEY\n`;
+        config += ` tls trustpoint RADSEC-TP\n`;
+    }
     
-    if (enableCritical) {
-        config += ` authentication event server dead action authorize vlan ${vlanUnauth}\n`;
-        config += ` authentication event server alive action reinitialize\n`;
+    // VLAN configuration
+    config += `\n! VLAN Configuration\n`;
+    config += `vlan ${vlanAuth}\n`;
+    config += ` name DATA_VLAN\n`;
+    
+    if (vlanVoice) {
+        config += `vlan ${vlanVoice}\n`;
+        config += ` name VOICE_VLAN\n`;
     }
     
     if (vlanGuest) {
-        config += ` authentication event no-response action authorize vlan ${vlanGuest}\n`;
+        config += `vlan ${vlanGuest}\n`;
+        config += ` name GUEST_VLAN\n`;
     }
     
-    config += ` authentication port-control auto\n`;
-    config += ` authentication periodic\n`;
-    config += ` authentication timer reauthenticate 3600\n`;
-    config += ` dot1x pae authenticator\n`;
+    if (vlanCritical) {
+        config += `vlan ${vlanCritical}\n`;
+        config += ` name CRITICAL_VLAN\n`;
+    }
     
-    if (enableMAB) {
+    // Interface configuration
+    config += `\n! Interface Configuration\n`;
+    config += `interface ${interface || 'GigabitEthernet1/0/1'}\n`;
+    config += ` switchport mode access\n`;
+    config += ` switchport access vlan ${vlanAuth}\n`;
+    
+    if (vlanVoice) {
+        config += ` switchport voice vlan ${vlanVoice}\n`;
+    }
+    
+    // Authentication settings
+    config += ` authentication port-control auto\n`;
+    
+    if (authMethod === 'dot1x-only') {
+        config += ` authentication order dot1x\n`;
+        config += ` authentication priority dot1x\n`;
+        config += ` dot1x pae authenticator\n`;
+    } else if (authMethod === 'mab-only') {
+        config += ` authentication order mab\n`;
+        config += ` authentication priority mab\n`;
         config += ` mab\n`;
+    } else if (authMethod === 'dot1x-mab') {
         config += ` authentication order dot1x mab\n`;
         config += ` authentication priority dot1x mab\n`;
+        config += ` dot1x pae authenticator\n`;
+        config += ` mab\n`;
+    }
+    
+    if (vlanGuest) {
+        config += ` authentication event fail action authorize vlan ${vlanGuest}\n`;
+    }
+    
+    if (vlanCritical) {
+        config += ` authentication event server dead action authorize vlan ${vlanCritical}\n`;
+        config += ` authentication event server alive action reinitialize\n`;
     }
     
     if (enableMonitor) {
         config += ` authentication open\n`;
     }
     
+    config += ` authentication periodic\n`;
+    config += ` authentication timer reauthenticate 3600\n`;
     config += ` spanning-tree portfast\n`;
-    config += `!\n`;
     
-    // Global settings and best practices
-    config += `! Global Settings and Best Practices\n`;
-    config += `authentication mac-move permit\n`;
-    config += `!\n`;
-    config += `! RADIUS Change of Authorization (CoA) support\n`;
-    config += `aaa server radius dynamic-author\n`;
-    config += ` client ${radiusServer} server-key ${radiusSecret}\n`;
-    
-    if (backupServer) {
-        config += ` client ${backupServer} server-key ${backupSecret}\n`;
+    // Change of Authorization (CoA)
+    if (enableCoA) {
+        config += `\n! RADIUS Change of Authorization (CoA) Configuration\n`;
+        config += `aaa server radius dynamic-author\n`;
+        config += ` client ${radiusServer} server-key ${radiusSecret}\n`;
+        
+        if (backupServer) {
+            config += ` client ${backupServer} server-key ${backupSecret}\n`;
+        }
+        
+        config += ` auth-type any\n`;
+        config += ` port 3799\n`;
     }
     
-    config += `!\n`;
+    config += `\n! End of Configuration\n`;
     
     return config;
 }
@@ -343,13 +568,14 @@ function generateCiscoConfig(platform, authMethod, radiusServer, radiusSecret, b
 /**
  * Generate Aruba configuration
  */
-function generateArubaConfig(platform, authMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanUnauth, vlanGuest, enableMAB, enableMonitor, enableCritical, enableVoice, enableAccounting) {
-    // Placeholder for Aruba configuration generation
-    let config = `! Aruba ${platform.toUpperCase()} 802.1X Configuration\n`;
-    config += `! Generated by Dot1Xer Supreme on ${new Date().toISOString()}\n\n`;
+function generateArubaConfig(platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec) {
+    // Generate a placeholder Aruba configuration
+    let config = `# Aruba ${platform} 802.1X Configuration\n`;
+    config += `# Generated by Dot1Xer Supreme on ${new Date().toISOString()}\n\n`;
     
-    // The actual configuration would be generated here based on Aruba syntax
-    config += `! This is a placeholder for Aruba configuration.\n`;
+    // Placeholder for Aruba configuration - this would be expanded in a full implementation
+    config += `# This is a placeholder for Aruba ${platform} configuration.\n`;
+    config += `# The actual configuration would be generated based on your selections.\n`;
     
     return config;
 }
@@ -357,15 +583,69 @@ function generateArubaConfig(platform, authMethod, radiusServer, radiusSecret, b
 /**
  * Generate Juniper configuration
  */
-function generateJuniperConfig(platform, authMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanUnauth, vlanGuest, enableMAB, enableMonitor, enableCritical, enableVoice, enableAccounting) {
-    // Placeholder for Juniper configuration generation
-    let config = `# Juniper ${platform.toUpperCase()} 802.1X Configuration\n`;
+function generateJuniperConfig(platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec) {
+    // Generate a placeholder Juniper configuration
+    let config = `# Juniper ${platform} 802.1X Configuration\n`;
     config += `# Generated by Dot1Xer Supreme on ${new Date().toISOString()}\n\n`;
     
-    // The actual configuration would be generated here based on Juniper syntax
-    config += `# This is a placeholder for Juniper configuration.\n`;
+    // Placeholder for Juniper configuration - this would be expanded in a full implementation
+    config += `# This is a placeholder for Juniper ${platform} configuration.\n`;
+    config += `# The actual configuration would be generated based on your selections.\n`;
     
     return config;
+}
+
+/**
+ * Generate a generic configuration for other vendors
+ */
+function generateGenericConfig(vendor, platform, authMethod, eapMethod, radiusServer, radiusSecret, backupServer, backupSecret, vlanAuth, vlanVoice, vlanGuest, vlanCritical, interface, enableCoA, enableMonitor, enableAccounting, enableTACACS, enableRadSec) {
+    // Generate a placeholder generic configuration
+    let config = `# ${vendor} ${platform} 802.1X Configuration\n`;
+    config += `# Generated by Dot1Xer Supreme on ${new Date().toISOString()}\n\n`;
+    
+    // Placeholder for generic configuration - this would be expanded in a full implementation
+    config += `# This is a placeholder for ${vendor} ${platform} configuration.\n`;
+    config += `# The actual configuration would be generated based on your selections.\n`;
+    config += `# For vendor-specific configuration templates, please check the Templates tab.\n`;
+    
+    return config;
+}
+
+/**
+ * Download the current configuration to a file
+ */
+function downloadConfiguration() {
+    const config = document.getElementById('config-result').textContent;
+    
+    // Check if there's content to download
+    if (!config || config === '# Configuration will appear here after generation.') {
+        alert('Please generate a configuration first.');
+        return;
+    }
+    
+    // Get vendor and platform for filename
+    const vendor = document.getElementById('vendor').value || 'config';
+    const platform = document.getElementById('platform').value || '';
+    const authMethod = document.getElementById('auth-method').value || '';
+    
+    // Create a filename
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `${vendor}_${platform}_${authMethod}_${timestamp}.conf`;
+    
+    // Create a blob with the content
+    const blob = new Blob([config], { type: 'text/plain' });
+    
+    // Create a download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.display = 'none';
+    
+    // Append to document, click and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 /**
@@ -401,19 +681,67 @@ function saveAsTemplate() {
         return;
     }
     
-    const vendor = document.getElementById('vendor').value;
-    const platform = document.getElementById('platform').value;
+    // Get vendor and platform for template categorization
+    const vendor = document.getElementById('vendor').value || 'multi-vendor';
+    const platform = document.getElementById('platform').value || '';
+    const authMethod = document.getElementById('auth-method').value || '';
     
     // Show a dialog to name the template
-    const templateName = prompt('Enter a name for this template:', `${vendor}-${platform}-template`);
+    const templateName = prompt('Enter a name for this template:', `${vendor}-${platform}-${authMethod}`);
     
     if (templateName) {
-        // Here we would normally save the template to a database or local storage
-        // For this example, we'll just simulate saving
-        alert(`Template "${templateName}" saved successfully!`);
+        // Create a new template item in the list
+        const templateList = document.querySelector('.template-list');
+        const newTemplateItem = document.createElement('li');
+        newTemplateItem.classList.add('template-item');
+        newTemplateItem.setAttribute('data-category', vendor);
+        newTemplateItem.textContent = templateName;
         
-        // Placeholder for actual template saving functionality
-        // saveTemplateToStorage(templateName, config);
+        // Add click event listener to the new template item
+        newTemplateItem.addEventListener('click', function() {
+            selectTemplate(this);
+        });
+        
+        // Add the new template to the list
+        templateList.appendChild(newTemplateItem);
+        
+        // Save the template to storage (simulated)
+        saveTemplateToStorage(templateName, vendor, config);
+        
+        // Select the new template
+        selectTemplate(newTemplateItem);
+        
+        // Switch to the Templates tab
+        document.querySelector('nav a[data-tab="templates"]').click();
+        
+        alert(`Template "${templateName}" created successfully!`);
+    }
+}
+
+/**
+ * Save a template to localStorage
+ * @param {string} name - The name of the template
+ * @param {string} category - The category of the template
+ * @param {string} config - The template configuration
+ */
+function saveTemplateToStorage(name, category, config) {
+    // Check if localStorage is available
+    if (typeof(Storage) !== "undefined") {
+        // Get existing templates or create an empty array
+        let templates = JSON.parse(localStorage.getItem('dot1xer-templates')) || [];
+        
+        // Add the new template
+        templates.push({
+            name: name,
+            category: category,
+            config: config,
+            created: new Date().toISOString()
+        });
+        
+        // Save the updated templates
+        localStorage.setItem('dot1xer-templates', JSON.stringify(templates));
+    } else {
+        console.warn('localStorage is not available. Template will not be saved permanently.');
     }
 }
 
@@ -533,437 +861,501 @@ function executeAITask() {
         
         switch (selectedTask) {
             case 'generate':
-                response = generateAIResponse(aiPrompt, detailLevel, securityFocus, includeComments);
+                response = simulateConfigGeneration(aiPrompt, detailLevel, securityFocus, includeComments);
                 break;
             case 'review':
-                response = reviewAIResponse(aiPrompt, detailLevel, securityFocus);
+                response = simulateConfigReview(aiPrompt, detailLevel);
                 break;
             case 'optimize':
-                response = optimizeAIResponse(aiPrompt, detailLevel, securityFocus, includeComments);
+                response = simulateConfigOptimization(aiPrompt, securityFocus);
                 break;
             case 'explain':
-                response = explainAIResponse(aiPrompt, detailLevel);
+                response = simulateConfigExplanation(aiPrompt, detailLevel);
                 break;
             case 'troubleshoot':
-                response = troubleshootAIResponse(aiPrompt, detailLevel);
+                response = simulateTroubleshooting(aiPrompt);
+                break;
+            case 'convert':
+                response = simulateConfigConversion(aiPrompt);
                 break;
             default:
-                response = '<p>Unknown AI task selected.</p>';
+                response = "I'm not sure what you want me to do. Please select a task and provide instructions.";
         }
         
         // Display the response
-        document.getElementById('ai-result').innerHTML = response;
-        
-    }, 2000); // Simulated delay for AI processing
+        const resultContainer = document.getElementById('ai-result');
+        resultContainer.innerHTML = `
+            <div class="ai-response">
+                <div class="ai-model-tag">${selectedProvider === 'builtin' ? 'Dot1Xer AI' : selectedProvider}</div>
+                <span class="ai-timestamp">${new Date().toLocaleTimeString()}</span>
+                ${response}
+            </div>
+        `;
+    }, 1500);
 }
 
 /**
- * Generate AI response for configuration generation
+ * Simulate AI config generation
  */
-function generateAIResponse(prompt, detailLevel, securityFocus, includeComments) {
-    // This is a simplified example of AI generated configuration
-    // In a real application, this would call an API or use a local model
-    
-    const currentDate = new Date().toISOString().split('T')[0];
-    
-    let response = `<div class="ai-response">`;
-    response += `<p><span class="ai-model-tag">AI-Generated Configuration</span><span class="ai-timestamp">${currentDate}</span></p>`;
-    response += `<h3>Generated 802.1X Configuration</h3>`;
-    response += `<p>Based on your requirements, here's a recommended configuration:</p>`;
-    
-    // Sample Cisco configuration
-    response += `<pre>! Cisco IOS 802.1X Configuration
-! Generated by Dot1Xer Supreme AI Assistant
-! Security Focus: ${securityFocus}
-! Detail Level: ${detailLevel}
+function simulateConfigGeneration(prompt, detailLevel, securityFocus, includeComments) {
+    // This is a simulation - in a real implementation, this would call an AI API
+    const config = `
+        <h3>Generated Configuration</h3>
+        <p>Based on your requirements, here's a configuration for a Cisco switch:</p>
+        <pre>! 802.1X Configuration for Cisco IOS
+! Generated by Dot1Xer Supreme AI
+! Security Level: ${securityFocus}
 
-! RADIUS Server Configuration
+aaa new-model
+aaa authentication dot1x default group RADIUS-SERVERS
+aaa authorization network default group RADIUS-SERVERS
+aaa accounting dot1x default start-stop group RADIUS-SERVERS
+
 radius server PRIMARY
  address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
  key SecureRadiusKey123
- 
-aaa new-model
-aaa authentication dot1x default group radius
-aaa authorization network default group radius
-aaa accounting dot1x default start-stop group radius
-
-! Global 802.1X Configuration
-dot1x system-auth-control
-authentication mac-move permit
-
-! Interface Configuration
-interface range GigabitEthernet1/0/1 - 48
- switchport mode access
- switchport access vlan 10
- authentication event fail action authorize vlan 999
- authentication event server dead action authorize vlan 999
- authentication event server alive action reinitialize
- authentication port-control auto
- authentication periodic
- authentication timer reauthenticate 3600
- dot1x pae authenticator
- mab
- authentication order dot1x mab
- authentication priority dot1x mab
- spanning-tree portfast
- 
-! RADIUS CoA Support
-aaa server radius dynamic-author
- client 10.1.1.100 server-key SecureRadiusKey123</pre>`;
-
-    if (includeComments && detailLevel !== 'basic') {
-        response += `<h3>Configuration Notes</h3>`;
-        response += `<ul>`;
-        response += `<li><strong>Security Considerations:</strong> This configuration implements ${securityFocus} security practices, including periodic reauthentication and fail-open to a restricted VLAN.</li>`;
-        response += `<li><strong>MAB Fallback:</strong> MAC Authentication Bypass is configured as a fallback method for devices that don't support 802.1X natively.</li>`;
-        response += `<li><strong>Dead Server Detection:</strong> If the RADIUS server becomes unreachable, ports will be moved to VLAN 999 (restricted access).</li>`;
-        if (detailLevel === 'detailed' || detailLevel === 'expert') {
-            response += `<li><strong>CoA Support:</strong> Change of Authorization is enabled to support dynamic policy changes from the RADIUS server.</li>`;
-            response += `<li><strong>Performance Impact:</strong> The reauthentication timer is set to 3600 seconds (1 hour) to balance security and performance.</li>`;
-        }
-        if (detailLevel === 'expert') {
-            response += `<li><strong>Advanced Considerations:</strong> Consider implementing RADIUS server redundancy and adjusting timers based on your environment's performance characteristics.</li>`;
-            response += `<li><strong>Security Enhancement:</strong> For higher security, consider implementing certificate-based EAP-TLS instead of PEAP/MSCHAPv2.</li>`;
-        }
-        response += `</ul>`;
-    }
-    
-    response += `</div>`;
-    return response;
-}
-
-/**
- * Generate AI response for configuration review
- */
-function reviewAIResponse(prompt, detailLevel, securityFocus) {
-    // Simplified example of AI configuration review
-    let response = `<div class="ai-response">`;
-    response += `<h3>Configuration Review</h3>`;
-    response += `<p>I've analyzed the provided configuration and identified the following:</p>`;
-    
-    response += `<h4>Security Findings</h4>`;
-    response += `<ul>`;
-    response += `<li><span style="color: #c62828;">⚠️ High Risk:</span> RADIUS shared secret appears to be using a weak password pattern.</li>`;
-    response += `<li><span style="color: #e65100;">⚠️ Medium Risk:</span> No RADIUS server redundancy configured.</li>`;
-    response += `<li><span style="color: #e65100;">⚠️ Medium Risk:</span> Reauthentication timer set too high (86400 seconds).</li>`;
-    response += `<li><span style="color: #33691e;">✓ Good:</span> MAC move detection is properly configured.</li>`;
-    response += `</ul>`;
-    
-    response += `<h4>Operational Recommendations</h4>`;
-    response += `<ul>`;
-    response += `<li>Consider adding a backup RADIUS server for redundancy.</li>`;
-    response += `<li>Reduce reauthentication timer to 3600-7200 seconds (1-2 hours).</li>`;
-    response += `<li>Implement a stronger RADIUS shared secret with mixed case, numbers, and special characters.</li>`;
-    if (detailLevel === 'detailed' || detailLevel === 'expert') {
-        response += `<li>Add RADIUS accounting for better visibility and troubleshooting.</li>`;
-        response += `<li>Consider implementing RADIUS server dead detection with automatic recovery.</li>`;
-    }
-    if (detailLevel === 'expert') {
-        response += `<li>Implement RADIUS server load balancing for better performance.</li>`;
-        response += `<li>Consider integrating with a NAC solution for more granular access control.</li>`;
-    }
-    response += `</ul>`;
-    
-    if (detailLevel !== 'basic') {
-        response += `<h4>Improved RADIUS Configuration</h4>`;
-        response += `<pre>radius server PRIMARY
- address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
- key StR0ng!R@d1us$3cr3t
  timeout 5
  retransmit 3
 
 radius server BACKUP
  address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
- key StR0ng!R@d1us$3cr3t
+ key SecureRadiusKey456
  timeout 5
  retransmit 3
 
-aaa group server radius AAA-SERVERS
+aaa group server radius RADIUS-SERVERS
  server name PRIMARY
  server name BACKUP
- load-balance method least-outstanding
- 
-aaa authentication dot1x default group AAA-SERVERS
-aaa authorization network default group AAA-SERVERS
-aaa accounting dot1x default start-stop group AAA-SERVERS</pre>`;
-    }
+ deadtime 15
+
+dot1x system-auth-control
+
+interface GigabitEthernet1/0/1
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 20
+ authentication port-control auto
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication event fail action authorize vlan 30
+ authentication event server dead action authorize vlan 999
+ authentication event server alive action reinitialize
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ dot1x max-reauth-req 3
+ spanning-tree portfast
+ mab
+</pre>
+        
+        ${includeComments ? `<h3>Configuration Notes</h3>
+        <ul>
+            <li>This configuration implements 802.1X with MAB fallback</li>
+            <li>VLAN 10 is assigned to authenticated users</li>
+            <li>VLAN 20 is configured as the voice VLAN</li>
+            <li>VLAN 30 is the guest VLAN for failed authentications</li>
+            <li>VLAN 999 is the critical VLAN for when RADIUS servers are unreachable</li>
+            <li>Primary and backup RADIUS servers are configured with appropriate timeout and retry settings</li>
+        </ul>` : ''}
+        
+        <p>You can customize this configuration further to meet your specific requirements.</p>
+    `;
     
-    response += `</div>`;
-    return response;
+    return config;
 }
 
 /**
- * Generate AI response for configuration optimization
+ * Simulate AI config review
  */
-function optimizeAIResponse(prompt, detailLevel, securityFocus, includeComments) {
-    // Simplified example of AI configuration optimization
-    let response = `<div class="ai-response">`;
-    response += `<h3>Optimized Configuration</h3>`;
-    response += `<p>I've optimized the configuration for ${securityFocus} focus and ${detailLevel} detail level:</p>`;
-    
-    response += `<pre>! Optimized Cisco IOS 802.1X Configuration
+function simulateConfigReview(config, detailLevel) {
+    // This is a simulation - in a real implementation, this would call an AI API
+    return `
+        <h3>Configuration Review</h3>
+        
+        <h4>Overview</h4>
+        <p>I've analyzed the provided configuration and found some potential issues and recommendations:</p>
+        
+        <h4>Security Issues</h4>
+        <ul>
+            <li><strong>High Severity:</strong> Weak RADIUS key detected. Consider using a stronger shared secret.</li>
+            <li><strong>Medium Severity:</strong> Missing RADIUS server deadtime configuration, which may cause delays during server failure.</li>
+            <li><strong>Medium Severity:</strong> No periodic reauthentication configured, which is recommended for better security.</li>
+        </ul>
+        
+        <h4>Optimization Opportunities</h4>
+        <ul>
+            <li>Consider increasing the RADIUS timeout from 5 to 10 seconds to account for network latency.</li>
+            <li>Add authentication event server alive action to reinitialize when servers come back online.</li>
+            <li>Configure dot1x max-reauth-req to reduce reauthentication failures.</li>
+        </ul>
+        
+        <h4>Best Practices</h4>
+        <ul>
+            <li>Implement RADIUS accounting for better auditing and troubleshooting.</li>
+            <li>Consider enabling Change of Authorization (CoA) support.</li>
+            <li>Add spanning-tree portfast to interfaces to improve client connectivity experience.</li>
+        </ul>
+        
+        <p>Overall, this configuration provides basic 802.1X functionality, but has several security improvements to consider implementing.</p>
+    `;
+}
+
+/**
+ * Simulate AI config optimization
+ */
+function simulateConfigOptimization(config, securityFocus) {
+    // This is a simulation - in a real implementation, this would call an AI API
+    return `
+        <h3>Optimized Configuration</h3>
+        
+        <p>I've optimized your configuration with a focus on <strong>${securityFocus}</strong>. Here's the improved version:</p>
+        
+        <pre>! Optimized 802.1X Configuration
+! Generated by Dot1Xer Supreme AI
 ! Security Focus: ${securityFocus}
 
-! RADIUS Server Configuration
-radius-server dead-criteria time 5 tries 3
-radius-server deadtime 15
-radius-server timeout 4
-radius-server retransmit 3
+aaa new-model
+aaa authentication dot1x default group RADIUS-SERVERS
+aaa authorization network default group RADIUS-SERVERS
+aaa accounting dot1x default start-stop group RADIUS-SERVERS
 
 radius server PRIMARY
  address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
- key StR0ng!R@d1us$3cr3t
- automate-tester username probe-user password 7 0214055F5A545C
- 
+ key Str0ngR@diusK3y!987
+ timeout 10
+ retransmit 2
+
 radius server BACKUP
  address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
- key StR0ng!R@d1us$3cr3t
- automate-tester username probe-user password 7 0214055F5A545C
+ key Str0ngB@ckupK3y!456
+ timeout 10
+ retransmit 2
 
-aaa group server radius AAA-SERVERS
+aaa group server radius RADIUS-SERVERS
  server name PRIMARY
  server name BACKUP
- load-balance method least-outstanding
+ deadtime 15
 
-aaa authentication dot1x default group AAA-SERVERS
-aaa authorization network default group AAA-SERVERS
-aaa accounting dot1x default start-stop group AAA-SERVERS
+! Enable CoA support
+aaa server radius dynamic-author
+ client 10.1.1.100 server-key Str0ngR@diusK3y!987
+ client 10.1.1.101 server-key Str0ngB@ckupK3y!456
+ auth-type any
+ port 3799
 
-! Global 802.1X Configuration
 dot1x system-auth-control
-authentication mac-move permit
 
-! Optimized Interface Template
-interface range GigabitEthernet1/0/1 - 48
+! Global 802.1X settings
+dot1x critical eapol
+dot1x logging verbose
+
+interface GigabitEthernet1/0/1
  switchport mode access
  switchport access vlan 10
- authentication event fail action authorize vlan 999
+ switchport voice vlan 20
+ switchport nonegotiate
+ authentication control-direction in
+ authentication event fail action authorize vlan 30
  authentication event server dead action authorize vlan 999
  authentication event server alive action reinitialize
- authentication port-control auto
- authentication periodic
- authentication timer reauthenticate 3600
- authentication timer restart 10
- authentication timer inactivity 86400
- dot1x pae authenticator
- dot1x timeout tx-period 10
- dot1x max-reauth-req 2
- mab
+ authentication host-mode multi-auth
+ authentication open
  authentication order dot1x mab
  authentication priority dot1x mab
- spanning-tree portfast
- 
-! RADIUS CoA Support
-aaa server radius dynamic-author
- client 10.1.1.100 server-key StR0ng!R@d1us$3cr3t
- client 10.1.1.101 server-key StR0ng!R@d1us$3cr3t</pre>`;
-
-    if (includeComments) {
-        response += `<h4>Optimization Notes</h4>`;
-        response += `<ul>`;
-        response += `<li><strong>RADIUS Redundancy:</strong> Added backup server and load balancing for better availability.</li>`;
-        response += `<li><strong>Dead Detection:</strong> Implemented automatic RADIUS server testing and faster failover.</li>`;
-        response += `<li><strong>Performance:</strong> Optimized timers for better performance while maintaining security.</li>`;
-        if (detailLevel === 'detailed' || detailLevel === 'expert') {
-            response += `<li><strong>Security Enhancement:</strong> Implemented stronger RADIUS keys and improved CoA support.</li>`;
-            response += `<li><strong>Operational Improvement:</strong> Added inactivity timer to automatically clear inactive sessions.</li>`;
-        }
-        if (detailLevel === 'expert') {
-            response += `<li><strong>Advanced Optimization:</strong> Fine-tuned retransmission parameters to reduce authentication delays.</li>`;
-            response += `<li><strong>Scalability:</strong> Interface template approach allows for consistent deployment across the network.</li>`;
-        }
-        response += `</ul>`;
-    }
-    
-    response += `</div>`;
-    return response;
-}
-
-/**
- * Generate AI response for configuration explanation
- */
-function explainAIResponse(prompt, detailLevel) {
-    // Simplified example of AI configuration explanation
-    let response = `<div class="ai-response">`;
-    response += `<h3>Configuration Explanation</h3>`;
-    response += `<p>Here's an explanation of the key components in this 802.1X configuration:</p>`;
-    
-    response += `<h4>RADIUS Server Configuration</h4>`;
-    response += `<p>This section defines the RADIUS servers that will be used for authentication:</p>`;
-    response += `<pre>radius server PRIMARY
- address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
- key SecureRadiusKey123</pre>`;
-    response += `<p>This configures a RADIUS server with IP address 10.1.1.100 using standard ports for authentication (1812) and accounting (1813). The shared secret "SecureRadiusKey123" is used to secure communication between the switch and RADIUS server.</p>`;
-    
-    if (detailLevel !== 'basic') {
-        response += `<h4>AAA Configuration</h4>`;
-        response += `<pre>aaa new-model
-aaa authentication dot1x default group radius
-aaa authorization network default group radius
-aaa accounting dot1x default start-stop group radius</pre>`;
-        response += `<p>This section enables Authentication, Authorization, and Accounting (AAA) services:</p>`;
-        response += `<ul>`;
-        response += `<li><code>aaa new-model</code> - Enables the AAA access control model</li>`;
-        response += `<li><code>aaa authentication dot1x</code> - Specifies that 802.1X authentication will use RADIUS servers</li>`;
-        response += `<li><code>aaa authorization network</code> - Allows the RADIUS server to assign attributes like VLANs</li>`;
-        response += `<li><code>aaa accounting dot1x</code> - Enables accounting to track user activity</li>`;
-        response += `</ul>`;
-    }
-    
-    response += `<h4>Global 802.1X Configuration</h4>`;
-    response += `<pre>dot1x system-auth-control
-authentication mac-move permit</pre>`;
-    response += `<p><code>dot1x system-auth-control</code> globally enables 802.1X on the switch. <code>authentication mac-move permit</code> allows a MAC address to move between ports without requiring reauthentication, which is useful for mobile devices.</p>`;
-    
-    if (detailLevel === 'detailed' || detailLevel === 'expert') {
-        response += `<h4>Interface Configuration</h4>`;
-        response += `<pre>interface GigabitEthernet1/0/1
- switchport mode access
- switchport access vlan 10
- authentication event fail action authorize vlan 999
  authentication port-control auto
  authentication periodic
- authentication timer reauthenticate 3600
- dot1x pae authenticator
+ authentication timer reauthenticate 7200
+ authentication timer restart 10
+ authentication violation restrict
  mab
- authentication order dot1x mab
- authentication priority dot1x mab</pre>`;
-        response += `<p>This configures 802.1X on a specific interface:</p>`;
-        response += `<ul>`;
-        response += `<li><code>authentication port-control auto</code> - Requires authentication for network access</li>`;
-        response += `<li><code>authentication event fail action...</code> - Places failed authentications in VLAN 999</li>`;
-        response += `<li><code>authentication periodic</code> - Enables periodic reauthentication</li>`;
-        response += `<li><code>authentication timer reauthenticate 3600</code> - Sets reauthentication interval to 1 hour</li>`;
-        response += `<li><code>mab</code> - Enables MAC Authentication Bypass for devices that don't support 802.1X</li>`;
-        response += `<li><code>authentication order dot1x mab</code> - Tries 802.1X first, then MAB if 802.1X fails</li>`;
-        response += `</ul>`;
-    }
-    
-    if (detailLevel === 'expert') {
-        response += `<h4>Advanced Features</h4>`;
-        response += `<pre>aaa server radius dynamic-author
- client 10.1.1.100 server-key SecureRadiusKey123</pre>`;
-        response += `<p>This enables RADIUS Change of Authorization (CoA), which allows the RADIUS server to dynamically change a user's authorization attributes (like VLAN assignment) after they've already authenticated. This is essential for integrating with NAC solutions that may need to quarantine devices or change their network access based on posture assessment.</p>`;
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ dot1x max-reauth-req 3
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+</pre>
         
-        response += `<h4>Security Design Considerations</h4>`;
-        response += `<p>This configuration implements a balance of security and usability:</p>`;
-        response += `<ul>`;
-        response += `<li><strong>Defense in Depth:</strong> Uses both 802.1X and MAB for multi-layered authentication</li>`;
-        response += `<li><strong>Segmentation:</strong> Separates authenticated and unauthenticated devices into different VLANs</li>`;
-        response += `<li><strong>Periodic Verification:</strong> Reauthenticates devices every hour to ensure continued compliance</li>`;
-        response += `<li><strong>Operational Resilience:</strong> Provides fallback mechanisms when authentication fails</li>`;
-        response += `</ul>`;
-    }
-    
-    response += `</div>`;
-    return response;
+        <h4>Key Optimizations</h4>
+        <ul>
+            <li>Strengthened RADIUS keys with complex passwords</li>
+            <li>Added RADIUS CoA support for dynamic policy changes</li>
+            <li>Optimized timeouts and retransmit values for better reliability</li>
+            <li>Added authentication timer reauthenticate to periodically verify users</li>
+            <li>Enabled BPDUGuard for better security on access ports</li>
+            <li>Configured authentication violation mode to restrict (rather than shutting down ports)</li>
+            <li>Enabled more verbose 802.1X logging for better troubleshooting</li>
+        </ul>
+        
+        <p>These changes significantly improve the security and reliability of your 802.1X deployment.</p>
+    `;
 }
 
 /**
- * Generate AI response for troubleshooting
+ * Simulate AI config explanation
  */
-function troubleshootAIResponse(prompt, detailLevel) {
-    // Simplified example of AI troubleshooting help
-    let response = `<div class="ai-response">`;
-    response += `<h3>802.1X Troubleshooting Guide</h3>`;
-    
-    // Extract issue type from prompt (simplified approach)
-    let issueType = 'authentication-failure';
-    if (prompt.toLowerCase().includes('timeout')) {
-        issueType = 'timeout';
-    } else if (prompt.toLowerCase().includes('vlan') || prompt.toLowerCase().includes('authorization')) {
-        issueType = 'authorization';
-    } else if (prompt.toLowerCase().includes('radius') || prompt.toLowerCase().includes('server')) {
-        issueType = 'radius-server';
-    }
-    
-    // Provide troubleshooting guidance based on the identified issue
-    switch (issueType) {
-        case 'authentication-failure':
-            response += `<h4>Authentication Failure Troubleshooting</h4>`;
-            response += `<p>Based on your description, it appears you're experiencing 802.1X authentication failures. Here's how to troubleshoot:</p>`;
-            
-            response += `<h5>Diagnostic Commands</h5>`;
-            response += `<pre>show authentication sessions interface GigabitEthernet1/0/1
-show dot1x interface GigabitEthernet1/0/1 details
-show aaa servers
-debug dot1x all
-debug radius authentication</pre>`;
-            
-            response += `<h5>Common Causes and Solutions</h5>`;
-            response += `<ol>`;
-            response += `<li><strong>Incorrect RADIUS shared secret</strong><br>Verify that the shared secret on the switch matches the one configured on the RADIUS server.</li>`;
-            response += `<li><strong>User credentials issues</strong><br>Confirm that the user exists in the RADIUS server database and has the correct password.</li>`;
-            response += `<li><strong>EAP method mismatch</strong><br>Ensure the client and server are configured for the same EAP method (PEAP, EAP-TLS, etc.).</li>`;
-            response += `<li><strong>Certificate issues</strong><br>For EAP-TLS, verify that certificates are valid and trusted by all parties.</li>`;
-            if (detailLevel !== 'basic') {
-                response += `<li><strong>Supplicant misconfiguration</strong><br>Check the client supplicant settings for proper configuration.</li>`;
-                response += `<li><strong>Incorrect VLAN assignment</strong><br>Ensure that the RADIUS server is sending the correct VLAN attributes and that the VLAN exists on the switch.</li>`;
-            }
-            if (detailLevel === 'expert') {
-                response += `<li><strong>Protocol mismatches</strong><br>Verify that the EAP over LAN (EAPOL) versions are compatible between devices.</li>`;
-                response += `<li><strong>Packet timing issues</strong><br>Adjust dot1x timeout values if responses are being received but timing out.</li>`;
-            }
-            response += `</ol>`;
-            break;
-            
-        case 'timeout':
-            response += `<h4>Authentication Timeout Troubleshooting</h4>`;
-            response += `<p>Timeout issues often indicate connectivity or response problems between the components. Here's how to troubleshoot:</p>`;
-            
-            response += `<h5>Diagnostic Commands</h5>`;
-            response += `<pre>show dot1x statistics
-show radius statistics
-ping 10.1.1.100 # Replace with your RADIUS server IP
-show authentication sessions interface GigabitEthernet1/0/1
-debug radius</pre>`;
-            
-            // Further timeout troubleshooting would be here
-            break;
-            
-        case 'authorization':
-            response += `<h4>VLAN Assignment/Authorization Troubleshooting</h4>`;
-            response += `<p>Issues with VLAN assignment or authorization typically relate to RADIUS attributes or switch configuration:</p>`;
-            
-            // VLAN authorization troubleshooting would be here
-            break;
-            
-        case 'radius-server':
-            response += `<h4>RADIUS Server Connectivity Troubleshooting</h4>`;
-            response += `<p>RADIUS server problems can prevent successful authentication:</p>`;
-            
-            // RADIUS server troubleshooting would be here
-            break;
-    }
-    
-    if (detailLevel === 'detailed' || detailLevel === 'expert') {
-        response += `<h4>Logging and Monitoring Best Practices</h4>`;
-        response += `<p>Implement these logging practices to better troubleshoot 802.1X issues:</p>`;
-        response += `<pre>conf t
-logging buffered 16384
-logging buffered informational
-logging trap informational
-logging origin-id hostname
-logging host 10.1.1.200
-service timestamps log datetime msec
-aaa accounting dot1x default start-stop group radius
-end</pre>`;
-    }
-    
-    if (detailLevel === 'expert') {
-        response += `<h4>Advanced Troubleshooting Workflow</h4>`;
-        response += `<p>For persistent issues, follow this systematic approach:</p>`;
-        response += `<ol>`;
-        response += `<li><strong>Isolate the scope</strong> - Determine if the issue affects a specific user, device type, switch port, or is system-wide</li>`;
-        response += `<li><strong>Verify configuration</strong> - Compare working and non-working configurations to identify differences</li>`;
-        response += `<li><strong>Packet capture analysis</strong> - Capture EAPOL and RADIUS traffic to analyze the specific failure point</li>`;
-        response += `<li><strong>Test incrementally</strong> - Temporarily simplify the configuration to isolate complex interactions</li>`;
-        response += `<li><strong>Consult server logs</strong> - Examine RADIUS server logs for detailed authentication process information</li>`;
-        response += `</ol>`;
-    }
-    
-    response += `</div>`;
-    return response;
+function simulateConfigExplanation(config, detailLevel) {
+    // This is a simulation - in a real implementation, this would call an AI API
+    return `
+        <h3>Configuration Explanation</h3>
+        
+        ${detailLevel === 'basic' ? `
+        <p>This is a basic 802.1X configuration for a Cisco switch. It sets up authentication against RADIUS servers and configures ports to require authentication before allowing network access. The configuration includes support for voice VLANs and fallback methods if authentication fails.</p>
+        ` : detailLevel === 'expert' ? `
+        <h4>AAA Configuration (Authentication, Authorization, Accounting)</h4>
+        <p>The <code>aaa new-model</code> command enables the AAA access control system. This is required for 802.1X authentication. The following lines configure the authentication method lists:</p>
+        <ul>
+            <li><code>aaa authentication dot1x default group RADIUS-SERVERS</code> - Specifies that 802.1X authentication should use the RADIUS-SERVERS group as the default method.</li>
+            <li><code>aaa authorization network default group RADIUS-SERVERS</code> - Configures the switch to use RADIUS for network authorization, which includes VLAN assignments and ACLs.</li>
+            <li><code>aaa accounting dot1x default start-stop group RADIUS-SERVERS</code> - Enables accounting records to be sent to the RADIUS servers when sessions start and stop.</li>
+        </ul>
+        
+        <h4>RADIUS Server Configuration</h4>
+        <p>The configuration defines two RADIUS servers:</p>
+        <ul>
+            <li>PRIMARY server at 10.1.1.100 with a specified key for secure communication</li>
+            <li>BACKUP server at 10.1.1.101 with its own key</li>
+        </ul>
+        <p>Both servers are configured with:</p>
+        <ul>
+            <li><code>timeout 5</code> - The switch will wait 5 seconds for a response before trying again</li>
+            <li><code>retransmit 3</code> - The switch will attempt to communicate with the RADIUS server up to 3 times before marking it as unavailable</li>
+        </ul>
+        
+        <h4>RADIUS Server Group</h4>
+        <p>The <code>aaa group server radius RADIUS-SERVERS</code> section creates a server group that includes both the PRIMARY and BACKUP servers. The <code>deadtime 15</code> setting means that if a server is unresponsive, it will be marked as "dead" for 15 minutes before the switch tries it again.</p>
+        
+        <h4>Interface Configuration</h4>
+        <p>The interface configuration shows a sophisticated 802.1X implementation:</p>
+        <ul>
+            <li><code>authentication order dot1x mab</code> - The switch will try 802.1X first, then fall back to MAC Authentication Bypass</li>
+            <li><code>authentication priority dot1x mab</code> - Defines which authentication method takes precedence if multiple succeed</li>
+            <li><code>authentication event fail action authorize vlan 30</code> - If authentication fails, place the device in VLAN 30 (guest VLAN)</li>
+            <li><code>authentication event server dead action authorize vlan 999</code> - If RADIUS servers are unreachable, place the device in VLAN 999 (critical VLAN)</li>
+        </ul>
+        
+        <h4>Additional 802.1X Parameters</h4>
+        <p>The configuration includes other important 802.1X parameters:</p>
+        <ul>
+            <li><code>dot1x timeout tx-period 10</code> - The interval in seconds between retransmissions of EAP requests to the client</li>
+            <li><code>dot1x max-reauth-req 3</code> - The maximum number of times the switch will retransmit an EAP-Request/Identity frame before restarting the authentication process</li>
+        </ul>
+        
+        <h4>Port Security Features</h4>
+        <p>The <code>spanning-tree portfast</code> command enables the port to transition directly to the forwarding state, which is appropriate for single-host access ports and improves the speed of client connectivity.</p>
+        ` : `
+        <h4>Authentication Configuration</h4>
+        <p>This configuration implements 802.1X port-based authentication with MAC Authentication Bypass (MAB) as a fallback method. The key components are:</p>
+        
+        <h5>RADIUS Server Setup</h5>
+        <p>Two RADIUS servers are configured:</p>
+        <ul>
+            <li>Primary server at 10.1.1.100</li>
+            <li>Backup server at 10.1.1.101</li>
+        </ul>
+        <p>These servers handle authentication requests from network devices.</p>
+        
+        <h5>VLAN Configuration</h5>
+        <p>The configuration uses several VLANs for different purposes:</p>
+        <ul>
+            <li>VLAN 10: For successfully authenticated devices</li>
+            <li>VLAN 20: Voice VLAN for IP phones</li>
+            <li>VLAN 30: Guest VLAN for failed authentications</li>
+            <li>VLAN 999: Critical VLAN when RADIUS servers are unreachable</li>
+        </ul>
+        
+        <h5>Authentication Process</h5>
+        <p>When a device connects to GigabitEthernet1/0/1:</p>
+        <ol>
+            <li>The switch attempts 802.1X authentication first</li>
+            <li>If 802.1X fails, it falls back to MAC Authentication Bypass</li>
+            <li>If authentication succeeds, the device is placed in VLAN 10</li>
+            <li>If authentication fails, the device is placed in VLAN 30</li>
+            <li>If RADIUS servers are unreachable, the device is placed in VLAN 999</li>
+        </ol>
+        `}
+    `;
+}
+
+/**
+ * Simulate AI troubleshooting
+ */
+function simulateTroubleshooting(problem) {
+    // This is a simulation - in a real implementation, this would call an AI API
+    return `
+        <h3>Troubleshooting Assistance</h3>
+        
+        <h4>Problem Analysis</h4>
+        <p>Based on your description, you're experiencing issues with 802.1X authentication failing for certain clients. Here are some potential causes and solutions:</p>
+        
+        <h4>Possible Causes</h4>
+        <ol>
+            <li><strong>Supplicant Configuration Issues</strong>
+                <ul>
+                    <li>Incorrect EAP method configuration on client</li>
+                    <li>Certificate validation issues on client</li>
+                    <li>Outdated supplicant software</li>
+                </ul>
+            </li>
+            <li><strong>Network Infrastructure Problems</strong>
+                <ul>
+                    <li>Switch port configuration mismatch</li>
+                    <li>RADIUS server reachability issues</li>
+                    <li>VLAN assignment problems</li>
+                </ul>
+            </li>
+            <li><strong>Authentication Server Issues</strong>
+                <ul>
+                    <li>RADIUS server misconfiguration</li>
+                    <li>User account or password problems</li>
+                    <li>Certificate issues on RADIUS server</li>
+                </ul>
+            </li>
+        </ol>
+        
+        <h4>Diagnostic Steps</h4>
+        <ol>
+            <li><strong>Verify Switch Configuration</strong>
+                <pre>show authentication sessions interface GigabitEthernet1/0/1
+show dot1x all
+show aaa servers</pre>
+                <p>Check that the port is configured correctly for 802.1X and that RADIUS servers are reachable.</p>
+            </li>
+            <li><strong>Check RADIUS Server Logs</strong>
+                <p>Look for authentication failures in the RADIUS server logs. Common error codes include:</p>
+                <ul>
+                    <li>Access-Reject (Authentication failure)</li>
+                    <li>Timeout (Server not responding)</li>
+                    <li>MPPE-Send/Recv-Key missing (Encryption key negotiation failed)</li>
+                </ul>
+            </li>
+            <li><strong>Examine Client Logs</strong>
+                <p>On Windows, check the Event Viewer > Windows Logs > System for 802.1X related events.</p>
+                <p>On macOS, use the Console app to view system logs for EAP/802.1X events.</p>
+            </li>
+            <li><strong>Packet Capture</strong>
+                <p>Capture EAP packets between the client and switch to identify where the authentication process is failing.</p>
+            </li>
+        </ol>
+        
+        <h4>Recommended Solutions</h4>
+        <ol>
+            <li><strong>Enable Monitor Mode</strong>
+                <pre>interface GigabitEthernet1/0/1
+ authentication open</pre>
+                <p>This allows traffic while logging authentication attempts, helping identify issues without blocking users.</p>
+            </li>
+            <li><strong>Configure Debug Logging</strong>
+                <pre>debug dot1x all
+debug radius authentication
+debug aaa authentication</pre>
+                <p>These commands provide detailed debugging information for 802.1X authentication.</p>
+            </li>
+            <li><strong>Test Authentication with a Known Good Device</strong>
+                <p>Configure a test port and authenticate with a device known to have correct supplicant settings.</p>
+            </li>
+            <li><strong>Implement MAC Authentication Bypass (MAB)</strong>
+                <pre>interface GigabitEthernet1/0/1
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ mab</pre>
+                <p>This allows devices without 802.1X supplicants to authenticate based on MAC address.</p>
+            </li>
+        </ol>
+        
+        <h4>Long-Term Recommendations</h4>
+        <ul>
+            <li>Implement a phased 802.1X deployment strategy starting with monitor mode</li>
+            <li>Create detailed documentation for both user and IT staff</li>
+            <li>Consider using a NAC solution for easier management and troubleshooting</li>
+            <li>Set up regular auditing of authentication logs to identify recurring issues</li>
+        </ul>
+    `;
+}
+
+/**
+ * Simulate AI config conversion
+ */
+function simulateConfigConversion(config) {
+    // This is a simulation - in a real implementation, this would call an AI API
+    return `
+        <h3>Configuration Conversion</h3>
+        
+        <p>I've converted the provided Cisco IOS configuration to equivalent configurations for other vendors:</p>
+        
+        <h4>Aruba AOS-CX Equivalent</h4>
+        <pre>radius-server host 10.1.1.100 key Str0ngR@diusK3y!987
+radius-server host 10.1.1.101 key Str0ngB@ckupK3y!456
+radius-server timeout 10
+radius-server retransmit 2
+radius-server dead-time 15
+
+aaa authentication dot1x default radius
+aaa authorization network default radius
+aaa accounting dot1x default start-stop radius
+
+aaa port-access authenticator 1/1/1
+aaa port-access authenticator 1/1/1 auth-server-timeout 60
+aaa port-access authenticator 1/1/1 reauth-period 7200
+aaa port-access authenticator 1/1/1 unauth-vid 30
+aaa port-access authenticator 1/1/1 auth-vid 10
+aaa port-access authenticator 1/1/1 voice-vid 20
+aaa port-access authenticator 1/1/1 critical-vid 999
+aaa port-access authenticator 1/1/1 client-limit 32
+aaa port-access authenticator 1/1/1 enable</pre>
+        
+        <h4>Juniper EX Series Equivalent</h4>
+        <pre>set system radius-server 10.1.1.100 secret "$9$abcdefghijklmno"
+set system radius-server 10.1.1.100 timeout 10
+set system radius-server 10.1.1.100 retry 2
+set system radius-server 10.1.1.101 secret "$9$pqrstuvwxyz1234"
+set system radius-server 10.1.1.101 timeout 10
+set system radius-server 10.1.1.101 retry 2
+
+set access radius-server 10.1.1.100 port 1812
+set access radius-server 10.1.1.100 accounting-port 1813
+set access radius-server 10.1.1.100 secret "$9$abcdefghijklmno"
+set access radius-server 10.1.1.101 port 1812
+set access radius-server 10.1.1.101 accounting-port 1813
+set access radius-server 10.1.1.101 secret "$9$pqrstuvwxyz1234"
+
+set access profile dot1x-profile authentication-order dot1x mac-radius
+set access profile dot1x-profile accounting order radius
+set access profile dot1x-profile radius authentication-server 10.1.1.100
+set access profile dot1x-profile radius authentication-server 10.1.1.101
+set access profile dot1x-profile radius accounting-server 10.1.1.100
+set access profile dot1x-profile radius accounting-server 10.1.1.101
+
+set protocols dot1x authenticator authentication-profile-name dot1x-profile
+set protocols dot1x authenticator interface ge-0/0/1.0 supplicant multiple
+set protocols dot1x authenticator interface ge-0/0/1.0 guest-vlan 30
+set protocols dot1x authenticator interface ge-0/0/1.0 server-fail vlan-name 999
+set protocols dot1x authenticator interface ge-0/0/1.0 mac-radius
+set protocols dot1x authenticator interface ge-0/0/1.0 reauthentication 7200
+set protocols dot1x authenticator interface ge-0/0/1.0 quiet-period 10
+set protocols dot1x authenticator interface ge-0/0/1.0 transmit-period 10
+set protocols dot1x authenticator interface ge-0/0/1.0 maximum-requests 3</pre>
+        
+        <h4>HPE Aruba AOS-Switch Equivalent</h4>
+        <pre>radius-server host 10.1.1.100 key Str0ngR@diusK3y!987
+radius-server host 10.1.1.101 key Str0ngB@ckupK3y!456
+radius-server timeout 10
+radius-server retransmit 2
+radius-server dead-time 15
+
+aaa authentication port-access eap-radius
+aaa authentication port-access mac-radius
+aaa port-access authenticator 1/1
+aaa port-access authenticator 1/1 auth-vid 10
+aaa port-access authenticator 1/1 unauth-vid 30
+aaa port-access authenticator 1/1 voice-vid 20
+aaa port-access authenticator 1/1 reauth-period 7200
+aaa port-access authenticator 1/1 tx-period 10
+aaa port-access authenticator 1/1 server-timeout 60
+aaa port-access authenticator 1/1 client-limit 32
+aaa port-access authenticator 1/1 unauth-period 10
+aaa port-access authenticator active</pre>
+        
+        <p>Note that while these configurations provide equivalent 802.1X functionality, there may be vendor-specific features or syntax that require adjustment for your specific environment. Always refer to the vendor documentation for the most accurate configuration guidance.</p>
+    `;
 }
 
 /**
@@ -971,7 +1363,6 @@ end</pre>`;
  */
 function initializeHelpTabs() {
     const helpTopics = document.querySelectorAll('.help-topics li');
-    const helpSections = document.querySelectorAll('.help-section');
     
     helpTopics.forEach(topic => {
         topic.addEventListener('click', function() {
@@ -982,11 +1373,171 @@ function initializeHelpTabs() {
             this.classList.add('active');
             
             // Hide all help sections
-            helpSections.forEach(section => section.classList.remove('active'));
+            document.querySelectorAll('.help-section').forEach(section => {
+                section.classList.remove('active');
+            });
             
             // Show the corresponding help section
             const topicId = this.getAttribute('data-topic');
-            document.getElementById('help-' + topicId).classList.add('active');
+            const helpSection = document.getElementById(`help-${topicId}`);
+            
+            if (helpSection) {
+                helpSection.classList.add('active');
+            }
         });
     });
+}
+
+/**
+ * Select a template from the template list
+ * @param {HTMLElement} templateItem - The template item to select
+ */
+function selectTemplate(templateItem) {
+    // Remove active class from all template items
+    document.querySelectorAll('.template-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to clicked template item
+    templateItem.classList.add('active');
+    
+    // Update template details
+    document.getElementById('template-title').textContent = templateItem.textContent;
+    
+    // Simulate getting template description and code
+    const templateCategory = templateItem.getAttribute('data-category');
+    let templateDescription = '';
+    let templateCode = '';
+    
+    // Generate a description based on the template name and category
+    if (templateCategory === 'cisco') {
+        templateDescription = `<p>This template provides a configuration for Cisco devices with comprehensive 802.1X implementation including MAB fallback, guest VLAN, and voice VLAN support.</p>
+        <p>Use this template for deploying 802.1X on Cisco switches with support for various authentication scenarios.</p>
+        <h4>Features</h4>
+        <ul>
+            <li>802.1X with MAC Authentication Bypass fallback</li>
+            <li>Guest VLAN for failed authentications</li>
+            <li>Critical VLAN for RADIUS server failures</li>
+            <li>Voice VLAN support for IP phones</li>
+            <li>CoA support for dynamic policy changes</li>
+        </ul>`;
+        
+        templateCode = `! Cisco 802.1X Configuration Template
+! Generated by Dot1Xer Supreme
+! Last Updated: ${new Date().toISOString().split('T')[0]}
+
+aaa new-model
+aaa authentication dot1x default group RADIUS-SERVERS
+aaa authorization network default group RADIUS-SERVERS
+aaa accounting dot1x default start-stop group RADIUS-SERVERS
+
+radius server PRIMARY
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key SecureRadius123
+ timeout 5
+ retransmit 3
+
+radius server BACKUP
+ address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
+ key SecureRadius456
+ timeout 5
+ retransmit 3
+
+aaa group server radius RADIUS-SERVERS
+ server name PRIMARY
+ server name BACKUP
+ deadtime 10
+
+dot1x system-auth-control
+
+interface GigabitEthernet1/0/1
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 20
+ authentication port-control auto
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication event fail action authorize vlan 30
+ authentication event server dead action authorize vlan 999
+ authentication event server alive action reinitialize
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ spanning-tree portfast
+ mab
+`;
+    } else {
+        templateDescription = `<p>This is a ${templateCategory} template for deploying 802.1X authentication.</p>
+        <p>Use this template as a starting point for your ${templateCategory} deployment.</p>`;
+        
+        templateCode = `# ${templateCategory.toUpperCase()} 802.1X Configuration Template
+# Generated by Dot1Xer Supreme
+# Last Updated: ${new Date().toISOString().split('T')[0]}
+
+# This is a placeholder for ${templateCategory} configuration.
+# The actual configuration would be based on your specific requirements.
+`;
+    }
+    
+    document.getElementById('template-description').innerHTML = templateDescription;
+    document.getElementById('template-code').textContent = templateCode;
+    document.getElementById('template-config').classList.remove('hidden');
+}
+
+/**
+ * Initialize Portnox integration
+ */
+function initializePortnoxIntegration() {
+    const testConnectionButton = document.getElementById('test-connection');
+    const connectPortnoxButton = document.getElementById('connect-portnox');
+    
+    // Test connection button click handler
+    if (testConnectionButton) {
+        testConnectionButton.addEventListener('click', function() {
+            const portnoxUrl = document.getElementById('portnox-url').value;
+            const portnoxTenant = document.getElementById('portnox-tenant').value;
+            const portnoxKey = document.getElementById('portnox-key').value;
+            
+            if (!portnoxUrl || !portnoxTenant || !portnoxKey) {
+                alert('Please fill in all Portnox connection details.');
+                return;
+            }
+            
+            // Simulate testing connection
+            alert('Testing connection to Portnox Cloud...');
+            
+            // Simulate successful connection after a short delay
+            setTimeout(() => {
+                alert('Connection successful! Portnox Cloud API is reachable.');
+            }, 1500);
+        });
+    }
+    
+    // Connect button click handler
+    if (connectPortnoxButton) {
+        connectPortnoxButton.addEventListener('click', function() {
+            const portnoxUrl = document.getElementById('portnox-url').value;
+            const portnoxTenant = document.getElementById('portnox-tenant').value;
+            const portnoxKey = document.getElementById('portnox-key').value;
+            const portnoxDescription = document.getElementById('portnox-description').value;
+            
+            if (!portnoxUrl || !portnoxTenant || !portnoxKey) {
+                alert('Please fill in all Portnox connection details.');
+                return;
+            }
+            
+            // Simulate connecting
+            alert('Connecting to Portnox Cloud...');
+            
+            // Simulate successful connection after a short delay
+            setTimeout(() => {
+                // Update connection status
+                const portnoxStatus = document.querySelector('.portnox-status');
+                portnoxStatus.textContent = 'Connected';
+                portnoxStatus.classList.remove('disconnected');
+                portnoxStatus.classList.add('connected');
+                
+                alert('Successfully connected to Portnox Cloud!');
+            }, 1500);
+        });
+    }
 }

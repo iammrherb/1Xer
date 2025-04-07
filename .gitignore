@@ -1,1 +1,29 @@
+# Dot1Xer Supreme .gitignore
+
+# Backups
 backups/
+
+# Temporary files
+temp_update/
+*.tmp
+*.bak
+
+# Logs
+logs/
+*.log
+
+# Environment-specific files
+.env
+config.local.js
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+vendor/

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/environment_discovery.css">
     <link rel="stylesheet" href="css/ai_integration.css">
     <link rel="stylesheet" href="css/portnox_integration.css">
+    <link rel="stylesheet" href="css/accordion.css">
     <!-- Favicon -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
@@ -26,6 +27,7 @@
                 <li><a href="#" data-tab="discovery">Environment Discovery</a></li>
                 <li><a href="#" data-tab="deployment">Deployment</a></li>
                 <li><a href="#" data-tab="ai-assist">AI Assist</a></li>
+                <li><a href="#" data-tab="advanced">Advanced</a></li>
                 <li><a href="#" data-tab="help">Help</a></li>
             </ul>
         </nav>
@@ -56,6 +58,7 @@
                         <option value="paloalto">Palo Alto</option>
                         <option value="checkpoint">Check Point</option>
                         <option value="sonicwall">SonicWall</option>
+                        <option value="portnox">Portnox</option>
                     </select>
                     <div class="help-tip" data-tip="Select the network equipment vendor for which you want to generate a configuration."></div>
                 </div>
@@ -72,65 +75,93 @@
                     <label for="auth-method">Authentication Method:</label>
                     <select id="auth-method" name="auth-method">
                         <option value="">-- Select Method --</option>
+                        <option value="dot1x-only">802.1X Only</option>
+                        <option value="mab-only">MAB Only</option>
+                        <option value="dot1x-mab">802.1X with MAB Fallback</option>
+                        <option value="multi-auth">Multiple Authentication Methods</option>
+                    </select>
+                    <div class="help-tip" data-tip="Select the authentication method to use."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="eap-method">EAP Method:</label>
+                    <select id="eap-method" name="eap-method">
+                        <option value="">-- Select EAP Method --</option>
                         <option value="eap-tls">EAP-TLS</option>
                         <option value="peap">PEAP</option>
                         <option value="eap-ttls">EAP-TTLS</option>
                         <option value="eap-fast">EAP-FAST</option>
                         <option value="eap-md5">EAP-MD5</option>
-                        <option value="mab">MAC Authentication Bypass</option>
-                        <option value="multi">Multiple Methods</option>
                     </select>
-                    <div class="help-tip" data-tip="Select the 802.1X authentication method to use."></div>
+                    <div class="help-tip" data-tip="Select the EAP method to use for 802.1X authentication."></div>
                 </div>
                 
                 <div class="option-group">
-                    <label for="radius-server">RADIUS Server:</label>
+                    <label for="radius-server">Primary RADIUS Server:</label>
                     <input type="text" id="radius-server" name="radius-server" placeholder="e.g., 10.1.1.100">
-                    <div class="help-tip" data-tip="Enter the IP address or hostname of your RADIUS server."></div>
+                    <div class="help-tip" data-tip="Enter the IP address or hostname of your primary RADIUS server."></div>
                 </div>
                 
                 <div class="option-group">
-                    <label for="radius-secret">RADIUS Secret:</label>
+                    <label for="radius-secret">Primary RADIUS Secret:</label>
                     <input type="password" id="radius-secret" name="radius-secret" placeholder="shared secret">
-                    <div class="help-tip" data-tip="Enter the shared secret used to authenticate with the RADIUS server."></div>
+                    <div class="help-tip" data-tip="Enter the shared secret used to authenticate with the primary RADIUS server."></div>
                 </div>
                 
                 <div class="option-group">
-                    <label for="backup-server">Backup RADIUS Server (Optional):</label>
+                    <label for="backup-server">Secondary RADIUS Server:</label>
                     <input type="text" id="backup-server" name="backup-server" placeholder="e.g., 10.1.1.101">
-                    <div class="help-tip" data-tip="Enter the IP address or hostname of your backup RADIUS server (if applicable)."></div>
+                    <div class="help-tip" data-tip="Enter the IP address or hostname of your secondary RADIUS server."></div>
                 </div>
                 
                 <div class="option-group">
-                    <label for="backup-secret">Backup RADIUS Secret (Optional):</label>
+                    <label for="backup-secret">Secondary RADIUS Secret:</label>
                     <input type="password" id="backup-secret" name="backup-secret" placeholder="shared secret">
-                    <div class="help-tip" data-tip="Enter the shared secret for the backup RADIUS server."></div>
+                    <div class="help-tip" data-tip="Enter the shared secret for the secondary RADIUS server."></div>
                 </div>
                 
                 <div class="option-group">
-                    <label for="vlan-auth">Authenticated VLAN ID:</label>
+                    <label for="vlan-auth">Data VLAN ID:</label>
                     <input type="number" id="vlan-auth" name="vlan-auth" min="1" max="4094" placeholder="e.g., 10">
                     <div class="help-tip" data-tip="Enter the VLAN ID to assign to authenticated devices."></div>
                 </div>
                 
                 <div class="option-group">
-                    <label for="vlan-unauth">Unauthenticated VLAN ID:</label>
-                    <input type="number" id="vlan-unauth" name="vlan-unauth" min="1" max="4094" placeholder="e.g., 999">
-                    <div class="help-tip" data-tip="Enter the VLAN ID to assign to unauthenticated devices."></div>
+                    <label for="vlan-voice">Voice VLAN ID (Optional):</label>
+                    <input type="number" id="vlan-voice" name="vlan-voice" min="1" max="4094" placeholder="e.g., 20">
+                    <div class="help-tip" data-tip="Enter the VLAN ID to assign to voice devices (if applicable)."></div>
                 </div>
                 
                 <div class="option-group">
                     <label for="vlan-guest">Guest VLAN ID (Optional):</label>
-                    <input type="number" id="vlan-guest" name="vlan-guest" min="1" max="4094" placeholder="e.g., 20">
+                    <input type="number" id="vlan-guest" name="vlan-guest" min="1" max="4094" placeholder="e.g., 30">
                     <div class="help-tip" data-tip="Enter the VLAN ID to assign to guest devices (if applicable)."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="vlan-critical">Critical VLAN ID (Optional):</label>
+                    <input type="number" id="vlan-critical" name="vlan-critical" min="1" max="4094" placeholder="e.g., 999">
+                    <div class="help-tip" data-tip="Enter the VLAN ID to assign when RADIUS servers are unavailable."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="interface">Interface:</label>
+                    <input type="text" id="interface" name="interface" placeholder="e.g., GigabitEthernet1/0/1">
+                    <div class="help-tip" data-tip="Enter the interface name or pattern to configure for 802.1X."></div>
                 </div>
                 
                 <div class="option-group checkboxes">
                     <label>Advanced Options:</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="enable-mab" name="enable-mab">
-                        <label for="enable-mab">Enable MAC Authentication Bypass</label>
-                        <div class="help-tip" data-tip="Enable MAC Authentication Bypass for devices that don't support 802.1X."></div>
+                        <input type="checkbox" id="enable-coa" name="enable-coa">
+                        <label for="enable-coa">Enable RADIUS CoA</label>
+                        <div class="help-tip" data-tip="Enable Change of Authorization (CoA) support."></div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enable-accounting" name="enable-accounting">
+                        <label for="enable-accounting">Enable RADIUS Accounting</label>
+                        <div class="help-tip" data-tip="Enable RADIUS accounting to log session information."></div>
                     </div>
                     
                     <div class="checkbox-group">
@@ -140,21 +171,15 @@
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" id="enable-critical" name="enable-critical">
-                        <label for="enable-critical">Enable Critical VLAN</label>
-                        <div class="help-tip" data-tip="Configure behavior when RADIUS servers are unavailable."></div>
+                        <input type="checkbox" id="enable-tacacs" name="enable-tacacs">
+                        <label for="enable-tacacs">Enable TACACS+</label>
+                        <div class="help-tip" data-tip="Enable TACACS+ for device administration."></div>
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" id="enable-voice" name="enable-voice">
-                        <label for="enable-voice">Enable Voice VLAN</label>
-                        <div class="help-tip" data-tip="Enable voice VLAN for VoIP devices."></div>
-                    </div>
-                    
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="enable-accounting" name="enable-accounting">
-                        <label for="enable-accounting">Enable RADIUS Accounting</label>
-                        <div class="help-tip" data-tip="Enable RADIUS accounting to log session information."></div>
+                        <input type="checkbox" id="enable-radsec" name="enable-radsec">
+                        <label for="enable-radsec">Enable RadSec</label>
+                        <div class="help-tip" data-tip="Enable secure RADIUS over TLS (RadSec)."></div>
                     </div>
                 </div>
                 
@@ -433,24 +458,28 @@
                         <h4>Select Task</h4>
                         <div class="task-options">
                             <div class="task-option active" data-task="generate">
-                                <span class="task-icon">‚úèÔ∏è</span>
+                                <span class="task-icon">??</span>
                                 <span class="task-label">Generate Configuration</span>
                             </div>
                             <div class="task-option" data-task="review">
-                                <span class="task-icon">üîç</span>
+                                <span class="task-icon">??</span>
                                 <span class="task-label">Review Configuration</span>
                             </div>
                             <div class="task-option" data-task="optimize">
-                                <span class="task-icon">‚öôÔ∏è</span>
+                                <span class="task-icon">??</span>
                                 <span class="task-label">Optimize Configuration</span>
                             </div>
                             <div class="task-option" data-task="explain">
-                                <span class="task-icon">üìù</span>
+                                <span class="task-icon">??</span>
                                 <span class="task-label">Explain Configuration</span>
                             </div>
                             <div class="task-option" data-task="troubleshoot">
-                                <span class="task-icon">üîß</span>
+                                <span class="task-icon">??</span>
                                 <span class="task-label">Troubleshooting Help</span>
+                            </div>
+                            <div class="task-option" data-task="convert">
+                                <span class="task-icon">??</span>
+                                <span class="task-label">Convert Configuration</span>
                             </div>
                         </div>
                     </div>
@@ -508,6 +537,224 @@
             </div>
         </div>
         
+        <div id="advanced" class="tab-content">
+            <h2>Advanced Features</h2>
+            
+            <div class="accordion-container">
+                <div class="accordion-header">
+                    <span>RADIUS Integration</span>
+                    <span class="accordion-icon">õ</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        <h3>RADIUS Server Integration</h3>
+                        <p>Configure advanced RADIUS server settings for your network environment.</p>
+                        
+                        <div class="option-group">
+                            <label for="radius-coa-port">CoA Port:</label>
+                            <input type="number" id="radius-coa-port" name="radius-coa-port" value="3799" min="1" max="65535">
+                            <div class="help-tip" data-tip="The port used for Change of Authorization (CoA) requests. Default is 3799."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radius-timeout">RADIUS Timeout (seconds):</label>
+                            <input type="number" id="radius-timeout" name="radius-timeout" value="5" min="1" max="60">
+                            <div class="help-tip" data-tip="The time to wait for a response from the RADIUS server before timing out."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radius-retries">RADIUS Retries:</label>
+                            <input type="number" id="radius-retries" name="radius-retries" value="3" min="0" max="10">
+                            <div class="help-tip" data-tip="The number of times to retry a RADIUS request if no response is received."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radius-deadtime">RADIUS Deadtime (minutes):</label>
+                            <input type="number" id="radius-deadtime" name="radius-deadtime" value="15" min="0" max="1440">
+                            <div class="help-tip" data-tip="The time to skip a RADIUS server that is not responding before trying it again."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radius-auth-port">Authentication Port:</label>
+                            <input type="number" id="radius-auth-port" name="radius-auth-port" value="1812" min="1" max="65535">
+                            <div class="help-tip" data-tip="The port used for RADIUS authentication requests. Default is 1812."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radius-acct-port">Accounting Port:</label>
+                            <input type="number" id="radius-acct-port" name="radius-acct-port" value="1813" min="1" max="65535">
+                            <div class="help-tip" data-tip="The port used for RADIUS accounting requests. Default is 1813."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-container">
+                <div class="accordion-header">
+                    <span>TACACS+ Configuration</span>
+                    <span class="accordion-icon">õ</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        <h3>TACACS+ Server Settings</h3>
+                        <p>Configure TACACS+ servers for device administration authentication.</p>
+                        
+                        <div class="option-group">
+                            <label for="tacacs-server">TACACS+ Server:</label>
+                            <input type="text" id="tacacs-server" name="tacacs-server" placeholder="e.g., 10.1.1.200">
+                            <div class="help-tip" data-tip="Enter the IP address or hostname of your TACACS+ server."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="tacacs-key">TACACS+ Key:</label>
+                            <input type="password" id="tacacs-key" name="tacacs-key" placeholder="shared secret">
+                            <div class="help-tip" data-tip="Enter the shared secret used to authenticate with the TACACS+ server."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="tacacs-port">TACACS+ Port:</label>
+                            <input type="number" id="tacacs-port" name="tacacs-port" value="49" min="1" max="65535">
+                            <div class="help-tip" data-tip="The port used for TACACS+ communication. Default is 49."></div>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="tacacs-single-connection" name="tacacs-single-connection">
+                            <label for="tacacs-single-connection">Use Single Connection</label>
+                            <div class="help-tip" data-tip="Use a single TCP connection for all TACACS+ communications with this server."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-container">
+                <div class="accordion-header">
+                    <span>RadSec Configuration</span>
+                    <span class="accordion-icon">õ</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        <h3>RadSec Settings</h3>
+                        <p>Configure RadSec (RADIUS over TLS) for secure RADIUS communications.</p>
+                        
+                        <div class="option-group">
+                            <label for="radsec-server">RadSec Server:</label>
+                            <input type="text" id="radsec-server" name="radsec-server" placeholder="e.g., 10.1.1.300">
+                            <div class="help-tip" data-tip="Enter the IP address or hostname of your RadSec server."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radsec-port">RadSec Port:</label>
+                            <input type="number" id="radsec-port" name="radsec-port" value="2083" min="1" max="65535">
+                            <div class="help-tip" data-tip="The port used for RadSec communication. Default is 2083."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radsec-key">RadSec Key:</label>
+                            <input type="password" id="radsec-key" name="radsec-key" placeholder="shared secret">
+                            <div class="help-tip" data-tip="Enter the shared secret used to authenticate with the RadSec server."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radsec-cert">TLS Certificate Path:</label>
+                            <input type="text" id="radsec-cert" name="radsec-cert" placeholder="e.g., /etc/certs/radsec.crt">
+                            <div class="help-tip" data-tip="Path to the TLS certificate file for RadSec communication."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="radsec-key-file">TLS Key Path:</label>
+                            <input type="text" id="radsec-key-file" name="radsec-key-file" placeholder="e.g., /etc/certs/radsec.key">
+                            <div class="help-tip" data-tip="Path to the TLS key file for RadSec communication."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-container">
+                <div class="accordion-header">
+                    <span>Device Tracking Configuration</span>
+                    <span class="accordion-icon">õ</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        <h3>Device Tracking Settings</h3>
+                        <p>Configure device tracking for enhanced endpoint visibility and control.</p>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable-device-tracking" name="enable-device-tracking">
+                            <label for="enable-device-tracking">Enable Device Tracking</label>
+                            <div class="help-tip" data-tip="Enable device tracking to monitor and manage connected devices."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="tracking-mode">Tracking Mode:</label>
+                            <select id="tracking-mode" name="tracking-mode">
+                                <option value="default">Default</option>
+                                <option value="binding">IP-MAC Binding</option>
+                                <option value="snooping">DHCP Snooping</option>
+                                <option value="inspection">ARP/ND Inspection</option>
+                            </select>
+                            <div class="help-tip" data-tip="Select the device tracking mode to use."></div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label for="tracking-limit">Tracking Limit Per Interface:</label>
+                            <input type="number" id="tracking-limit" name="tracking-limit" value="10" min="1" max="1000">
+                            <div class="help-tip" data-tip="Maximum number of devices to track per interface."></div>
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="enable-learning" name="enable-learning" checked>
+                            <label for="enable-learning">Enable Learning Mode</label>
+                            <div class="help-tip" data-tip="Enable learning mode to dynamically discover and track new devices."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-container">
+                <div class="accordion-header">
+                    <span>Portnox Integration</span>
+                    <span class="accordion-icon">õ</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-inner">
+                        <div class="portnox-container">
+                            <div class="portnox-header">
+                                <img src="assets/logos/portnox-logo.png" alt="Portnox" class="portnox-logo">
+                                <div class="portnox-status disconnected">Disconnected</div>
+                            </div>
+                            
+                            <div class="portnox-connection">
+                                <h3>Connect to Portnox Cloud</h3>
+                                <form class="connection-form">
+                                    <div>
+                                        <label for="portnox-url">Portnox Cloud URL:</label>
+                                        <input type="url" id="portnox-url" placeholder="https://your-tenant.portnox.cloud">
+                                    </div>
+                                    <div>
+                                        <label for="portnox-tenant">Tenant ID:</label>
+                                        <input type="text" id="portnox-tenant" placeholder="Your Tenant ID">
+                                    </div>
+                                    <div>
+                                        <label for="portnox-key">API Key:</label>
+                                        <input type="password" id="portnox-key" placeholder="Your API Key">
+                                    </div>
+                                    <div class="full-width">
+                                        <label for="portnox-description">Connection Description:</label>
+                                        <input type="text" id="portnox-description" placeholder="My Portnox Connection">
+                                    </div>
+                                    <div class="connection-buttons">
+                                        <button type="button" id="test-connection" class="secondary-button">Test Connection</button>
+                                        <button type="button" id="connect-portnox" class="primary-button">Connect</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div id="help" class="tab-content">
             <h2>Help & Documentation</h2>
             <div class="help-container">
@@ -521,6 +768,7 @@
                         <li data-topic="discovery">Environment Discovery</li>
                         <li data-topic="deployment">Deployment Planning</li>
                         <li data-topic="ai-assist">AI Assistance</li>
+                        <li data-topic="advanced-features">Advanced Features</li>
                         <li data-topic="vendors">Vendor-Specific Guides</li>
                         <li data-topic="troubleshooting">Troubleshooting</li>
                         <li data-topic="best-practices">Best Practices</li>
@@ -550,6 +798,8 @@
                             <li><strong>Deployment Planning</strong> - Create phased deployment plans with checklists and prerequisites.</li>
                             <li><strong>AI Assistance</strong> - Get intelligent configuration recommendations and reviews.</li>
                             <li><strong>Template Library</strong> - Save and reuse common configurations.</li>
+                            <li><strong>Advanced Features</strong> - Configure CoA, device tracking, and other enterprise-grade features.</li>
+                            <li><strong>Portnox Integration</strong> - Connect to Portnox Cloud for enhanced NAC capabilities.</li>
                         </ul>
                         
                         <p>For more detailed information, please explore the other help topics or refer to the documentation.</p>
@@ -566,7 +816,7 @@
             <div class="footer-section">
                 <h4>Dot1Xer Supreme</h4>
                 <p>Enterprise 802.1X Configuration Tool</p>
-                <p>Version 2.5.0</p>
+                <p>Version 3.0.0</p>
             </div>
             <div class="footer-section">
                 <h4>Resources</h4>
@@ -590,8 +840,6 @@
         </div>
     </footer>
 
-    <!-- Modal dialogs would be here -->
-    
     <!-- Scripts -->
     <script src="js/main.js"></script>
     <script src="js/vendor-data.js"></script>
@@ -599,5 +847,6 @@
     <script src="js/discovery/network-scanner.js"></script>
     <script src="js/ai/ai-integration.js"></script>
     <script src="js/cloud/portnox-integration.js"></script>
+    <script src="js/accordion.js"></script>
 </body>
 </html>

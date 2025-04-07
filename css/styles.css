@@ -634,55 +634,6 @@ code {
     border-color: #0077cc;
 }
 
-.ai-input textarea {
-    width: 100%;
-    height: 150px;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    resize: vertical;
-    font-family: inherit;
-}
-
-.parameter-group {
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-}
-
-.parameter-group label {
-    flex: 0 0 120px;
-    font-weight: 500;
-}
-
-.parameter-group select,
-.parameter-group input {
-    flex: 1;
-}
-
-#ai-result {
-    flex: 1;
-    overflow-y: auto;
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-radius: 4px;
-    border: 1px solid #eee;
-}
-
-.ai-placeholder {
-    color: #888;
-    font-style: italic;
-}
-
-.thinking-indicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    color: #666;
-}
-
 /* Help Tab Styles */
 .help-container {
     display: flex;
@@ -721,37 +672,6 @@ code {
     padding: 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     overflow-y: auto;
-}
-
-.help-section {
-    display: none;
-}
-
-.help-section.active {
-    display: block;
-}
-
-.help-section h4 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-}
-
-.help-section ul,
-.help-section ol {
-    padding-left: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.help-section ul {
-    list-style-type: disc;
-}
-
-.help-section ol {
-    list-style-type: decimal;
-}
-
-.help-section li {
-    margin-bottom: 0.5rem;
 }
 
 /* Footer Styles */
