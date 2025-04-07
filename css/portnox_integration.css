@@ -39,6 +39,163 @@
     color: #c62828;
 }
 
+.connection-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.connection-form .input-group {
+    margin-bottom: 0;
+}
+
+.connection-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.portnox-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.feature-card {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid #eee;
+}
+
+.feature-card h4 {
+    margin-bottom: 0.75rem;
+    color: #1a3a5f;
+}
+
+.feature-card p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 1rem;
+}
+
+.sync-section {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    border: 1px solid #eee;
+    margin-bottom: 1.5rem;
+}
+
+.sync-section h4 {
+    margin-bottom: 1rem;
+}
+
+.sync-options {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.sync-option {
+    flex: 1;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.75rem;
+}
+
+.sync-option label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.sync-option input {
+    margin-right: 0.5rem;
+}
+
+.sync-buttons {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.portnox-dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.dashboard-card {
+    background-color: white;
+    border-radius: 6px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dashboard-card h4 {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dashboard-card .stat {
+    float: right;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.dashboard-card .stat.positive {
+    color: #2e7d32;
+}
+
+.dashboard-card .stat.negative {
+    color: #c62828;
+}
+
+.dashboard-card .stat.neutral {
+    color: #f57f17;
+}
+
+.device-list {
+    list-style: none;
+    margin-top: 0.5rem;
+}
+
+.device-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+.device-list li:last-child {
+    border-bottom: none;
+}
+
+.device-list .device-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.device-status.compliant {
+    background-color: #4caf50;
+}
+
+.device-status.non-compliant {
+    background-color: #f44336;
+}
+
+.device-status.pending {
+    background-color: #ff9800;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 992px) {
     .portnox-features,

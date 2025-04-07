@@ -1,0 +1,292 @@
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+/* Header in Dark Mode */
+body.dark-mode header {
+    background: linear-gradient(135deg, #0d2339 0%, #071522 100%);
+}
+
+/* Navigation in Dark Mode */
+body.dark-mode nav a {
+    color: rgba(255,255,255,0.8);
+}
+
+body.dark-mode nav a:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;
+}
+
+body.dark-mode nav a.active {
+    background-color: #0077cc;
+    color: white;
+}
+
+/* Main content areas in Dark Mode */
+body.dark-mode .config-options,
+body.dark-mode .config-output,
+body.dark-mode .templates-sidebar,
+body.dark-mode .template-details,
+body.dark-mode .discovery-controls,
+body.dark-mode .discovery-results,
+body.dark-mode .deployment-types,
+body.dark-mode .deployment-details,
+body.dark-mode .ai-controls,
+body.dark-mode .ai-output,
+body.dark-mode .help-sidebar,
+body.dark-mode .help-content,
+body.dark-mode .portnox-container {
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Typography in Dark Mode */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3, 
+body.dark-mode h4, 
+body.dark-mode h5, 
+body.dark-mode h6 {
+    color: #e0e0e0;
+}
+
+body.dark-mode h2 {
+    border-bottom-color: #444;
+}
+
+/* Form elements in Dark Mode */
+body.dark-mode .option-group input,
+body.dark-mode .option-group select,
+body.dark-mode .input-group input,
+body.dark-mode .input-group select,
+body.dark-mode .search-box input,
+body.dark-mode #ai-prompt {
+    background-color: #333;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body.dark-mode .option-group input:focus,
+body.dark-mode .option-group select:focus {
+    border-color: #0077cc;
+    box-shadow: 0 0 0 3px rgba(0,119,204,0.2);
+}
+
+/* Buttons in Dark Mode */
+body.dark-mode .primary-button {
+    background-color: #0077cc;
+}
+
+body.dark-mode .primary-button:hover {
+    background-color: #0065af;
+}
+
+body.dark-mode .secondary-button {
+    background-color: #444;
+    color: #e0e0e0;
+    border-color: #666;
+}
+
+body.dark-mode .secondary-button:hover {
+    background-color: #555;
+}
+
+body.dark-mode .output-controls button {
+    background-color: #444;
+    border-color: #666;
+    color: #e0e0e0;
+}
+
+body.dark-mode .output-controls button:hover {
+    background-color: #555;
+}
+
+/* Template list items in Dark Mode */
+body.dark-mode .template-item:hover {
+    background-color: #333;
+}
+
+body.dark-mode .template-item.active {
+    background-color: #444;
+}
+
+body.dark-mode .help-topics li:hover {
+    background-color: #333;
+}
+
+body.dark-mode .help-topics li.active {
+    background-color: #444;
+}
+
+/* Deployment type items in Dark Mode */
+body.dark-mode .deployment-type-item:hover {
+    background-color: #333;
+}
+
+body.dark-mode .deployment-type-item.active {
+    background-color: #444;
+}
+
+body.dark-mode .deployment-type-item p {
+    color: #aaa;
+}
+
+/* Code and pre in Dark Mode */
+body.dark-mode pre {
+    background-color: #333;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-mode code {
+    color: #e0e0e0;
+}
+
+/* AI elements in Dark Mode */
+body.dark-mode .provider-option,
+body.dark-mode .task-option {
+    border-color: #555;
+    background-color: #2a2a2a;
+}
+
+body.dark-mode .provider-option:hover,
+body.dark-mode .task-option:hover {
+    background-color: #333;
+    border-color: #0077cc;
+}
+
+body.dark-mode .provider-option.active,
+body.dark-mode .task-option.active {
+    background-color: #444;
+    border-color: #0077cc;
+}
+
+body.dark-mode #api-key-section {
+    background-color: #333;
+    border-color: #555;
+}
+
+body.dark-mode #ai-thinking,
+body.dark-mode #ai-result {
+    background-color: #333;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+body.dark-mode .thinking-indicator {
+    color: #aaa;
+}
+
+body.dark-mode .ai-placeholder {
+    color: #aaa;
+}
+
+body.dark-mode .ai-model-tag {
+    background-color: #0d2339;
+    color: #5aaaff;
+}
+
+body.dark-mode .ai-timestamp {
+    color: #aaa;
+}
+
+/* Accordion in Dark Mode */
+body.dark-mode .accordion-header {
+    background-color: #4a0091;
+}
+
+body.dark-mode .accordion-header:hover {
+    background-color: #6300c4;
+}
+
+body.dark-mode .accordion-content {
+    background-color: #2a2a2a;
+}
+
+/* Footer in Dark Mode */
+body.dark-mode footer {
+    background-color: #0d2339;
+}
+
+body.dark-mode .copyright {
+    border-top-color: rgba(255,255,255,0.1);
+}
+
+/* Help tips in Dark Mode */
+body.dark-mode .help-tip::after {
+    background-color: #444;
+}
+
+/* Table in Dark Mode */
+body.dark-mode #discovery-results-table th {
+    background-color: #333;
+}
+
+body.dark-mode #discovery-results-table td,
+body.dark-mode #discovery-results-table th {
+    border-color: #444;
+}
+
+body.dark-mode #discovery-results-table tr:hover {
+    background-color: #333;
+}
+
+body.dark-mode #discovery-results-table tr.selected {
+    background-color: #0d2339;
+}
+
+/* Portnox elements in Dark Mode */
+body.dark-mode .feature-card,
+body.dark-mode .sync-section {
+    background-color: #333;
+    border-color: #444;
+}
+
+body.dark-mode .sync-option {
+    background-color: #2a2a2a;
+    border-color: #555;
+}
+
+body.dark-mode .dashboard-card {
+    background-color: #333;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+body.dark-mode .device-list li {
+    border-bottom-color: #444;
+}
+
+body.dark-mode .device-list li:last-child {
+    border-bottom: none;
+}
+
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #0077cc;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+    transform: scale(1.1);
+}
+
+body.dark-mode .dark-mode-toggle {
+    background-color: #f9a825;
+    color: #333;
+}
