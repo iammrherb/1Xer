@@ -1,80 +1,93 @@
-/* 
- * Dot1Xer Supreme - Help Tips Stylesheet
- * Version: 2.0.0
- *
- * This file contains styles specific to the help and tooltips system.
- */
-
-/*=============================================
-  1. Help Tips
-=============================================*/
+/* Help Tips CSS */
 .help-tip {
     display: inline-block;
     position: relative;
-    margin-left: 0.5rem;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #0077cc;
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    line-height: 18px;
+    margin-left: 8px;
     vertical-align: middle;
 }
 
-.help-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    font-size: 12px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
+.help-tip::before {
+    content: "?";
 }
 
-.help-icon:hover {
-    background-color: var(--primary-dark);
-    transform: scale(1.1);
-}
-
-/*=============================================
-  2. Tooltips
-=============================================*/
-.tooltip {
-    position: relative;
-    display: inline-block;
-}
-
-.tooltip .tooltip-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: var(--primary-color);
-    color: white;
-    font-size: 10px;
-    margin-left: 0.5rem;
-    cursor: pointer;
-}
-
-.tooltip .tooltip-content {
+.help-tip::after {
+    content: attr(data-tip);
     position: absolute;
-    top: 100%;
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    width: 250px;
+    z-index: 10;
+    bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%);
-    width: 250px;
-    background-color: var(--primary-dark);
-    color: white;
-    padding: 0.75rem;
-    border-radius: var(--border-radius);
-    font-size: 0.875rem;
-    z-index: 100;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    pointer-events: none;
     opacity: 0;
     visibility: hidden;
-    transition: var(--transition);
+    transition: opacity 0.3s, visibility 0.3s;
+    text-align: left;
 }
 
-.tooltip:hover .tooltip-content {
+.help-tip:hover::after {
     opacity: 1;
     visibility: visible;
+}
+
+/* Arrow at the bottom of tooltip */
+.help-tip::before {
+    content: "?";
+}
+
+.help-tip::after {
+    content: attr(data-tip);
+    position: absolute;
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border-radius: 4px;
+    width: 250px;
+    z-index: 10;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    line-height: 1.4;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+.help-tip::before {
+    content: "?";
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .help-tip::after {
+        width: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .help-tip::after {
+        width: 180px;
+        left: auto;
+        right: 0;
+        transform: none;
+    }
 }

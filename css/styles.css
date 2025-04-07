@@ -1,54 +1,6 @@
-/* 
- * Dot1Xer Supreme - Main Stylesheet
- * Version: 2.0.0
- *
- * This file contains all styling for the Dot1Xer Supreme application.
- * It's organized in sections for easy maintenance.
- */
+/* Dot1Xer Supreme - Main Styles */
 
-/*=============================================
-  1. Variables and Base Styles
-=============================================*/
-:root {
-    /* Main color palette */
-    --primary-color: #6a1b9a;        /* Main purple */
-    --primary-light: #9c4dcc;        /* Lighter purple */
-    --primary-dark: #38006b;         /* Darker purple */
-    --secondary-color: #14b789;      /* Teal accent */
-    --secondary-light: #5ceabb;      /* Light teal */
-    --secondary-dark: #00865a;       /* Dark teal */
-    
-    /* Neutral colors */
-    --light-gray: #f8f9fa;
-    --medium-gray: #dee2e6;
-    --dark-gray: #495057;
-    
-    /* Status colors */
-    --danger-color: #e74c3c;
-    --warning-color: #f39c12;
-    --success-color: #2ecc71;
-    --info-color: #3498db;
-    
-    /* UI elements */
-    --border-radius: 5px;
-    --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    --transition: all 0.3s ease;
-    
-    /* Text */
-    --text-color: #212529;
-    --text-light: #6c757d;
-    --text-dark: #343a40;
-    
-    /* Backgrounds */
-    --bg-color: #ffffff;
-    --bg-light: #f8f9fa;
-    --bg-dark: #343a40;
-    
-    /* Navigation */
-    --nav-bg: #364049;
-    --nav-active: #3a4550;
-}
-
+/* CSS Reset and Base Styles */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -58,540 +10,874 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--light-gray);
+    color: #333;
+    background-color: #f5f7fa;
+    margin: 0;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-.container {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 15px;
-}
-
-main {
-    flex: 1;
-}
-
 a {
-    color: var(--primary-color);
+    color: #0056b3;
     text-decoration: none;
-    transition: var(--transition);
 }
 
 a:hover {
-    color: var(--primary-light);
     text-decoration: underline;
 }
 
-/*=============================================
-  2. Typography
-=============================================*/
+ul {
+    list-style: none;
+}
+
+/* Typography */
 h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0.75em;
     font-weight: 600;
     line-height: 1.2;
-    margin-bottom: 1rem;
-    color: var(--text-dark);
+    color: #1a3a5f;
 }
 
 h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
 }
 
 h2 {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    border-bottom: 1px solid #e1e4e8;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
 h3 {
-    font-size: 1.75rem;
-}
-
-h4 {
     font-size: 1.5rem;
 }
 
-h5 {
+h4 {
     font-size: 1.25rem;
-}
-
-h6 {
-    font-size: 1rem;
 }
 
 p {
     margin-bottom: 1rem;
 }
 
-.text-muted {
-    color: var(--text-light);
-}
-
-.text-primary {
-    color: var(--primary-color);
-}
-
-.text-danger {
-    color: var(--danger-color);
-}
-
-.text-success {
-    color: var(--success-color);
-}
-
-/*=============================================
-  3. Header and Navigation
-=============================================*/
 /* Header Styles */
-.header {
-    background-color: var(--primary-color);
+header {
+    background: linear-gradient(135deg, #1a3a5f 0%, #0d2339 100%);
     color: white;
-    padding: 1.5rem 0;
-    text-align: center;
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.logo h1 {
+    margin: 0;
     color: white;
+    font-size: 1.8rem;
 }
 
-.header-subtitle {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 0.5rem;
-}
-
-.version-info {
+.tagline {
     font-size: 0.9rem;
-    opacity: 0.7;
-}
-
-/* Main Navigation */
-.main-nav {
-    background-color: var(--nav-bg);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.nav-container {
-    display: flex;
-    justify-content: space-between;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.nav-tabs {
-    display: flex;
-    list-style-type: none;
-}
-
-.nav-tabs li {
+    opacity: 0.9;
     margin: 0;
 }
 
-.nav-tabs a {
+nav {
+    margin-top: 1rem;
+}
+
+nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+nav a {
     display: block;
-    padding: 1rem 1.5rem;
+    padding: 0.5rem 1rem;
+    color: rgba(255,255,255,0.9);
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+nav a:hover {
+    background-color: rgba(255,255,255,0.1);
     color: white;
     text-decoration: none;
-    transition: background-color 0.3s;
 }
 
-.nav-tabs a:hover,
-.nav-tabs a.active {
-    background-color: var(--nav-active);
-    text-decoration: none;
-}
-
-/*=============================================
-  4. Sections and Containers
-=============================================*/
-/* Section Headers */
-.section-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1rem;
-    border-radius: var(--border-radius) var(--border-radius) 0 0;
-}
-
-.section-header h2 {
-    font-size: 1.5rem;
-    margin: 0;
+nav a.active {
+    background-color: #0077cc;
     color: white;
 }
 
-.section-content {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 0 0 var(--border-radius) var(--border-radius);
-    margin-bottom: 2rem;
-    box-shadow: var(--box-shadow);
+/* Main Content */
+main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
 }
 
-/* Tab Content */
 .tab-content {
     display: none;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .tab-content.active {
     display: block;
 }
 
-/*=============================================
-  5. Vendor Selection
-=============================================*/
-/* Platform Toggle */
-.platform-toggle {
-    display: flex;
-    margin-bottom: 1.5rem;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.platform-toggle-btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    background-color: var(--light-gray);
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: var(--transition);
-}
-
-.platform-toggle-btn:first-child {
-    border-radius: var(--border-radius) 0 0 var(--border-radius);
-}
-
-.platform-toggle-btn:last-child {
-    border-radius: 0 var(--border-radius) var(--border-radius) 0;
-}
-
-.platform-toggle-btn.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-/* Vendor Grid */
-.vendor-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.vendor-card {
+/* Config Tab Styles */
+.config-options {
     background-color: white;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--box-shadow);
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-    border: 2px solid transparent;
-}
-
-.vendor-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.vendor-card.selected {
-    border-color: var(--primary-color);
-}
-
-.vendor-card-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 0.75rem 1rem;
-    font-weight: 500;
-}
-
-.vendor-card-body {
-    padding: 1rem;
-    text-align: center;
-}
-
-.vendor-logo {
-    max-width: 120px;
-    max-height: 60px;
-    margin-bottom: 1rem;
-}
-
-.vendor-description {
-    font-size: 0.875rem;
-    color: var(--text-light);
-    margin-bottom: 1rem;
-}
-
-/*=============================================
-  6. Forms and Inputs
-=============================================*/
-/* Form Styles */
-.form-group {
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     margin-bottom: 1.5rem;
 }
 
-.form-group label {
+.option-group {
+    margin-bottom: 1.2rem;
+    position: relative;
+}
+
+.option-group label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
 
-.form-control {
+.option-group input,
+.option-group select {
     width: 100%;
     padding: 0.75rem;
-    border: 1px solid var(--medium-gray);
-    border-radius: var(--border-radius);
+    border: 1px solid #ddd;
+    border-radius: 4px;
     font-size: 1rem;
-    transition: border-color 0.3s;
+    transition: border-color 0.2s;
 }
 
-.form-control:focus {
-    border-color: var(--primary-color);
+.option-group input:focus,
+.option-group select:focus {
+    border-color: #0077cc;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(106, 27, 154, 0.2);
+    box-shadow: 0 0 0 3px rgba(0,119,204,0.1);
 }
 
-.form-hint {
-    display: block;
-    margin-top: 0.25rem;
-    font-size: 0.875rem;
-    color: var(--dark-gray);
-}
-
-/* Checkboxes and Radios */
-.checkbox-label, 
-.radio-label {
+.checkbox-group {
     display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
-    cursor: pointer;
 }
 
-.checkbox-label input, 
-.radio-label input {
+.checkbox-group input[type="checkbox"] {
+    width: auto;
     margin-right: 0.5rem;
 }
 
-/* Form Actions */
-.form-actions {
+.checkbox-group label {
+    margin-bottom: 0;
+    display: inline;
+}
+
+.config-output {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.output-header {
     display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eee;
 }
 
-/*=============================================
-  7. Buttons
-=============================================*/
-/* Button Styles */
-.btn {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 500;
-    text-align: center;
-    text-decoration: none;
-    border: none;
-    border-radius: var(--border-radius);
+.output-header h3 {
+    margin-bottom: 0;
+}
+
+.output-controls button {
+    background-color: #f5f7fa;
+    border: 1px solid #ddd;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
     cursor: pointer;
-    transition: var(--transition);
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+    transition: background-color 0.2s;
 }
 
-.btn-primary {
-    background-color: var(--primary-color);
+.output-controls button:hover {
+    background-color: #e7eaf0;
+}
+
+pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+code {
+    color: #333;
+}
+
+/* Button Styles */
+.primary-button, 
+.secondary-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    border: none;
+    font-size: 1rem;
+}
+
+.primary-button {
+    background-color: #0077cc;
     color: white;
 }
 
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    color: white;
-    text-decoration: none;
+.primary-button:hover {
+    background-color: #0065af;
 }
 
-.btn-secondary {
-    background-color: var(--secondary-color);
-    color: white;
+.primary-button:active {
+    transform: translateY(1px);
 }
 
-.btn-secondary:hover {
-    background-color: var(--secondary-dark);
-    color: white;
-    text-decoration: none;
+.secondary-button {
+    background-color: #f0f2f5;
+    color: #333;
+    border: 1px solid #ddd;
 }
 
-.btn-light {
-    background-color: var(--light-gray);
-    color: var(--text-dark);
+.secondary-button:hover {
+    background-color: #e5e8ed;
 }
 
-.btn-light:hover {
-    background-color: var(--medium-gray);
-    text-decoration: none;
+.secondary-button:active {
+    transform: translateY(1px);
 }
 
-.btn-danger {
-    background-color: var(--danger-color);
-    color: white;
+.small-button {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.85rem;
+    border-radius: 3px;
 }
 
-.btn-danger:hover {
-    background-color: #c0392b;
-    color: white;
-    text-decoration: none;
+/* Templates Tab Styles */
+.templates-container {
+    display: flex;
+    gap: 1.5rem;
+    height: 650px;
 }
 
-.btn-sm {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+.templates-sidebar {
+    flex: 0 0 300px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
-.btn-lg {
-    padding: 1rem 2rem;
-    font-size: 1.25rem;
+.search-box {
+    margin-bottom: 1rem;
 }
 
-/*=============================================
-  8. Output Container
-=============================================*/
-.config-header {
+.search-box input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.template-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.template-item {
+    padding: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 0.25rem;
+}
+
+.template-item:hover {
+    background-color: #f5f7fa;
+}
+
+.template-item.active {
+    background-color: #e7eaf0;
+    font-weight: 500;
+}
+
+.template-details {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#template-description {
+    margin-bottom: 1.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Discovery Tab Styles */
+.discovery-container {
+    display: flex;
+    gap: 1.5rem;
+    height: 650px;
+}
+
+.discovery-controls {
+    flex: 0 0 300px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.discovery-results {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group {
+    margin-bottom: 1.2rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.results-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
 }
 
-.config-actions {
+.result-stats {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.result-filters {
     display: flex;
-    gap: 0.5rem;
-}
-
-.copy-btn {
-    padding: 0.5rem 1rem;
-    background-color: var(--light-gray);
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    transition: var(--transition);
-    font-size: 0.875rem;
-    display: flex;
-    align-items: center;
-}
-
-.copy-btn i {
-    margin-right: 0.5rem;
-}
-
-.copy-btn:hover {
-    background-color: var(--medium-gray);
-}
-
-.config-output {
-    background-color: var(--bg-dark);
-    color: white;
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.875rem;
-    line-height: 1.5;
-    overflow-x: auto;
-    white-space: pre;
-}
-
-/*=============================================
-  9. Network Discovery Styles
-=============================================*/
-.discovery-tabs {
-    display: flex;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--medium-gray);
-}
-
-.discovery-tab-btn {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: var(--transition);
-    border-bottom: 2px solid transparent;
-}
-
-.discovery-tab-btn.active {
-    color: var(--primary-color);
-    border-bottom-color: var(--primary-color);
-}
-
-.discovery-tab-content {
-    display: none;
-}
-
-.discovery-tab-content.active {
-    display: block;
-}
-
-.scan-type-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
-.scan-option {
-    padding: 1rem;
-    border: 1px solid var(--medium-gray);
-    border-radius: var(--border-radius);
+.result-filters input,
+.result-filters select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
 }
 
-.scan-option-header {
+.result-filters input {
+    flex: 1;
+}
+
+.results-table-container {
+    flex: 1;
+    overflow: auto;
+}
+
+#discovery-results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#discovery-results-table th,
+#discovery-results-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+#discovery-results-table th {
+    background-color: #f5f7fa;
+    position: sticky;
+    top: 0;
+}
+
+.empty-results {
+    text-align: center;
+    color: #666;
+    padding: 2rem 0;
+}
+
+/* Deployment Tab Styles */
+.deployment-container {
     display: flex;
-    align-items: center;
+    gap: 1.5rem;
+    height: 650px;
+}
+
+.deployment-types {
+    flex: 0 0 300px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.deployment-type-item {
+    padding: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-bottom: 0.75rem;
+}
+
+.deployment-type-item:hover {
+    background-color: #f5f7fa;
+}
+
+.deployment-type-item.active {
+    background-color: #e7eaf0;
+}
+
+.deployment-type-item h4 {
     margin-bottom: 0.5rem;
 }
 
-.scan-option-description {
-    font-size: 0.875rem;
-    color: var(--text-light);
+.deployment-type-item p {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0;
 }
 
-/*=============================================
-  10. Footer Styles
-=============================================*/
-.footer {
-    background-color: var(--dark-gray);
-    color: white;
-    padding: 1.5rem 0;
+.deployment-details {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow-y: auto;
+}
+
+.deployment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eee;
+}
+
+.deployment-header h3 {
+    margin-bottom: 0;
+}
+
+#deployment-description h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+#deployment-description ol,
+#deployment-description ul {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#deployment-description ol {
+    list-style-type: decimal;
+}
+
+#deployment-description ul {
+    list-style-type: disc;
+}
+
+#deployment-description li {
+    margin-bottom: 0.5rem;
+}
+
+/* AI Assist Tab Styles */
+.ai-container {
+    display: flex;
+    gap: 1.5rem;
+    height: 650px;
+}
+
+.ai-controls {
+    flex: 0 0 350px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow-y: auto;
+}
+
+.ai-output {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-providers,
+.ai-tasks,
+.ai-input,
+.ai-parameters {
+    margin-bottom: 1.5rem;
+}
+
+.provider-options,
+.task-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.provider-option,
+.task-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.provider-option {
+    flex: 0 0 calc(50% - 0.5rem);
+}
+
+.task-option {
+    flex: 0 0 calc(33.33% - 0.5rem);
+}
+
+.provider-option img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 0.5rem;
+}
+
+.provider-option span,
+.task-option .task-label {
+    font-size: 0.85rem;
     text-align: center;
-    margin-top: auto;
 }
 
-/*=============================================
-  11. Responsive Styles
-=============================================*/
-@media (max-width: 768px) {
-    .vendor-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .nav-tabs {
-        flex-wrap: wrap;
-    }
-    
-    .nav-tabs a {
-        padding: 0.75rem 1rem;
-    }
-    
-    .scan-type-options {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-actions {
+.task-option .task-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.provider-option.active,
+.task-option.active {
+    background-color: #e7eaf0;
+    border-color: #0077cc;
+}
+
+.ai-input textarea {
+    width: 100%;
+    height: 150px;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.parameter-group {
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+}
+
+.parameter-group label {
+    flex: 0 0 120px;
+    font-weight: 500;
+}
+
+.parameter-group select,
+.parameter-group input {
+    flex: 1;
+}
+
+#ai-result {
+    flex: 1;
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.ai-placeholder {
+    color: #888;
+    font-style: italic;
+}
+
+.thinking-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #666;
+}
+
+/* Help Tab Styles */
+.help-container {
+    display: flex;
+    gap: 1.5rem;
+    height: 650px;
+}
+
+.help-sidebar {
+    flex: 0 0 250px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.help-topics li {
+    padding: 0.75rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.help-topics li:hover {
+    background-color: #f5f7fa;
+}
+
+.help-topics li.active {
+    background-color: #e7eaf0;
+    font-weight: 500;
+}
+
+.help-content {
+    flex: 1;
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    overflow-y: auto;
+}
+
+.help-section {
+    display: none;
+}
+
+.help-section.active {
+    display: block;
+}
+
+.help-section h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.help-section ul,
+.help-section ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.help-section ul {
+    list-style-type: disc;
+}
+
+.help-section ol {
+    list-style-type: decimal;
+}
+
+.help-section li {
+    margin-bottom: 0.5rem;
+}
+
+/* Footer Styles */
+footer {
+    background-color: #1a3a5f;
+    color: rgba(255,255,255,0.8);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-section h4 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section a {
+    color: rgba(255,255,255,0.8);
+    transition: color 0.2s;
+}
+
+.footer-section a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 1200px) {
+    .templates-container,
+    .discovery-container,
+    .deployment-container,
+    .ai-container,
+    .help-container {
         flex-direction: column;
+        height: auto;
     }
     
-    .form-actions button {
+    .templates-sidebar,
+    .discovery-controls,
+    .deployment-types,
+    .ai-controls,
+    .help-sidebar {
+        flex: 0 0 auto;
         width: 100%;
-        margin-bottom: 0.5rem;
+    }
+    
+    .template-details,
+    .discovery-results,
+    .deployment-details,
+    .ai-output,
+    .help-content {
+        height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 1rem;
+    }
+    
+    main {
+        padding: 1rem;
+    }
+    
+    .output-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .output-controls {
+        margin-top: 0.5rem;
+    }
+    
+    .template-details,
+    .discovery-results,
+    .deployment-details,
+    .ai-output,
+    .help-content {
+        height: 400px;
+    }
+    
+    nav ul {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    nav a {
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 576px) {
+    .provider-option,
+    .task-option {
+        flex: 0 0 100%;
     }
 }

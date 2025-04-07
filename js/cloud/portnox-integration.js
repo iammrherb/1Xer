@@ -1,355 +1,318 @@
 /**
- * Dot1Xer Supreme - Portnox Integration
- * Version: 2.0.0
- * 
- * This file contains functions for Portnox Cloud integration.
+ * Dot1Xer Supreme - Portnox Integration Module
+ * Functions for integrating with Portnox Cloud NAC solution
  */
 
-// Portnox connection state
-let portnoxConnection = {
-    connected: false,
-    tenant: null,
-    apiKey: null,
-    apiSecret: null
-};
+// Initialize Portnox integration when document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // This function would be implemented in a full version
+    // For this example, it's a placeholder
+});
 
 /**
- * Initialize Portnox integration
+ * Class to handle Portnox Cloud API integration
  */
-function initPortnoxIntegration() {
-    console.log('Initializing Portnox integration');
-    
-    // Create Portnox UI components
-    createPortnoxUI();
-    
-    // Check for stored connection
-    checkStoredPortnoxConnection();
-}
-
-/**
- * Create Portnox UI components
- */
-function createPortnoxUI() {
-    const portnoxTab = document.getElementById('portnox');
-    if (!portnoxTab) return;
-    
-    const portnoxContent = portnoxTab.querySelector('.section-content');
-    if (!portnoxContent) return;
-    
-    // Create connection status component
-    const connectionSection = document.createElement('div');
-    connectionSection.innerHTML = `
-        <div class="portnox-connection">
-            <div class="portnox-status">
-                <span class="portnox-status-indicator portnox-disconnected"></span>
-                <span id="portnox-status-text">Not connected to Portnox Clear</span>
-            </div>
-            <button id="portnox-connect-btn" class="btn btn-primary">Connect</button>
-        </div>
-        
-        <div id="portnox-connection-form" class="portnox-connection-form">
-            <div class="form-group">
-                <label for="portnox-tenant">Tenant ID</label>
-                <input type="text" id="portnox-tenant" class="form-control" placeholder="your-tenant-id">
-                <span class="form-hint">Your Portnox Clear tenant ID</span>
-            </div>
-            
-            <div class="form-group">
-                <label for="portnox-api-key">API Key</label>
-                <input type="text" id="portnox-api-key" class="form-control" placeholder="api-key">
-                <span class="form-hint">Your Portnox API key</span>
-            </div>
-            
-            <div class="form-group">
-                <label for="portnox-api-secret">API Secret</label>
-                <input type="password" id="portnox-api-secret" class="form-control" placeholder="api-secret">
-                <span class="form-hint">Your Portnox API secret</span>
-            </div>
-            
-            <div class="form-actions">
-                <button id="portnox-save-connection" class="btn btn-primary">Connect</button>
-                <button id="portnox-cancel-connection" class="btn btn-light">Cancel</button>
-            </div>
-        </div>
-    `;
-    
-    // Create dashboard component (initially hidden)
-    const dashboardSection = document.createElement('div');
-    dashboardSection.id = 'portnox-dashboard-container';
-    dashboardSection.style.display = 'none';
-    dashboardSection.innerHTML = `
-        <h3>Portnox Clear Dashboard</h3>
-        
-        <div class="portnox-dashboard">
-            <div class="portnox-card">
-                <div class="portnox-card-header">Device Status</div>
-                <div class="portnox-card-body">
-                    <div class="portnox-metric">
-                        <div class="portnox-metric-value" id="portnox-authenticated-count">0</div>
-                        <div class="portnox-metric-label">Authenticated Devices</div>
-                    </div>
-                    <div class="portnox-metric">
-                        <div class="portnox-metric-value" id="portnox-unauthenticated-count">0</div>
-                        <div class="portnox-metric-label">Unauthenticated Devices</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="portnox-card">
-                <div class="portnox-card-header">Network Access</div>
-                <div class="portnox-card-body">
-                    <div class="portnox-metric">
-                        <div class="portnox-metric-value" id="portnox-allowed-count">0</div>
-                        <div class="portnox-metric-label">Allowed Devices</div>
-                    </div>
-                    <div class="portnox-metric">
-                        <div class="portnox-metric-value" id="portnox-blocked-count">0</div>
-                        <div class="portnox-metric-label">Blocked Devices</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="portnox-card">
-                <div class="portnox-card-header">Device Types</div>
-                <div class="portnox-card-body">
-                    <div class="portnox-metric">
-                        <div class="portnox-metric-value" id="portnox-managed-count">0</div>
-                        <div class="portnox-metric-label">Managed Devices</div>
-                    </div>
-                    <div class="portnox-metric">
-                        <div class="portnox-metric-value" id="portnox-byod-count">0</div>
-                        <div class="portnox-metric-label">BYOD Devices</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="portnox-device-list">
-            <h3>Recent Devices</h3>
-            <table class="portnox-device-table">
-                <thead>
-                    <tr>
-                        <th>Status</th>
-                        <th>Device Name</th>
-                        <th>MAC Address</th>
-                        <th>IP Address</th>
-                        <th>User</th>
-                        <th>Authentication</th>
-                        <th>Last Seen</th>
-                    </tr>
-                </thead>
-                <tbody id="portnox-device-table-body">
-                    <!-- Device rows will be populated here -->
-                </tbody>
-            </table>
-        </div>
-    `;
-    
-    // Add to content
-    portnoxContent.innerHTML = '';
-    portnoxContent.appendChild(connectionSection);
-    portnoxContent.appendChild(dashboardSection);
-    
-    // Initialize event listeners
-    initPortnoxEventListeners();
-}
-
-/**
- * Initialize Portnox event listeners
- */
-function initPortnoxEventListeners() {
-    const connectBtn = document.getElementById('portnox-connect-btn');
-    const cancelBtn = document.getElementById('portnox-cancel-connection');
-    const saveBtn = document.getElementById('portnox-save-connection');
-    const connectionForm = document.getElementById('portnox-connection-form');
-    
-    if (connectBtn) {
-        connectBtn.addEventListener('click', function() {
-            connectionForm.style.display = 'block';
-        });
+class PortnoxIntegration {
+    constructor() {
+        this.apiBaseUrl = '';
+        this.apiKey = '';
+        this.tenant = '';
+        this.isConnected = false;
+        this.lastSyncTime = null;
     }
     
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            connectionForm.style.display = 'none';
-        });
-    }
-    
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function() {
-            connectToPortnox();
-        });
-    }
-}
-
-/**
- * Connect to Portnox Clear
- */
-function connectToPortnox() {
-    const tenantInput = document.getElementById('portnox-tenant');
-    const apiKeyInput = document.getElementById('portnox-api-key');
-    const apiSecretInput = document.getElementById('portnox-api-secret');
-    
-    if (!tenantInput || !apiKeyInput || !apiSecretInput) return;
-    
-    const tenant = tenantInput.value.trim();
-    const apiKey = apiKeyInput.value.trim();
-    const apiSecret = apiSecretInput.value.trim();
-    
-    if (!tenant || !apiKey || !apiSecret) {
-        alert('Please enter all required fields.');
-        return;
-    }
-    
-    // Simulate connection
-    document.getElementById('portnox-status-text').textContent = 'Connecting to Portnox Clear...';
-    
-    // In a real implementation, this would make an API call to verify credentials
-    setTimeout(() => {
-        // Simulate successful connection
-        portnoxConnection.connected = true;
-        portnoxConnection.tenant = tenant;
-        portnoxConnection.apiKey = apiKey;
-        portnoxConnection.apiSecret = apiSecret;
+    /**
+     * Configure the Portnox connection
+     * @param {string} apiBaseUrl - The Portnox API base URL
+     * @param {string} apiKey - The API key for authentication
+     * @param {string} tenant - The tenant ID
+     * @returns {Promise<boolean>} - True if connection is successful
+     */
+    async configure(apiBaseUrl, apiKey, tenant) {
+        this.apiBaseUrl = apiBaseUrl;
+        this.apiKey = apiKey;
+        this.tenant = tenant;
         
-        // Update UI
-        updatePortnoxConnectionStatus();
-        
-        // Load dashboard data
-        loadPortnoxDashboardData();
-        
-        // Hide connection form
-        document.getElementById('portnox-connection-form').style.display = 'none';
-    }, 1500);
-}
-
-/**
- * Update Portnox connection status in UI
- */
-function updatePortnoxConnectionStatus() {
-    const statusIndicator = document.querySelector('.portnox-status-indicator');
-    const statusText = document.getElementById('portnox-status-text');
-    const connectBtn = document.getElementById('portnox-connect-btn');
-    const dashboardContainer = document.getElementById('portnox-dashboard-container');
-    
-    if (!statusIndicator || !statusText || !connectBtn || !dashboardContainer) return;
-    
-    if (portnoxConnection.connected) {
-        statusIndicator.className = 'portnox-status-indicator portnox-connected';
-        statusText.textContent = `Connected to Portnox Clear (Tenant: ${portnoxConnection.tenant})`;
-        connectBtn.textContent = 'Disconnect';
-        dashboardContainer.style.display = 'block';
-    } else {
-        statusIndicator.className = 'portnox-status-indicator portnox-disconnected';
-        statusText.textContent = 'Not connected to Portnox Clear';
-        connectBtn.textContent = 'Connect';
-        dashboardContainer.style.display = 'none';
-    }
-}
-
-/**
- * Load Portnox dashboard data
- */
-function loadPortnoxDashboardData() {
-    // In a real implementation, this would make API calls to fetch data
-    // For this demo, we'll simulate data
-    
-    // Update metrics
-    document.getElementById('portnox-authenticated-count').textContent = '127';
-    document.getElementById('portnox-unauthenticated-count').textContent = '18';
-    document.getElementById('portnox-allowed-count').textContent = '142';
-    document.getElementById('portnox-blocked-count').textContent = '3';
-    document.getElementById('portnox-managed-count').textContent = '98';
-    document.getElementById('portnox-byod-count').textContent = '47';
-    
-    // Update device table
-    const tableBody = document.getElementById('portnox-device-table-body');
-    if (!tableBody) return;
-    
-    // Clear table
-    tableBody.innerHTML = '';
-    
-    // Generate simulated device data
-    const devices = [
-        {
-            status: 'Authenticated',
-            name: 'Desktop-WS2025',
-            mac: '00:1A:2B:3C:4D:5E',
-            ip: '192.168.1.101',
-            user: 'jsmith',
-            authMethod: 'EAP-TLS',
-            lastSeen: '2 minutes ago'
-        },
-        {
-            status: 'Authenticated',
-            name: 'Laptop-MKT15',
-            mac: '00:1A:2B:3C:4D:6F',
-            ip: '192.168.1.102',
-            user: 'agarcia',
-            authMethod: 'PEAP-MSCHAPv2',
-            lastSeen: '5 minutes ago'
-        },
-        {
-            status: 'Unauthenticated',
-            name: 'Unknown Device',
-            mac: '00:1A:2B:3C:4D:7G',
-            ip: '192.168.1.103',
-            user: 'N/A',
-            authMethod: 'Failed',
-            lastSeen: '12 minutes ago'
-        },
-        {
-            status: 'Authenticated',
-            name: 'iPhone-CEO',
-            mac: '00:1A:2B:3C:4D:8H',
-            ip: '192.168.1.104',
-            user: 'jcarter',
-            authMethod: 'EAP-TLS',
-            lastSeen: '15 minutes ago'
-        },
-        {
-            status: 'Authenticated',
-            name: 'Android-Dev2',
-            mac: '00:1A:2B:3C:4D:9I',
-            ip: '192.168.1.105',
-            user: 'rlopez',
-            authMethod: 'PEAP-MSCHAPv2',
-            lastSeen: '23 minutes ago'
+        // Test the connection
+        try {
+            const result = await this.testConnection();
+            this.isConnected = result;
+            return result;
+        } catch (error) {
+            console.error('Portnox connection error:', error);
+            this.isConnected = false;
+            return false;
         }
-    ];
+    }
     
-    // Add rows to table
-    devices.forEach(device => {
-        const row = document.createElement('tr');
-        
-        // Status cell
-        const statusCell = document.createElement('td');
-        const statusElement = document.createElement('div');
-        statusElement.className = 'portnox-device-status';
-        
-        const statusIndicator = document.createElement('span');
-        statusIndicator.className = `portnox-device-status-indicator portnox-device-${device.status.toLowerCase()}`;
-        statusElement.appendChild(statusIndicator);
-        
-        statusElement.appendChild(document.createTextNode(device.status));
-        statusCell.appendChild(statusElement);
-        row.appendChild(statusCell);
-        
-        // Add other cells
-        ['name', 'mac', 'ip', 'user', 'authMethod', 'lastSeen'].forEach(field => {
-            const cell = document.createElement('td');
-            cell.textContent = device[field];
-            row.appendChild(cell);
+    /**
+     * Test the connection to Portnox Cloud
+     * @returns {Promise<boolean>} - True if connection is successful
+     */
+    async testConnection() {
+        // This would make an API call to verify credentials
+        // For this example, we'll simulate a successful connection
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(true);
+            }, 1000);
         });
-        
-        tableBody.appendChild(row);
-    });
+    }
+    
+    /**
+     * Get devices from Portnox Cloud
+     * @returns {Promise<Array>} - Array of device objects
+     */
+    async getDevices() {
+        // This would make an API call to retrieve devices
+        // For this example, we'll return simulated data
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve([
+                    {
+                        id: '1',
+                        mac: '00:1A:2B:3C:4D:5E',
+                        ip: '192.168.1.100',
+                        hostname: 'LAPTOP-USER1',
+                        vendor: 'Dell Inc.',
+                        osType: 'Windows 10',
+                        lastSeen: '2023-10-15T10:30:45Z',
+                        compliant: true,
+                        risk: 'low'
+                    },
+                    {
+                        id: '2',
+                        mac: '00:2B:3C:4D:5E:6F',
+                        ip: '192.168.1.101',
+                        hostname: 'LAPTOP-USER2',
+                        vendor: 'Apple Inc.',
+                        osType: 'macOS 12',
+                        lastSeen: '2023-10-15T09:45:22Z',
+                        compliant: true,
+                        risk: 'low'
+                    },
+                    {
+                        id: '3',
+                        mac: '00:3C:4D:5E:6F:7A',
+                        ip: '192.168.1.102',
+                        hostname: 'DESKTOP-ADMIN1',
+                        vendor: 'Lenovo',
+                        osType: 'Windows 11',
+                        lastSeen: '2023-10-15T11:15:33Z',
+                        compliant: false,
+                        risk: 'high'
+                    }
+                ]);
+            }, 1500);
+        });
+    }
+    
+    /**
+     * Get users from Portnox Cloud
+     * @returns {Promise<Array>} - Array of user objects
+     */
+    async getUsers() {
+        // This would make an API call to retrieve users
+        // For this example, we'll return simulated data
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve([
+                    {
+                        id: '101',
+                        username: 'john.doe',
+                        fullName: 'John Doe',
+                        email: 'john.doe@example.com',
+                        department: 'IT',
+                        active: true,
+                        lastLogin: '2023-10-15T08:30:12Z'
+                    },
+                    {
+                        id: '102',
+                        username: 'jane.smith',
+                        fullName: 'Jane Smith',
+                        email: 'jane.smith@example.com',
+                        department: 'Finance',
+                        active: true,
+                        lastLogin: '2023-10-14T16:45:33Z'
+                    },
+                    {
+                        id: '103',
+                        username: 'bob.johnson',
+                        fullName: 'Bob Johnson',
+                        email: 'bob.johnson@example.com',
+                        department: 'HR',
+                        active: false,
+                        lastLogin: '2023-10-10T09:22:47Z'
+                    }
+                ]);
+            }, 1500);
+        });
+    }
+    
+    /**
+     * Get policies from Portnox Cloud
+     * @returns {Promise<Array>} - Array of policy objects
+     */
+    async getPolicies() {
+        // This would make an API call to retrieve policies
+        // For this example, we'll return simulated data
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve([
+                    {
+                        id: '1001',
+                        name: 'Corporate Devices',
+                        description: 'Policy for corporate-owned devices',
+                        conditions: [
+                            { type: 'domain', value: 'example.com' },
+                            { type: 'certificate', value: 'Corporate CA' }
+                        ],
+                        actions: [
+                            { type: 'assign_vlan', value: '10' },
+                            { type: 'allow_access', value: true }
+                        ]
+                    },
+                    {
+                        id: '1002',
+                        name: 'BYOD Devices',
+                        description: 'Policy for employee-owned devices',
+                        conditions: [
+                            { type: 'user_group', value: 'Employees' },
+                            { type: 'compliance', value: true }
+                        ],
+                        actions: [
+                            { type: 'assign_vlan', value: '20' },
+                            { type: 'allow_access', value: true }
+                        ]
+                    },
+                    {
+                        id: '1003',
+                        name: 'Guest Devices',
+                        description: 'Policy for guest devices',
+                        conditions: [
+                            { type: 'user_group', value: 'Guests' }
+                        ],
+                        actions: [
+                            { type: 'assign_vlan', value: '30' },
+                            { type: 'allow_access', value: true },
+                            { type: 'restrict_access', value: 'Internet Only' }
+                        ]
+                    }
+                ]);
+            }, 1500);
+        });
+    }
+    
+    /**
+     * Sync configurations from Dot1Xer to Portnox
+     * @param {object} config - The configuration to sync
+     * @returns {Promise<boolean>} - True if sync is successful
+     */
+    async syncConfiguration(config) {
+        // This would make API calls to sync configuration
+        // For this example, we'll simulate a successful sync
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                this.lastSyncTime = new Date();
+                resolve(true);
+            }, 2000);
+        });
+    }
+    
+    /**
+     * Get recent events from Portnox Cloud
+     * @param {number} limit - Maximum number of events to retrieve
+     * @returns {Promise<Array>} - Array of event objects
+     */
+    async getEvents(limit = 10) {
+        // This would make an API call to retrieve events
+        // For this example, we'll return simulated data
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve([
+                    {
+                        id: '10001',
+                        timestamp: '2023-10-15T11:30:22Z',
+                        type: 'authentication_success',
+                        device: { mac: '00:1A:2B:3C:4D:5E', hostname: 'LAPTOP-USER1' },
+                        user: 'john.doe',
+                        details: 'Successful 802.1X authentication'
+                    },
+                    {
+                        id: '10002',
+                        timestamp: '2023-10-15T11:25:17Z',
+                        type: 'authentication_failure',
+                        device: { mac: '00:3C:4D:5E:6F:7A', hostname: 'DESKTOP-ADMIN1' },
+                        user: 'bob.johnson',
+                        details: 'Failed 802.1X authentication: Invalid credentials'
+                    },
+                    {
+                        id: '10003',
+                        timestamp: '2023-10-15T10:15:44Z',
+                        type: 'compliance_failed',
+                        device: { mac: '00:3C:4D:5E:6F:7A', hostname: 'DESKTOP-ADMIN1' },
+                        user: 'bob.johnson',
+                        details: 'Device failed compliance check: Antivirus not running'
+                    },
+                    {
+                        id: '10004',
+                        timestamp: '2023-10-15T09:45:33Z',
+                        type: 'authentication_success',
+                        device: { mac: '00:2B:3C:4D:5E:6F', hostname: 'LAPTOP-USER2' },
+                        user: 'jane.smith',
+                        details: 'Successful 802.1X authentication'
+                    },
+                    {
+                        id: '10005',
+                        timestamp: '2023-10-15T09:30:12Z',
+                        type: 'device_registered',
+                        device: { mac: '00:4D:5E:6F:7A:8B', hostname: 'IPHONE-JANE' },
+                        user: 'jane.smith',
+                        details: 'New device registered in NAC'
+                    }
+                ].slice(0, limit));
+            }, 1500);
+        });
+    }
+    
+    /**
+     * Get statistics from Portnox Cloud
+     * @returns {Promise<object>} - Object containing statistics
+     */
+    async getStatistics() {
+        // This would make an API call to retrieve statistics
+        // For this example, we'll return simulated data
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    deviceCount: {
+                        total: 256,
+                        compliant: 230,
+                        nonCompliant: 26
+                    },
+                    authentication: {
+                        success: 1245,
+                        failure: 37,
+                        rate: 97.1
+                    },
+                    deviceTypes: {
+                        windows: 128,
+                        macos: 45,
+                        linux: 12,
+                        ios: 38,
+                        android: 24,
+                        other: 9
+                    },
+                    userStats: {
+                        active: 243,
+                        inactive: 15,
+                        locked: 3
+                    }
+                });
+            }, 1500);
+        });
+    }
 }
 
-/**
- * Check for stored Portnox connection
- */
-function checkStoredPortnoxConnection() {
-    // Implementation details
-    console.log('Checking stored Portnox connection');
-}
+// Export the class
+window.PortnoxIntegration = new PortnoxIntegration();

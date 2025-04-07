@@ -1,337 +1,373 @@
 /**
- * Dot1Xer Supreme - AI Integration
- * Version: 2.0.0
- * 
- * This file contains functions for AI provider integration.
+ * Dot1Xer Supreme - AI Integration Module
+ * Functions for AI-assisted configuration generation and review
  */
 
-// AI provider connection statuses
-const aiProviders = {
-    openai: { connected: false, token: null, model: null },
-    claude: { connected: false, token: null, model: null },
-    bedrock: { connected: false, credentials: null, model: null },
-    azure: { connected: false, credentials: null, model: null }
-};
+// Initialize AI integration when document is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAIIntegration();
+});
 
 /**
- * Initialize AI integration components
+ * Initialize AI integration features
  */
-function initAIIntegration() {
-    console.log('Initializing AI integration');
-    
-    // Create AI provider cards if they don't exist
-    createAIProviderCards();
-    
-    // Check for stored connections
-    checkStoredConnections();
-}
-
-/**
- * Create AI provider cards
- */
-function createAIProviderCards() {
-    const aiTab = document.getElementById('ai');
-    if (!aiTab) return;
-    
-    const aiContent = aiTab.querySelector('.section-content');
-    if (!aiContent) return;
-    
-    // Check if cards already exist
-    if (aiContent.querySelector('.ai-provider-grid')) return;
-    
-    // Create providers grid
-    const providersGrid = document.createElement('div');
-    providersGrid.className = 'ai-provider-grid';
-    
-    // Define providers
-    const providers = [
-        {
-            id: 'openai',
-            name: 'OpenAI',
-            logo: 'openai-logo.png',
-            description: 'Connect to OpenAI API (GPT models)'
-        },
-        {
-            id: 'claude',
-            name: 'Anthropic Claude',
-            logo: 'anthropic-logo.png',
-            description: 'Connect to Anthropic API (Claude models)'
-        },
-        {
-            id: 'bedrock',
-            name: 'AWS Bedrock',
-            logo: 'aws-logo.png',
-            description: 'Connect to AWS Bedrock (multiple models)'
-        },
-        {
-            id: 'azure',
-            name: 'Azure OpenAI',
-            logo: 'azure-logo.png',
-            description: 'Connect to Azure OpenAI Service'
-        }
-    ];
-    
-    // Create provider cards
-    providers.forEach(provider => {
-        const card = createAIProviderCard(provider);
-        providersGrid.appendChild(card);
+function initializeAIIntegration() {
+    // Initialize AI review button in configuration tab
+    document.getElementById('ai-review').addEventListener('click', function() {
+        reviewConfigurationWithAI();
     });
     
-    // Add to content
-    aiContent.innerHTML = '';
-    aiContent.appendChild(document.createElement('h3')).textContent = 'AI Services';
-    aiContent.appendChild(document.createTextNode('Connect to AI services to enable configuration assistance and advanced features.'));
-    aiContent.appendChild(providersGrid);
-    
-    // Add chat interface container
-    const chatContainer = document.createElement('div');
-    chatContainer.id = 'ai-chat-container';
-    chatContainer.style.display = 'none';
-    chatContainer.innerHTML = `
-        <h3>AI Configuration Assistant</h3>
-        <p>Ask questions about 802.1X configuration or get help with specific scenarios.</p>
-        <div class="ai-chat-container">
-            <div class="ai-chat-header">
-                <span id="ai-chat-model">AI Assistant</span>
-            </div>
-            <div class="ai-chat-messages" id="ai-chat-messages">
-                <div class="ai-message ai-message-assistant">
-                    Hello! I'm your 802.1X configuration assistant. How can I help you today?
-                </div>
-            </div>
-            <div class="ai-chat-input">
-                <input type="text" id="ai-chat-input" placeholder="Type your question here...">
-                <button id="ai-chat-send">Send</button>
-            </div>
-        </div>
-    `;
-    aiContent.appendChild(chatContainer);
-}
-
-/**
- * Create an AI provider card
- * @param {Object} provider - Provider data
- * @returns {HTMLElement} - Provider card element
- */
-function createAIProviderCard(provider) {
-    const card = document.createElement('div');
-    card.className = 'ai-provider-card';
-    card.id = `ai-provider-${provider.id}`;
-    
-    // Create card header
-    const header = document.createElement('div');
-    header.className = 'ai-provider-header';
-    header.textContent = provider.name;
-    card.appendChild(header);
-    
-    // Create card body
-    const body = document.createElement('div');
-    body.className = 'ai-provider-body';
-    
-    // Add provider logo
-    const logo = document.createElement('img');
-    logo.className = 'ai-provider-logo';
-    logo.src = `assets/logos/${provider.logo}`;
-    logo.alt = provider.name;
-    body.appendChild(logo);
-    
-    // Add provider description
-    const description = document.createElement('p');
-    description.className = 'ai-provider-description';
-    description.textContent = provider.description;
-    body.appendChild(description);
-    
-    // Add provider status
-    const status = document.createElement('div');
-    status.className = 'ai-provider-status ai-provider-disconnected';
-    status.textContent = 'Not Connected';
-    status.id = `ai-provider-status-${provider.id}`;
-    body.appendChild(status);
-    
-    // Add connect button
-    const connectBtn = document.createElement('button');
-    connectBtn.className = 'btn btn-primary';
-    connectBtn.textContent = 'Connect';
-    connectBtn.addEventListener('click', function() {
-        connectToAIProvider(provider.id);
+    // Initialize API key handling
+    document.getElementById('save-api-key').addEventListener('click', function() {
+        saveAPIKey();
     });
-    body.appendChild(connectBtn);
     
-    card.appendChild(body);
-    return card;
+    // Initialize copy AI output button
+    document.getElementById('copy-ai-output').addEventListener('click', function() {
+        copyAIOutputToClipboard();
+    });
+    
+    // Initialize save AI output button
+    document.getElementById('save-ai-output').addEventListener('click', function() {
+        saveAIOutput();
+    });
+    
+    // Initialize load to editor button
+    document.getElementById('load-to-editor').addEventListener('click', function() {
+        loadAIOutputToEditor();
+    });
 }
 
 /**
- * Connect to an AI provider
- * @param {String} providerId - Provider ID
+ * Review the current configuration using AI
  */
-function connectToAIProvider(providerId) {
-    // In a real implementation, this would show a form to enter API keys and configurations
-    // For this demo, we'll simulate a successful connection
+function reviewConfigurationWithAI() {
+    // Get the current configuration
+    const config = document.getElementById('config-result').textContent;
     
-    // Create simulated credentials based on provider
-    let credentials = null;
-    let modelName = '';
-    
-    switch (providerId) {
-        case 'openai':
-            credentials = { api_key: 'sk-simulated-key' };
-            modelName = 'GPT-4o';
-            break;
-        case 'claude':
-            credentials = { api_key: 'sk-ant-simulated-key' };
-            modelName = 'Claude 3 Opus';
-            break;
-        case 'bedrock':
-            credentials = { region: 'us-east-1', access_key: 'AKIA...', secret_key: 'simulated-secret' };
-            modelName = 'Anthropic Claude on AWS Bedrock';
-            break;
-        case 'azure':
-            credentials = { endpoint: 'https://example.openai.azure.com', api_key: 'simulated-azure-key', deployment: 'gpt-4' };
-            modelName = 'Azure OpenAI GPT-4';
-            break;
+    // Check if there's a configuration to review
+    if (!config || config === '# Configuration will appear here after generation.') {
+        alert('Please generate a configuration first.');
+        return;
     }
     
-    // Simulate connection
-    setTimeout(() => {
-        aiProviders[providerId].connected = true;
-        aiProviders[providerId].token = credentials;
-        aiProviders[providerId].model = modelName;
-        
-        // Update UI
-        updateAIProviderStatus(providerId);
-        
-        // Show chat interface
-        document.getElementById('ai-chat-container').style.display = 'block';
-        document.getElementById('ai-chat-model').textContent = modelName;
-        
-        // Initialize chat functionality
-        initAIChatFunctionality(providerId);
-    }, 1000);
+    // Switch to the AI Assist tab
+    document.querySelector('nav a[data-tab="ai-assist"]').click();
     
-    // Show connecting status
-    const statusElement = document.getElementById(`ai-provider-status-${providerId}`);
-    if (statusElement) {
-        statusElement.textContent = 'Connecting...';
-        statusElement.className = 'ai-provider-status';
+    // Set the AI task to review
+    const reviewTaskOption = document.querySelector('.task-option[data-task="review"]');
+    if (reviewTaskOption) {
+        // Remove active class from all task options
+        document.querySelectorAll('.task-option').forEach(option => {
+            option.classList.remove('active');
+        });
+        
+        // Add active class to review task option
+        reviewTaskOption.classList.add('active');
+        
+        // Update button text
+        document.getElementById('execute-ai-task').textContent = 'Review';
     }
+    
+    // Fill the prompt with the configuration
+    document.getElementById('ai-prompt').value = config;
+    
+    // Focus on the execute button
+    document.getElementById('execute-ai-task').focus();
 }
 
 /**
- * Update AI provider status in UI
- * @param {String} providerId - Provider ID
+ * Save the API key for the selected AI provider
  */
-function updateAIProviderStatus(providerId) {
-    const statusElement = document.getElementById(`ai-provider-status-${providerId}`);
-    if (!statusElement) return;
+function saveAPIKey() {
+    const apiKey = document.getElementById('api-key').value.trim();
+    const provider = document.querySelector('.provider-option.active').getAttribute('data-provider');
     
-    const provider = aiProviders[providerId];
+    if (!apiKey) {
+        alert('Please enter an API key.');
+        return;
+    }
     
-    if (provider.connected) {
-        statusElement.textContent = `Connected (${provider.model})`;
-        statusElement.className = 'ai-provider-status ai-provider-connected';
+    // In a real application, this would securely store the API key
+    // For this example, we'll just simulate storage and show a message
+    
+    alert(`API key for ${provider} saved successfully!`);
+    
+    // Optionally, store in session storage for demo purposes
+    // This is not secure and should not be used in production
+    sessionStorage.setItem(`${provider}-api-key`, apiKey);
+    
+    // Clear the input field for security
+    document.getElementById('api-key').value = '';
+}
+
+/**
+ * Copy AI output to clipboard
+ */
+function copyAIOutputToClipboard() {
+    const aiResult = document.getElementById('ai-result');
+    
+    // Check if there's content to copy
+    if (!aiResult.textContent || aiResult.textContent.trim() === 'AI output will appear here after you submit your request.') {
+        alert('No AI output to copy.');
+        return;
+    }
+    
+    // Create a temporary textarea to copy from
+    const textarea = document.createElement('textarea');
+    
+    // If the AI result contains HTML, we need to preserve it
+    // This is a simple approach - for complex HTML a more robust solution would be needed
+    textarea.value = aiResult.innerHTML.includes('<pre>') 
+        ? aiResult.querySelector('pre').textContent 
+        : aiResult.textContent;
+    
+    document.body.appendChild(textarea);
+    
+    // Select and copy
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Clean up
+    document.body.removeChild(textarea);
+    
+    // Show success message
+    alert('AI output copied to clipboard!');
+}
+
+/**
+ * Save AI output to a file
+ */
+function saveAIOutput() {
+    const aiResult = document.getElementById('ai-result');
+    
+    // Check if there's content to save
+    if (!aiResult.textContent || aiResult.textContent.trim() === 'AI output will appear here after you submit your request.') {
+        alert('No AI output to save.');
+        return;
+    }
+    
+    // Determine if the output is configuration or analysis
+    const isConfig = aiResult.innerHTML.includes('<pre>');
+    
+    // Get the content to save
+    let content = isConfig 
+        ? aiResult.querySelector('pre').textContent 
+        : aiResult.textContent;
+    
+    // Create a blob with the content
+    const blob = new Blob([content], { type: 'text/plain' });
+    
+    // Create a download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    
+    // Set the filename based on content type
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = isConfig 
+        ? `802.1x-config-${timestamp}.txt` 
+        : `ai-analysis-${timestamp}.txt`;
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.display = 'none';
+    
+    // Append to document, click and remove
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+/**
+ * Load AI output to the configuration editor
+ */
+function loadAIOutputToEditor() {
+    const aiResult = document.getElementById('ai-result');
+    
+    // Check if there's content to load
+    if (!aiResult.textContent || aiResult.textContent.trim() === 'AI output will appear here after you submit your request.') {
+        alert('No AI output to load.');
+        return;
+    }
+    
+    // Get the configuration from AI output
+    let config;
+    
+    if (aiResult.innerHTML.includes('<pre>')) {
+        // If there's a pre element, use its content
+        config = aiResult.querySelector('pre').textContent;
+    } else if (aiResult.textContent.includes('#') || aiResult.textContent.includes('!')) {
+        // If the text contains common config markers, use the full content
+        config = aiResult.textContent;
     } else {
-        statusElement.textContent = 'Not Connected';
-        statusElement.className = 'ai-provider-status ai-provider-disconnected';
+        // Otherwise, alert that no configuration was found
+        alert('No valid configuration found in AI output.');
+        return;
     }
+    
+    // Switch to the Configuration tab
+    document.querySelector('nav a[data-tab="config"]').click();
+    
+    // Load the configuration to the editor
+    document.getElementById('config-result').textContent = config;
+    
+    // Alert success
+    alert('Configuration loaded to editor!');
 }
 
 /**
- * Initialize AI chat functionality
- * @param {String} providerId - Provider ID
+ * LLM Provider Interfaces
+ * These functions would handle communication with different AI providers
  */
-function initAIChatFunctionality(providerId) {
-    const sendButton = document.getElementById('ai-chat-send');
-    const inputField = document.getElementById('ai-chat-input');
-    const messagesContainer = document.getElementById('ai-chat-messages');
+
+/**
+ * Call OpenAI API for AI processing
+ * @param {string} prompt - The prompt to send to the API
+ * @param {string} task - The AI task to perform
+ * @param {string} detailLevel - The desired detail level
+ * @param {string} securityFocus - The security focus preference
+ * @returns {Promise<string>} - The API response
+ */
+async function callOpenAIAPI(prompt, task, detailLevel, securityFocus) {
+    // This would be the actual API call to OpenAI
+    // For this example, we'll return a promise that resolves with simulated data
     
-    // Add event listener to send button
-    sendButton.addEventListener('click', function() {
-        sendMessageToAI();
-    });
-    
-    // Add event listener to input field for Enter key
-    inputField.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendMessageToAI();
-        }
-    });
-    
-    /**
-     * Send message to AI
-     */
-    function sendMessageToAI() {
-        const message = inputField.value.trim();
-        if (!message) return;
-        
-        // Clear input field
-        inputField.value = '';
-        
-        // Add user message to chat
-        addMessageToChat('user', message);
-        
-        // Simulate AI response
-        simulateAIResponse(message);
-    }
-    
-    /**
-     * Add message to chat
-     * @param {String} role - 'user' or 'assistant'
-     * @param {String} content - Message content
-     */
-    function addMessageToChat(role, content) {
-        const messageElement = document.createElement('div');
-        messageElement.className = `ai-message ai-message-${role}`;
-        messageElement.textContent = content;
-        messagesContainer.appendChild(messageElement);
-        
-        // Scroll to bottom
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-    
-    /**
-     * Simulate AI response
-     * @param {String} userMessage - User message
-     */
-    function simulateAIResponse(userMessage) {
-        // Add thinking indicator
-        const thinkingElement = document.createElement('div');
-        thinkingElement.className = 'ai-message ai-message-assistant';
-        thinkingElement.textContent = '...';
-        messagesContainer.appendChild(thinkingElement);
-        
-        // Simulate AI thinking time
+    return new Promise((resolve) => {
         setTimeout(() => {
-            // Remove thinking indicator
-            messagesContainer.removeChild(thinkingElement);
-            
-            // Generate response based on user message
-            let response = '';
-            
-            if (userMessage.toLowerCase().includes('802.1x')) {
-                response = '802.1X is a IEEE standard for port-based Network Access Control (PNAC). It provides an authentication mechanism to devices wishing to attach to a LAN or WLAN.';
-            } else if (userMessage.toLowerCase().includes('radius')) {
-                response = 'RADIUS (Remote Authentication Dial-In User Service) is a networking protocol that provides centralized Authentication, Authorization, and Accounting (AAA) management for users who connect and use a network service.';
-            } else if (userMessage.toLowerCase().includes('eap')) {
-                response = 'EAP (Extensible Authentication Protocol) is an authentication framework frequently used in wireless networks and point-to-point connections. Common methods include EAP-TLS, PEAP, and EAP-TTLS.';
-            } else if (userMessage.toLowerCase().includes('cisco') && userMessage.toLowerCase().includes('config')) {
-                response = 'For Cisco switches, a basic 802.1X configuration includes setting up RADIUS servers, AAA, and applying dot1x to interfaces. Would you like me to provide a configuration example?';
-            } else if (userMessage.toLowerCase().includes('aruba') && userMessage.toLowerCase().includes('config')) {
-                response = 'Aruba switches use a different syntax for 802.1X configuration compared to Cisco. The key components include RADIUS server configuration, AAA settings, and port-access authenticator settings.';
-            } else {
-                response = "I'm your 802.1X configuration assistant. I can help with questions about 802.1X, RADIUS, EAP methods, and vendor-specific configurations. How can I assist you with your deployment?";
+            // Simulate different responses based on task
+            switch (task) {
+                case 'generate':
+                    resolve(generateAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'review':
+                    resolve(reviewAIResponse(prompt, detailLevel, securityFocus));
+                    break;
+                case 'optimize':
+                    resolve(optimizeAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'explain':
+                    resolve(explainAIResponse(prompt, detailLevel));
+                    break;
+                case 'troubleshoot':
+                    resolve(troubleshootAIResponse(prompt, detailLevel));
+                    break;
+                default:
+                    resolve('<p>Unknown AI task selected.</p>');
             }
-            
-            // Add response to chat
-            addMessageToChat('assistant', response);
-        }, 1500);
-    }
+        }, 2000);
+    });
 }
 
 /**
- * Check for stored AI provider connections
+ * Call Anthropic API for AI processing
+ * @param {string} prompt - The prompt to send to the API
+ * @param {string} task - The AI task to perform
+ * @param {string} detailLevel - The desired detail level
+ * @param {string} securityFocus - The security focus preference
+ * @returns {Promise<string>} - The API response
  */
-function checkStoredConnections() {
-    // Implementation details
-    console.log('Checking stored AI connections');
+async function callAnthropicAPI(prompt, task, detailLevel, securityFocus) {
+    // This would be the actual API call to Anthropic
+    // For this example, we'll return a promise that resolves with simulated data
+    
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Simulate different responses based on task
+            switch (task) {
+                case 'generate':
+                    resolve(generateAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'review':
+                    resolve(reviewAIResponse(prompt, detailLevel, securityFocus));
+                    break;
+                case 'optimize':
+                    resolve(optimizeAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'explain':
+                    resolve(explainAIResponse(prompt, detailLevel));
+                    break;
+                case 'troubleshoot':
+                    resolve(troubleshootAIResponse(prompt, detailLevel));
+                    break;
+                default:
+                    resolve('<p>Unknown AI task selected.</p>');
+            }
+        }, 2000);
+    });
+}
+
+/**
+ * Call Hugging Face API for AI processing
+ * @param {string} prompt - The prompt to send to the API
+ * @param {string} task - The AI task to perform
+ * @param {string} detailLevel - The desired detail level
+ * @param {string} securityFocus - The security focus preference
+ * @returns {Promise<string>} - The API response
+ */
+async function callHuggingFaceAPI(prompt, task, detailLevel, securityFocus) {
+    // This would be the actual API call to Hugging Face
+    // For this example, we'll return a promise that resolves with simulated data
+    
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Simulate different responses based on task
+            switch (task) {
+                case 'generate':
+                    resolve(generateAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'review':
+                    resolve(reviewAIResponse(prompt, detailLevel, securityFocus));
+                    break;
+                case 'optimize':
+                    resolve(optimizeAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'explain':
+                    resolve(explainAIResponse(prompt, detailLevel));
+                    break;
+                case 'troubleshoot':
+                    resolve(troubleshootAIResponse(prompt, detailLevel));
+                    break;
+                default:
+                    resolve('<p>Unknown AI task selected.</p>');
+            }
+        }, 2000);
+    });
+}
+
+/**
+ * Use the built-in AI for processing
+ * @param {string} prompt - The prompt to send to the API
+ * @param {string} task - The AI task to perform
+ * @param {string} detailLevel - The desired detail level
+ * @param {string} securityFocus - The security focus preference
+ * @returns {Promise<string>} - The API response
+ */
+async function useBuiltInAI(prompt, task, detailLevel, securityFocus) {
+    // This would use a simplified local model or pre-defined responses
+    // For this example, we'll return a promise that resolves with simulated data
+    
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            // Simulate different responses based on task
+            switch (task) {
+                case 'generate':
+                    resolve(generateAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'review':
+                    resolve(reviewAIResponse(prompt, detailLevel, securityFocus));
+                    break;
+                case 'optimize':
+                    resolve(optimizeAIResponse(prompt, detailLevel, securityFocus, true));
+                    break;
+                case 'explain':
+                    resolve(explainAIResponse(prompt, detailLevel));
+                    break;
+                case 'troubleshoot':
+                    resolve(troubleshootAIResponse(prompt, detailLevel));
+                    break;
+                default:
+                    resolve('<p>Unknown AI task selected.</p>');
+            }
+        }, 1000); // Built-in AI is faster since it's local
+    });
 }
