@@ -6,6 +6,7 @@
     <title>Dot1Xer Supreme - Advanced 802.1X Configuration</title>
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/help_tips.css">
+    <link rel="stylesheet" href="css/dark-theme.css" id="dark-theme" disabled>
 </head>
 <body>
     <!-- Banner Section -->
@@ -18,7 +19,7 @@
         </video>
     </div>
 
-    <!-- Header Section (now thinner) -->
+    <!-- Header Section -->
     <header>
         <div class="logo">
             <h1>Dot1Xer Supreme</h1>
@@ -38,6 +39,7 @@
 
     <!-- Main Content -->
     <main>
+        <!-- Config Tab -->
         <div id="config" class="tab-content active">
             <h2>802.1X Configuration Generator</h2>
             
@@ -237,7 +239,347 @@
             </div>
         </div>
         
-        <!-- Other tab content would go here -->
+        <!-- Templates Tab -->
+        <div id="templates" class="tab-content">
+            <h2>Configuration Templates</h2>
+            
+            <div class="templates-container">
+                <div class="templates-sidebar">
+                    <div class="search-box">
+                        <input type="text" id="template-search" placeholder="Search templates...">
+                    </div>
+                    
+                    <div class="template-list" id="template-list">
+                        <!-- Template list will be populated by JavaScript -->
+                    </div>
+                    
+                    <button id="add-template" class="secondary-button">Add New Template</button>
+                </div>
+                
+                <div class="template-details">
+                    <h3 id="template-title">Select a Template</h3>
+                    <div id="template-description">
+                        <p>Select a template from the sidebar to view its details and configuration.</p>
+                    </div>
+                    
+                    <div id="template-configuration" class="hidden">
+                        <div class="output-header">
+                            <h3>Template Configuration</h3>
+                            <div class="output-controls">
+                                <button id="edit-template" class="secondary-button">Edit</button>
+                                <button id="copy-template" class="secondary-button">Copy</button>
+                                <button id="download-template" class="secondary-button">Download</button>
+                            </div>
+                        </div>
+                        
+                        <pre><code id="template-content">Template content will appear here</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Discovery Tab -->
+        <div id="discovery" class="tab-content">
+            <h2>Network Discovery</h2>
+            
+            <div class="discovery-container">
+                <div class="discovery-controls">
+                    <h3>Discovery Options</h3>
+                    
+                    <div class="input-group">
+                        <label for="discovery-range">IP Range</label>
+                        <input type="text" id="discovery-range" placeholder="e.g., 192.168.1.0/24">
+                        <div class="help-tip" data-tip="discovery-range">
+                            <div class="tooltip">Specify the IP range to scan in CIDR notation (e.g., 192.168.1.0/24) or as a range (e.g., 192.168.1.1-192.168.1.254).</div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="discovery-method">Discovery Method</label>
+                        <select id="discovery-method">
+                            <option value="snmp">SNMP (v2c)</option>
+                            <option value="snmpv3">SNMP (v3)</option>
+                            <option value="ssh">SSH</option>
+                            <option value="telnet">Telnet</option>
+                            <option value="ping">Ping Sweep</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group" id="snmp-community-group">
+                        <label for="snmp-community">SNMP Community</label>
+                        <input type="text" id="snmp-community" placeholder="e.g., public">
+                    </div>
+                    
+                    <div class="input-group hidden" id="snmpv3-group">
+                        <label for="snmpv3-user">SNMP v3 Username</label>
+                        <input type="text" id="snmpv3-user" placeholder="Enter username">
+                        
+                        <label for="snmpv3-auth">Authentication Protocol</label>
+                        <select id="snmpv3-auth">
+                            <option value="sha">SHA</option>
+                            <option value="md5">MD5</option>
+                        </select>
+                        
+                        <label for="snmpv3-auth-pass">Authentication Password</label>
+                        <input type="password" id="snmpv3-auth-pass" placeholder="Enter auth password">
+                        
+                        <label for="snmpv3-priv">Privacy Protocol</label>
+                        <select id="snmpv3-priv">
+                            <option value="aes">AES</option>
+                            <option value="des">DES</option>
+                        </select>
+                        
+                        <label for="snmpv3-priv-pass">Privacy Password</label>
+                        <input type="password" id="snmpv3-priv-pass" placeholder="Enter privacy password">
+                    </div>
+                    
+                    <div class="input-group hidden" id="cred-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" placeholder="Enter username">
+                        
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Enter password">
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="save-credentials">
+                        <label for="save-credentials">Save credentials for deployment</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="discovery-timeout">Timeout (seconds)</label>
+                        <input type="number" id="discovery-timeout" min="1" max="60" value="5">
+                    </div>
+                    
+                    <button id="start-discovery" class="primary-button">Start Discovery</button>
+                </div>
+                
+                <div class="discovery-results">
+                    <div class="results-header">
+                        <h3>Discovery Results</h3>
+                        <div class="result-stats">
+                            <span id="discovery-count">0</span> devices found
+                        </div>
+                    </div>
+                    
+                    <div class="result-filters">
+                        <input type="text" id="filter-results" placeholder="Filter results...">
+                        <select id="vendor-filter">
+                            <option value="">All Vendors</option>
+                            <!-- Will be populated with discovered vendors -->
+                        </select>
+                        <select id="platform-filter">
+                            <option value="">All Platforms</option>
+                            <!-- Will be populated with discovered platforms -->
+                        </select>
+                    </div>
+                    
+                    <div class="results-table-container">
+                        <table id="discovery-results-table">
+                            <thead>
+                                <tr>
+                                    <th>IP Address</th>
+                                    <th>Hostname</th>
+                                    <th>Vendor</th>
+                                    <th>Platform</th>
+                                    <th>802.1X Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="discovery-results-body">
+                                <!-- Results will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="discovery-actions">
+                        <button id="export-results" class="secondary-button">Export Results</button>
+                        <button id="create-deployment" class="primary-button">Create Deployment Plan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Deployment Tab -->
+        <div id="deployment" class="tab-content">
+            <h2>Deployment Management</h2>
+            
+            <div class="deployment-stages">
+                <div class="deployment-stage">
+                    <div class="stage-circle active">1</div>
+                    <div class="stage-title">Plan</div>
+                </div>
+                <div class="deployment-stage">
+                    <div class="stage-circle">2</div>
+                    <div class="stage-title">Prerequisites</div>
+                </div>
+                <div class="deployment-stage">
+                    <div class="stage-circle">3</div>
+                    <div class="stage-title">Configure</div>
+                </div>
+                <div class="deployment-stage">
+                    <div class="stage-circle">4</div>
+                    <div class="stage-title">Validate</div>
+                </div>
+                <div class="deployment-stage">
+                    <div class="stage-circle">5</div>
+                    <div class="stage-title">Monitor</div>
+                </div>
+            </div>
+            
+            <div class="deployment-container">
+                <div class="deployment-step" id="deployment-step-1">
+                    <h3>Deployment Planning</h3>
+                    
+                    <div class="input-group">
+                        <label for="deployment-name">Deployment Name</label>
+                        <input type="text" id="deployment-name" placeholder="e.g., HQ 802.1X Deployment">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="deployment-description">Description</label>
+                        <textarea id="deployment-description" placeholder="Enter deployment description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="deployment-scope">Deployment Scope</label>
+                        <select id="deployment-scope">
+                            <option value="pilot">Pilot (Limited Devices)</option>
+                            <option value="phased">Phased Rollout</option>
+                            <option value="full">Full Deployment</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="deployment-devices">Target Devices</label>
+                        <select id="deployment-devices" multiple size="5">
+                            <!-- Will be populated from discovery results -->
+                        </select>
+                        <p class="note">Devices can be imported from Discovery tab or added manually</p>
+                    </div>
+                    
+                    <div class="deployment-actions">
+                        <button id="import-devices" class="secondary-button">Import from Discovery</button>
+                        <button id="add-device-manual" class="secondary-button">Add Device Manually</button>
+                        <button id="generate-plan" class="primary-button">Generate Deployment Plan</button>
+                    </div>
+                </div>
+                
+                <!-- Additional deployment steps would be shown/hidden based on the progress -->
+            </div>
+        </div>
+        
+        <!-- AI Assist Tab -->
+        <div id="ai" class="tab-content">
+            <h2>AI Configuration Assistant</h2>
+            
+            <div class="ai-container">
+                <div class="ai-controls">
+                    <h3>Configuration Analysis & Recommendations</h3>
+                    
+                    <div class="ai-prompt-area">
+                        <textarea id="ai-input" class="ai-prompt-input" placeholder="Paste your existing configuration here or describe what you want to configure..."></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="ai-mode">Assistant Mode</label>
+                        <select id="ai-mode">
+                            <option value="analyze">Analyze Configuration</option>
+                            <option value="improve">Recommend Improvements</option>
+                            <option value="generate">Generate Configuration</option>
+                            <option value="explain">Explain Configuration</option>
+                            <option value="compare">Compare Configurations</option>
+                        </select>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="ai-best-practices" checked>
+                        <label for="ai-best-practices">Include security best practices</label>
+                    </div>
+                    
+                    <button id="ai-analyze" class="primary-button">Analyze with AI</button>
+                </div>
+                
+                <div class="ai-chat-container">
+                    <div class="ai-chat-messages" id="ai-chat-messages">
+                        <!-- AI messages will appear here -->
+                        <div class="ai-message assistant">
+                            Hello! I'm your 802.1X configuration assistant. I can help analyze your existing configurations, suggest improvements, or generate new configurations based on your requirements. Paste your configuration or ask a question to get started.
+                        </div>
+                    </div>
+                    
+                    <div class="ai-input-area">
+                        <textarea id="ai-message-input" placeholder="Ask a follow-up question..."></textarea>
+                        <button id="ai-send" class="primary-button">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Help Tab -->
+        <div id="help" class="tab-content">
+            <h2>Documentation & Help</h2>
+            
+            <div class="help-container">
+                <div class="help-sidebar">
+                    <div class="search-box">
+                        <input type="text" id="help-search" placeholder="Search help...">
+                    </div>
+                    
+                    <div class="help-categories">
+                        <h3>Categories</h3>
+                        <ul>
+                            <li><a href="#getting-started" class="help-link active">Getting Started</a></li>
+                            <li><a href="#configuration-guides" class="help-link">Configuration Guides</a></li>
+                            <li><a href="#vendor-specific" class="help-link">Vendor Specific</a></li>
+                            <li><a href="#troubleshooting" class="help-link">Troubleshooting</a></li>
+                            <li><a href="#best-practices" class="help-link">Best Practices</a></li>
+                            <li><a href="#faq" class="help-link">FAQ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="help-content">
+                    <div id="getting-started" class="help-section active">
+                        <h3>Getting Started with Dot1Xer Supreme</h3>
+                        
+                        <p>Welcome to Dot1Xer Supreme, the comprehensive tool for 802.1X configuration management. This guide will help you get started using the application.</p>
+                        
+                        <h4>Introduction to 802.1X</h4>
+                        <p>IEEE 802.1X is a standard for port-based network access control that provides an authentication mechanism for devices wishing to connect to a LAN or WLAN.</p>
+                        
+                        <p>The main components in an 802.1X deployment are:</p>
+                        <ul>
+                            <li><strong>Supplicant</strong>: The client device requesting access to the network</li>
+                            <li><strong>Authenticator</strong>: The network device (switch or access point) that enforces authentication</li>
+                            <li><strong>Authentication Server</strong>: Typically a RADIUS server that validates credentials</li>
+                        </ul>
+                        
+                        <h4>Using the Configuration Tab</h4>
+                        <p>The Configuration tab is where you'll generate 802.1X configurations for your network devices:</p>
+                        <ol>
+                            <li>Select your network device vendor (Cisco, Aruba, etc.)</li>
+                            <li>Choose the specific platform or OS version</li>
+                            <li>Enter your RADIUS server details</li>
+                            <li>Configure VLANs for authenticated, guest, and voice devices</li>
+                            <li>Specify the interfaces where 802.1X will be enabled</li>
+                            <li>Adjust advanced options as needed</li>
+                            <li>Click "Generate Configuration" to create your configuration</li>
+                        </ol>
+                        
+                        <h4>Next Steps</h4>
+                        <p>After generating your basic configuration, explore these features:</p>
+                        <ul>
+                            <li>Use the Templates tab to access pre-built configurations</li>
+                            <li>Try the Discovery tab to identify devices on your network</li>
+                            <li>Use the AI Assist feature to analyze and improve your configurations</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Other help sections would be added here -->
+                </div>
+            </div>
+        </div>
     </main>
 
     <footer>
@@ -252,6 +594,8 @@
                     <li><a href="#config">Configure</a></li>
                     <li><a href="#templates">Templates</a></li>
                     <li><a href="#discovery">Discovery</a></li>
+                    <li><a href="#deployment">Deployment</a></li>
+                    <li><a href="#ai">AI Assist</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -262,6 +606,16 @@
                     <li><a href="#help/support">Support</a></li>
                 </ul>
             </div>
+            <div class="footer-section">
+                <h4>Settings</h4>
+                <div class="theme-toggle">
+                    <label for="dark-mode-toggle" class="toggle-label">Dark Mode</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dark-mode-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
         </div>
         <div class="copyright">
             &copy; 2025 Dot1Xer Supreme. All rights reserved.
@@ -270,5 +624,9 @@
 
     <script src="js/help_tips.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/templates.js"></script>
+    <script src="js/discovery.js"></script>
+    <script src="js/deployment.js"></script>
+    <script src="js/ai.js"></script>
 </body>
 </html>

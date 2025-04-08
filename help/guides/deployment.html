@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>802.1X Deployment Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color, #333);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--background-color, #fff);
+        }
+        h1 {
+            color: var(--primary-color, #1a3a5f);
+            border-bottom: 1px solid var(--border-color, #eee);
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: var(--primary-color, #1a3a5f);
+            margin-top: 30px;
+        }
+        h3 {
+            color: var(--accent-color, #0077cc);
+        }
+        .note {
+            background-color: rgba(0, 119, 204, 0.05);
+            border-left: 4px solid var(--accent-color, #0077cc);
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: rgba(255, 152, 0, 0.05);
+            border-left: 4px solid #f57f17;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background-color: rgba(76, 175, 80, 0.05);
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        code {
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        pre {
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: Consolas, Monaco, 'Andale Mono', monospace;
+        }
+        ul, ol {
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid var(--border-color, #ddd);
+            padding: 8px 12px;
+            text-align: left;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 20px auto;
+        }
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: var(--border-color, #ddd);
+            top: 0;
+            bottom: 0;
+            left: 0;
+            margin-left: -3px;
+        }
+        .phase {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            margin-bottom: 20px;
+            margin-left: 20px;
+        }
+        .phase::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: -10px;
+            background-color: var(--accent-color, #0077cc);
+            border: 4px solid white;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .phase-content {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.02);
+            position: relative;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-color, #0077cc);
+        }
+    </style>
+</head>
+<body>
+    <h1>802.1X Deployment Guide</h1>
+    
+    <p>This guide provides a comprehensive approach to deploying 802.1X authentication in your network environment. A successful deployment requires careful planning, phased implementation, and ongoing management.</p>
+    
+    <div class="timeline">
+        <div class="phase">
+            <div class="phase-content">
+                <h2>Phase 1: Assessment and Planning</h2>
+                <h3>Network Assessment</h3>
+                <ul>
+                    <li>Inventory network devices (switches, access points, controllers)</li>
+                    <li>Verify 802.1X support on all network equipment</li>
+                    <li>Identify devices that may not support 802.1X (printers, IoT devices, etc.)</li>
+                    <li>Evaluate current network topology and segmentation</li>
+                </ul>
+                
+                <h3>Define Authentication Policy</h3>
+                <ul>
+                    <li>Determine authentication methods (802.1X, MAB, WebAuth)</li>
+                    <li>Select EAP method(s) to use (PEAP, EAP-TLS, EAP-TTLS, etc.)</li>
+                    <li>Define VLAN assignments for different user/device types</li>
+                    <li>Establish policies for failed authentication and RADIUS server unavailability</li>
+                </ul>
+                
+                <h3>Design Authentication Infrastructure</h3>
+                <ul>
+                    <li>Select RADIUS server solution (FreeRADIUS, Cisco ISE, Microsoft NPS, etc.)</li>
+                    <li>Design for high availability with redundant RADIUS servers</li>
+                    <li>Plan integration with existing identity stores (Active Directory, LDAP)</li>
+                    <li>If using EAP-TLS, plan certificate infrastructure</li>
+                </ul>
+                
+                <div class="note">
+                    <strong>Tip:</strong> Create a detailed network diagram showing authentication flows, RADIUS server placement, and network segmentation.
+                </div>
+            </div>
+        </div>
+        
+        <div class="phase">
+            <div class="phase-content">
+                <h2>Phase 2: Pilot Deployment</h2>
+                <h3>Set Up Authentication Infrastructure</h3>
+                <ul>
+                    <li>Install and configure RADIUS servers</li>
+                    <li>Establish redundancy and load balancing</li>
+                    <li>Configure identity source integration</li>
+                    <li>If using EAP-TLS, set up certificate services</li>
+                </ul>
+                
+                <h3>Configure Test Environment</h3>
+                <ul>
+                    <li>Select a limited network segment for initial testing</li>
+                    <li>Configure switches in monitor mode to observe authentication behavior without enforcement</li>
+                    <li>Set up logging and monitoring to track authentication attempts</li>
+                </ul>
+                
+                <h3>Test with Different Device Types</h3>
+                <ul>
+                    <li>Configure and test Windows, macOS, and Linux clients</li>
+                    <li>Test mobile devices (iOS, Android)</li>
+                    <li>Test non-802.1X capable devices with MAC Authentication Bypass</li>
+                    <li>Document any issues and develop workarounds</li>
+                </ul>
+                
+                <div class="warning">
+                    <strong>Important:</strong> Always maintain a fallback method (like a direct console connection) to access network devices in case of authentication issues.
+                </div>
+            </div>
+        </div>
+        
+        <div class="phase">
+            <div class="phase-content">
+                <h2>Phase 3: Phased Implementation</h2>
+                <h3>Deployment Strategy</h3>
+                <ul>
+                    <li>Divide network into deployment phases based on criticality and complexity</li>
+                    <li>Start with less critical areas and progress to more critical ones</li>
+                    <li>Create a detailed implementation schedule with rollback plans</li>
+                </ul>
+                
+                <h3>User Communication</h3>
+                <ul>
+                    <li>Develop communication plan for end users</li>
+                    <li>Create documentation for IT support staff</li>
+                    <li>Establish a help desk process for authentication issues</li>
+                </ul>
+                
+                <h3>Implementation Steps</h3>
+                <ol>
+                    <li>Deploy in monitor mode to identify potential issues</li>
+                    <li>Address any discovered issues before enabling enforcement</li>
+                    <li>Switch from monitor mode to enforcing mode in scheduled phases</li>
+                    <li>Validate successful authentication after each phase</li>
+                </ol>
+                
+                <div class="note">
+                    <strong>Tip:</strong> Implement 802.1X during maintenance windows when possible, and always have a rollback plan ready.
+                </div>
+            </div>
+        </div>
+        
+        <div class="phase">
+            <div class="phase-content">
+                <h2>Phase 4: Monitoring and Optimization</h2>
+                <h3>Authentication Monitoring</h3>
+                <ul>
+                    <li>Set up comprehensive logging for authentication events</li>
+                    <li>Configure SNMP monitoring for authentication failures</li>
+                    <li>Create dashboards for authentication statistics</li>
+                    <li>Establish alerts for unusual authentication patterns</li>
+                </ul>
+                
+                <h3>Performance Tuning</h3>
+                <ul>
+                    <li>Optimize RADIUS server performance</li>
+                    <li>Adjust timers for authentication process (reauth period, quiet period, etc.)</li>
+                    <li>Fine-tune load balancing for RADIUS infrastructure</li>
+                </ul>
+                
+                <h3>Regular Auditing</h3>
+                <ul>
+                    <li>Audit MAB device database regularly</li>
+                    <li>Review authorization policies periodically</li>
+                    <li>Validate guest and visitor access processes</li>
+                </ul>
+                
+                <div class="success">
+                    <strong>Success Metric:</strong> A successful 802.1X deployment should result in high authentication success rates (>99%) with minimal end-user complaints.
+                </div>
+            </div>
+        </div>
+        
+        <div class="phase">
+            <div class="phase-content">
+                <h2>Phase 5: Ongoing Management</h2>
+                <h3>Documentation and Knowledge Base</h3>
+                <ul>
+                    <li>Maintain detailed documentation of the 802.1X implementation</li>
+                    <li>Create troubleshooting guides for common issues</li>
+                    <li>Develop standard operating procedures for various scenarios</li>
+                </ul>
+                
+                <h3>Change Management</h3>
+                <ul>
+                    <li>Establish processes for updating authentication policies</li>
+                    <li>Create procedures for adding new device types</li>
+                    <li>Define approach for testing and implementing security updates</li>
+                </ul>
+                
+                <h3>Continuous Improvement</h3>
+                <ul>
+                    <li>Regularly review and update authentication policies</li>
+                    <li>Keep abreast of new 802.1X features and capabilities</li>
+                    <li>Consider implementing advanced features like posture assessment</li>
+                </ul>
+                
+                <div class="note">
+                    <strong>Remember:</strong> 802.1X deployment is not a one-time project but an ongoing process that requires continuous attention and improvement.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Vendor-Specific Considerations</h2>
+    
+    <h3>Cisco</h3>
+    <ul>
+        <li>Use <code>authentication open</code> mode initially for monitoring</li>
+        <li>Consider implementing Identity-Based Networking Services (IBNS) for more advanced policies</li>
+        <li>Utilize <code>authentication event server dead action authorize vlan</code> for RADIUS server failures</li>
+    </ul>
+    
+    <h3>Aruba</h3>
+    <ul>
+        <li>Use role-based access control to fine-tune permissions</li>
+        <li>Consider implementing ClearPass for advanced authentication and device profiling</li>
+        <li>Leverage Aruba's dynamic segmentation capabilities</li>
+    </ul>
+    
+    <h3>Juniper</h3>
+    <ul>
+        <li>Utilize server-fail and server-reject options to handle authentication failures</li>
+        <li>Consider implementing Juniper's Unified Access Control for comprehensive NAC</li>
+        <li>Use supplicant multiple mode for multi-auth environments</li>
+    </ul>
+    
+    <h3>Mixed-Vendor Environments</h3>
+    <ul>
+        <li>Focus on RADIUS server configuration to maintain consistent policy enforcement</li>
+        <li>Use vendor-specific attributes when necessary, but try to standardize where possible</li>
+        <li>Document the differences between vendor implementations for IT support staff</li>
+    </ul>
+    
+    <h2>Troubleshooting Common Issues</h2>
+    
+    <table>
+        <tr>
+            <th>Issue</th>
+            <th>Possible Causes</th>
+            <th>Troubleshooting Steps</th>
+        </tr>
+        <tr>
+            <td>Authentication Failures</td>
+            <td>
+                <ul>
+                    <li>Incorrect credentials</li>
+                    <li>RADIUS server unreachable</li>
+                    <li>EAP method mismatch</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>Check RADIUS server logs</li>
+                    <li>Verify network connectivity to RADIUS server</li>
+                    <li>Confirm client supplicant configuration</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>Intermittent Authentication</td>
+            <td>
+                <ul>
+                    <li>RADIUS server overload</li>
+                    <li>Network latency</li>
+                    <li>Timer misconfigurations</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>Increase timeouts and retries</li>
+                    <li>Implement RADIUS server load balancing</li>
+                    <li>Check network performance between switch and RADIUS</li>
+                </ul>
+            </td>
+        </tr>
+        <tr>
+            <td>Legacy Device Issues</td>
+            <td>
+                <ul>
+                    <li>No 802.1X support</li>
+                    <li>MAB misconfiguration</li>
+                    <li>MAC address not in database</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>Verify MAB configuration</li>
+                    <li>Check MAC address format in RADIUS database</li>
+                    <li>Consider static assignments for critical devices</li>
+                </ul>
+            </td>
+        </tr>
+    </table>
+    
+    <h2>Conclusion</h2>
+    <p>A successful 802.1X deployment requires thorough planning, phased implementation, and ongoing management. By following this guide, you can enhance your network security, meet compliance requirements, and maintain control over network access.</p>
+    
+    <p>Use Dot1Xer Supreme to generate consistent configurations across your network and streamline your 802.1X deployment process.</p>
+</body>
+</html>

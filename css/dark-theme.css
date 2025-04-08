@@ -1,0 +1,29 @@
+/* Dot1Xer Supreme - Dark Theme Override */
+
+:root {
+    --primary-color: #1e1e1e;
+    --secondary-color: #333333;
+    --accent-color: #0077cc;
+    --text-color: #ffffff;
+    --background-color: #121212;
+    --card-background: #252525;
+    --border-color: #444444;
+    --highlight-color: #0077cc;
+    --header-gradient: linear-gradient(135deg, #222222 0%, #111111 100%);
+}
+
+/* Fix code blocks for dark theme */
+pre {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-color: #444444;
+}
+
+/* Fix tooltips for dark theme */
+.help-tip .tooltip {
+    background-color: #2d2d2d;
+}
+
+.help-tip .tooltip::after {
+    border-color: #2d2d2d transparent transparent transparent;
+}

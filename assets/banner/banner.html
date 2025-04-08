@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dot1Xer Supreme Banner</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .banner-container {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #1a3a5f 0%, #0d2339 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: wave 15s infinite linear;
+            transform-origin: center center;
+        }
+        .wave:nth-child(2) {
+            animation-delay: -5s;
+            opacity: 0.1;
+        }
+        .wave:nth-child(3) {
+            animation-delay: -10s;
+            opacity: 0.15;
+        }
+        .logo-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 36px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        .tagline {
+            display: block;
+            font-size: 18px;
+            margin-top: 10px;
+            opacity: 0.85;
+            font-weight: normal;
+        }
+        .dot {
+            color: #00a4ef;
+        }
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: float 10s infinite ease-in-out;
+        }
+        
+        @keyframes wave {
+            0% {
+                transform: scale(1, 0.3) translateX(0) translateY(70%);
+            }
+            100% {
+                transform: scale(1, 0.3) translateX(-50%) translateY(70%);
+            }
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            25% {
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-20px) translateX(20px);
+                opacity: 0.8;
+            }
+            75% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="banner-container">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        
+        <div class="particles" id="particles"></div>
+        
+        <div class="logo-text">
+            Dot1Xer<span class="dot">.</span>Supreme
+            <span class="tagline">Advanced 802.1X Configuration Management</span>
+        </div>
+    </div>
+    
+    <script>
+        // Create animated particles
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 30;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Random properties
+            const size = Math.random() * 6 + 2;
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            const delay = Math.random() * 10;
+            const duration = 5 + Math.random() * 10;
+            
+            // Apply styles
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${posX}%`;
+            particle.style.top = `${posY}%`;
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+            
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+</html>
