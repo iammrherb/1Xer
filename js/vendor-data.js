@@ -1,287 +1,269 @@
 /**
  * Dot1Xer Supreme - Vendor Data
- * Contains vendor-specific information and configurations
+ * Contains data about supported vendors and their platforms
  */
 
 const vendorData = {
-    // Cisco configuration data
+    // Cisco data
     cisco: {
         name: "Cisco",
         platforms: {
-            "ios": {
+            ios: {
                 name: "IOS",
                 minVersion: "12.2(55)SE",
-                recommendedVersion: "15.2(4)E",
+                recommendedVersion: "15.2(2)E",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: true,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "Cisco IOS has excellent 802.1X support with comprehensive features."
+                supportsVoiceVLAN: true,
+                configGuide: "cisco-ios-config-guide.html",
+                templatePath: "templates/cisco/ios/"
             },
             "ios-xe": {
                 name: "IOS-XE",
                 minVersion: "3.2.0",
-                recommendedVersion: "16.9.1",
+                recommendedVersion: "16.9.4",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: true,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: true,
-                notes: "Cisco IOS-XE provides modern 802.1X features and is recommended for new deployments."
+                supportsVoiceVLAN: true,
+                configGuide: "cisco-ios-xe-config-guide.html",
+                templatePath: "templates/cisco/ios-xe/"
             },
             "nx-os": {
                 name: "NX-OS",
                 minVersion: "5.2",
-                recommendedVersion: "9.2",
+                recommendedVersion: "9.3(5)",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: false,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "NX-OS has good 802.1X support but lacks some advanced features like MDA."
+                supportsVoiceVLAN: true,
+                configGuide: "cisco-nx-os-config-guide.html",
+                templatePath: "templates/cisco/nx-os/"
             },
-            "wlc": {
+            wlc: {
                 name: "Wireless LAN Controller",
-                minVersion: "7.4",
-                recommendedVersion: "8.5",
-                supportsMAB: true,
-                supports8021x: true,
+                minVersion: "7.0",
+                recommendedVersion: "8.10",
+                supportsMAB: false,
                 supportsCoA: true,
-                supportsMDA: false,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: false,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "Cisco WLC provides comprehensive 802.1X support for wireless networks."
+                supportsVoiceVLAN: false,
+                configGuide: "cisco-wlc-config-guide.html",
+                templatePath: "templates/cisco/wlc/"
             }
-        },
-        supportsMultiAuth: true,
-        defaultPorts: {
-            auth: 1812,
-            acct: 1813,
-            coa: 3799
-        },
-        radiusConfigStyle: "server-first",
-        vendorSpecificAttributes: [
-            "Cisco-AVPair",
-            "Cisco-NAS-Port"
-        ]
+        }
     },
     
-    // Aruba configuration data
+    // Aruba data
     aruba: {
         name: "Aruba",
         platforms: {
             "aos-cx": {
                 name: "AOS-CX",
                 minVersion: "10.4",
-                recommendedVersion: "10.9",
+                recommendedVersion: "10.7",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: true,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: true,
-                notes: "Aruba AOS-CX provides excellent 802.1X support with modern features."
+                supportsVoiceVLAN: true,
+                configGuide: "aruba-aos-cx-config-guide.html",
+                templatePath: "templates/aruba/aos-cx/"
             },
             "aos-switch": {
-                name: "AOS-Switch",
-                minVersion: "16.04",
+                name: "AOS-Switch (ArubaOS)",
+                minVersion: "16.4",
                 recommendedVersion: "16.10",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: true,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "Aruba AOS-Switch (formerly ProVision) has good 802.1X support for legacy deployments."
+                supportsVoiceVLAN: true,
+                configGuide: "aruba-aos-switch-config-guide.html",
+                templatePath: "templates/aruba/aos-switch/"
             },
-            "instant": {
+            instant: {
                 name: "Instant AP",
                 minVersion: "6.4",
                 recommendedVersion: "8.7",
-                supportsMAB: true,
-                supports8021x: true,
+                supportsMAB: false,
                 supportsCoA: true,
-                supportsMDA: false,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: false,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "Aruba Instant AP provides controller-less 802.1X support for wireless networks."
+                supportsVoiceVLAN: false,
+                configGuide: "aruba-instant-config-guide.html",
+                templatePath: "templates/aruba/instant/"
             }
-        },
-        supportsMultiAuth: true,
-        defaultPorts: {
-            auth: 1812,
-            acct: 1813,
-            coa: 3799
-        },
-        radiusConfigStyle: "server-first",
-        vendorSpecificAttributes: [
-            "Aruba-User-Role",
-            "Aruba-AP-Group"
-        ]
+        }
     },
     
-    // Juniper configuration data
+    // Juniper data
     juniper: {
         name: "Juniper",
         platforms: {
-            "junos": {
+            junos: {
                 name: "JunOS",
                 minVersion: "12.3",
-                recommendedVersion: "21.2",
+                recommendedVersion: "19.4",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: true,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "Juniper JunOS provides comprehensive 802.1X features across enterprise platforms."
+                supportsVoiceVLAN: true,
+                configGuide: "juniper-junos-config-guide.html",
+                templatePath: "templates/juniper/junos/"
             },
             "ex-series": {
                 name: "EX Series",
                 minVersion: "12.3",
-                recommendedVersion: "21.2",
+                recommendedVersion: "19.4",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: true,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "Juniper EX Series switches are optimized for enterprise 802.1X deployments."
+                supportsVoiceVLAN: true,
+                configGuide: "juniper-ex-config-guide.html",
+                templatePath: "templates/juniper/ex-series/"
             },
             "srx-series": {
                 name: "SRX Series",
                 minVersion: "12.3",
-                recommendedVersion: "21.2",
+                recommendedVersion: "19.4",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: false,
-                supportsCriticalVLAN: true,
+                supportsDynamicVLAN: true,
+                supportsCriticalVLAN: false,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "Juniper SRX Series devices provide 802.1X features with integrated security functions."
+                supportsVoiceVLAN: false,
+                configGuide: "juniper-srx-config-guide.html",
+                templatePath: "templates/juniper/srx-series/"
             }
-        },
-        supportsMultiAuth: true,
-        defaultPorts: {
-            auth: 1812,
-            acct: 1813,
-            coa: 3799
-        },
-        radiusConfigStyle: "profile-based",
-        vendorSpecificAttributes: [
-            "Juniper-Local-User-Name",
-            "Juniper-Switching-Filter"
-        ]
+        }
     },
     
-    // Fortinet configuration data
+    // Fortinet data
     fortinet: {
         name: "Fortinet",
         platforms: {
-            "fortigate": {
+            fortigate: {
                 name: "FortiGate",
-                minVersion: "5.4",
+                minVersion: "6.0",
                 recommendedVersion: "7.0",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: false,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: false,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "FortiGate provides limited 802.1X support primarily for network access control."
+                supportsVoiceVLAN: false,
+                configGuide: "fortinet-fortigate-config-guide.html",
+                templatePath: "templates/fortinet/fortigate/"
             },
-            "fortiswitch": {
+            fortiswitch: {
                 name: "FortiSwitch",
-                minVersion: "3.4",
+                minVersion: "6.2",
                 recommendedVersion: "6.4",
                 supportsMAB: true,
-                supports8021x: true,
                 supportsCoA: true,
-                supportsMDA: true,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: true,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "FortiSwitch provides comprehensive 802.1X support for enterprise deployments."
+                supportsVoiceVLAN: true,
+                configGuide: "fortinet-fortiswitch-config-guide.html",
+                templatePath: "templates/fortinet/fortiswitch/"
             },
-            "fortiwlc": {
+            fortiwlc: {
                 name: "FortiWLC",
                 minVersion: "8.3",
-                recommendedVersion: "8.5",
-                supportsMAB: true,
-                supports8021x: true,
+                recommendedVersion: "8.6",
+                supportsMAB: false,
                 supportsCoA: true,
-                supportsMDA: false,
+                supportsDynamicVLAN: true,
                 supportsCriticalVLAN: false,
                 supportsGuestVLAN: true,
-                supportsRadSec: false,
-                notes: "FortiWLC provides 802.1X support for wireless networks."
-            }
-        },
-        supportsMultiAuth: true,
-        defaultPorts: {
-            auth: 1812,
-            acct: 1813,
-            coa: 3799
-        },
-        radiusConfigStyle: "system-based",
-        vendorSpecificAttributes: [
-            "Fortinet-Group-Name",
-            "Fortinet-Client-IP-Address"
-        ]
-    },
-    
-    // Add more vendors...
-    
-    // Helper methods
-    getVendorInfo: function(vendorId) {
-        return this[vendorId] || null;
-    },
-    
-    getPlatformInfo: function(vendorId, platformId) {
-        const vendor = this.getVendorInfo(vendorId);
-        if (vendor && vendor.platforms) {
-            return vendor.platforms[platformId] || null;
-        }
-        return null;
-    },
-    
-    getCompatibilityInfo: function(vendorId, platformId, feature) {
-        const platform = this.getPlatformInfo(vendorId, platformId);
-        if (platform) {
-            switch (feature) {
-                case 'mab':
-                    return platform.supportsMAB;
-                case '802.1x':
-                    return platform.supports8021x;
-                case 'coa':
-                    return platform.supportsCoA;
-                case 'mda':
-                    return platform.supportsMDA;
-                case 'critical-vlan':
-                    return platform.supportsCriticalVLAN;
-                case 'guest-vlan':
-                    return platform.supportsGuestVLAN;
-                case 'radsec':
-                    return platform.supportsRadSec;
-                default:
-                    return false;
+                supportsVoiceVLAN: false,
+                configGuide: "fortinet-fortiwlc-config-guide.html",
+                templatePath: "templates/fortinet/fortiwlc/"
             }
         }
-        return false;
     }
+    
+    // Additional vendors would be defined here
 };
+
+/**
+ * Get information about a specific vendor
+ * @param {string} vendorId - The ID of the vendor
+ * @returns {object} Vendor information or null if not found
+ */
+function getVendorInfo(vendorId) {
+    return vendorData[vendorId] || null;
+}
+
+/**
+ * Get information about a specific platform for a vendor
+ * @param {string} vendorId - The ID of the vendor
+ * @param {string} platformId - The ID of the platform
+ * @returns {object} Platform information or null if not found
+ */
+function getPlatformInfo(vendorId, platformId) {
+    if (vendorData[vendorId] && vendorData[vendorId].platforms[platformId]) {
+        return vendorData[vendorId].platforms[platformId];
+    }
+    return null;
+}
+
+/**
+ * Check if a specific platform supports a feature
+ * @param {string} vendorId - The ID of the vendor
+ * @param {string} platformId - The ID of the platform
+ * @param {string} feature - The feature to check (e.g., 'supportsMAB')
+ * @returns {boolean} True if the platform supports the feature, false otherwise
+ */
+function platformSupportsFeature(vendorId, platformId, feature) {
+    const platformInfo = getPlatformInfo(vendorId, platformId);
+    if (platformInfo && platformInfo[feature] !== undefined) {
+        return platformInfo[feature];
+    }
+    return false;
+}
+
+/**
+ * Get all supported vendors
+ * @returns {array} Array of vendor objects with id and name
+ */
+function getAllVendors() {
+    return Object.keys(vendorData).map(vendorId => ({
+        id: vendorId,
+        name: vendorData[vendorId].name
+    }));
+}
+
+/**
+ * Get all platforms for a specific vendor
+ * @param {string} vendorId - The ID of the vendor
+ * @returns {array} Array of platform objects with id and name
+ */
+function getVendorPlatforms(vendorId) {
+    if (!vendorData[vendorId]) {
+        return [];
+    }
+    
+    return Object.keys(vendorData[vendorId].platforms).map(platformId => ({
+        id: platformId,
+        name: vendorData[vendorId].platforms[platformId].name
+    }));
+}

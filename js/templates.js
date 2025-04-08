@@ -1,152 +1,150 @@
 /**
  * Dot1Xer Supreme - Templates Management
- * Provides functionality for template browsing, editing, and management
- * Version: 3.5.0
+ * Functions for managing configuration templates
  */
 
-// Initialize templates when the DOM is loaded
+// Initialize templates when the document is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    if (document.getElementById('template-list')) {
-        loadTemplatesList();
-        setupTemplateEventListeners();
-    }
+    initializeTemplateListeners();
+    loadTemplates();
 });
 
 /**
- * Set up event listeners for template functionality
+ * Initialize template-related event listeners
  */
-function setupTemplateEventListeners() {
-    // Template search
-    const searchInput = document.getElementById('template-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            filterTemplates(this.value);
+function initializeTemplateListeners() {
+    // Template list item click event
+    document.querySelectorAll('.template-item').forEach(item => {
+        item.addEventListener('click', function() {
+            selectTemplate(this);
         });
-    }
+    });
     
-    // Copy template button
-    const copyTemplateBtn = document.getElementById('copy-template');
-    if (copyTemplateBtn) {
-        copyTemplateBtn.addEventListener('click', function() {
-            const templateContent = document.getElementById('template-content');
-            if (templateContent) {
-                copyToClipboard(templateContent.textContent);
-                
-                // Show success message
-                const originalText = this.textContent;
-                this.textContent = 'Copied!';
-                setTimeout(() => {
-                    this.textContent = originalText;
-                }, 2000);
-            }
-        });
-    }
+    // Template search functionality
+    document.getElementById('template-search').addEventListener('input', function() {
+        searchTemplates(this.value);
+    });
     
-    // Download template button
-    const downloadTemplateBtn = document.getElementById('download-template');
-    if (downloadTemplateBtn) {
-        downloadTemplateBtn.addEventListener('click', function() {
-            const templateContent = document.getElementById('template-content');
-            const templateTitle = document.getElementById('template-title');
-            
-            if (templateContent && templateTitle) {
-                const filename = templateTitle.textContent.replace(/\s+/g, '_').toLowerCase() + '.conf';
-                downloadTextFile(templateContent.textContent, filename);
-            }
-        });
-    }
+    // New template button click event
+    document.getElementById('new-template').addEventListener('click', function() {
+        createNewTemplate();
+    });
     
-    // Add new template button
-    const addTemplateBtn = document.getElementById('add-template');
-    if (addTemplateBtn) {
-        addTemplateBtn.addEventListener('click', function() {
-            showAddTemplateModal();
-        });
-    }
+    // Template action buttons
+    document.getElementById('copy-template').addEventListener('click', function() {
+        copyTemplateToClipboard();
+    });
     
-    // Edit template button
-    const editTemplateBtn = document.getElementById('edit-template');
-    if (editTemplateBtn) {
-        editTemplateBtn.addEventListener('click', function() {
-            const templateContent = document.getElementById('template-content');
-            const templateTitle = document.getElementById('template-title');
-            
-            if (templateContent && templateTitle) {
-                showEditTemplateModal(templateTitle.textContent, templateContent.textContent);
-            }
-        });
-    }
-}
-
-/**
- * Load the list of available templates
- */
-function loadTemplatesList() {
-    const templateList = document.getElementById('template-list');
-    if (!templateList) return;
+    document.getElementById('load-template').addEventListener('click', function() {
+        loadTemplateToEditor();
+    });
     
-    // Clear existing templates
-    templateList.innerHTML = '';
+    document.getElementById('edit-template').addEventListener('click', function() {
+        editTemplate();
+    });
     
-    // Sample templates data
-    const templates = [
-        { id: 'cisco-ios-dot1x-mab', name: 'Cisco IOS 802.1X + MAB', vendor: 'cisco', platform: 'ios', type: 'dot1x-mab' },
-        { id: 'cisco-ios-dot1x-only', name: 'Cisco IOS 802.1X Only', vendor: 'cisco', platform: 'ios', type: 'dot1x-only' },
-        { id: 'cisco-ios-mab-only', name: 'Cisco IOS MAB Only', vendor: 'cisco', platform: 'ios', type: 'mab-only' },
-        { id: 'cisco-nxos-dot1x-mab', name: 'Cisco NX-OS 802.1X + MAB', vendor: 'cisco', platform: 'nxos', type: 'dot1x-mab' },
-        { id: 'cisco-wlc-dot1x', name: 'Cisco WLC 802.1X', vendor: 'cisco', platform: 'wlc', type: 'dot1x-only' },
-        { id: 'aruba-aoscx-dot1x-mab', name: 'Aruba AOS-CX 802.1X + MAB', vendor: 'aruba', platform: 'aoscx', type: 'dot1x-mab' },
-        { id: 'aruba-controller-dot1x', name: 'Aruba Controller 802.1X', vendor: 'aruba', platform: 'controller', type: 'dot1x-only' },
-        { id: 'juniper-ex-dot1x-mab', name: 'Juniper EX 802.1X + MAB', vendor: 'juniper', platform: 'ex', type: 'dot1x-mab' },
-        { id: 'extreme-exos-dot1x-mab', name: 'Extreme EXOS 802.1X + MAB', vendor: 'extreme', platform: 'exos', type: 'dot1x-mab' },
-        { id: 'hp-procurve-dot1x-mab', name: 'HP ProCurve 802.1X + MAB', vendor: 'hp', platform: 'procurve', type: 'dot1x-mab' },
-        { id: 'multi-vendor-deployment', name: 'Multi-Vendor Deployment', vendor: 'multi-vendor', platform: 'mixed', type: 'deployment' }
-    ];
-    
-    // Add templates to the list
-    templates.forEach(template => {
-        const templateItem = document.createElement('div');
-        templateItem.className = 'template-item';
-        templateItem.dataset.id = template.id;
-        templateItem.dataset.vendor = template.vendor;
-        templateItem.dataset.platform = template.platform;
-        templateItem.dataset.type = template.type;
-        templateItem.textContent = template.name;
-        
-        // Add click event to select template
-        templateItem.addEventListener('click', function() {
-            // Remove active class from all templates
-            document.querySelectorAll('.template-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Add active class to this template
-            this.classList.add('active');
-            
-            // Load template details
-            loadTemplateDetails(template.id);
-        });
-        
-        templateList.appendChild(templateItem);
+    document.getElementById('delete-template').addEventListener('click', function() {
+        deleteTemplate();
     });
 }
 
 /**
- * Filter templates list based on search query
+ * Load templates from storage or API
  */
-function filterTemplates(query) {
-    const templateItems = document.querySelectorAll('.template-item');
-    const lowerQuery = query.toLowerCase();
+function loadTemplates() {
+    // This function would normally load templates from localStorage, IndexedDB, or a server API
+    // For this example, we'll use the templates that are already in the HTML
     
-    templateItems.forEach(item => {
-        const name = item.textContent.toLowerCase();
-        const vendor = item.dataset.vendor.toLowerCase();
-        const platform = item.dataset.platform.toLowerCase();
-        const type = item.dataset.type.toLowerCase();
+    // Select the first template by default
+    const firstTemplate = document.querySelector('.template-item');
+    if (firstTemplate) {
+        selectTemplate(firstTemplate);
+    }
+}
+
+/**
+ * Select a template from the list
+ * @param {HTMLElement} templateItem - The template item element that was clicked
+ */
+function selectTemplate(templateItem) {
+    // Remove active class from all template items
+    document.querySelectorAll('.template-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Add active class to clicked template item
+    templateItem.classList.add('active');
+    
+    // Update template details
+    document.getElementById('template-title').textContent = templateItem.textContent;
+    
+    // Show template configuration and hide description
+    document.getElementById('template-description').style.display = 'none';
+    document.getElementById('template-config').classList.remove('hidden');
+    
+    // Load template configuration based on the template category
+    const category = templateItem.getAttribute('data-category');
+    const templateName = templateItem.textContent;
+    
+    // Simulate loading template configuration
+    let templateConfig = '';
+    
+    switch (category) {
+        case 'cisco':
+            if (templateName.includes('ISE')) {
+                templateConfig = getCiscoISETemplate();
+            } else {
+                templateConfig = getCiscoGeneralTemplate();
+            }
+            break;
+        case 'aruba':
+            templateConfig = getArubaClearPassTemplate();
+            break;
+        case 'juniper':
+            templateConfig = getJuniperBasicTemplate();
+            break;
+        case 'fortinet':
+            templateConfig = getFortinetNACTemplate();
+            break;
+        case 'multi-vendor':
+            if (templateName.includes('Healthcare')) {
+                templateConfig = getMultiVendorHealthcareTemplate();
+            } else if (templateName.includes('Education')) {
+                templateConfig = getMultiVendorEducationTemplate();
+            } else {
+                templateConfig = getMultiVendorEnterpriseTemplate();
+            }
+            break;
+        case 'wireless':
+            templateConfig = getWirelessControllerTemplate();
+            break;
+        case 'guest':
+            templateConfig = getGuestAccessTemplate();
+            break;
+        case 'byod':
+            templateConfig = getBYODOnboardingTemplate();
+            break;
+        default:
+            templateConfig = '# Template configuration not available.';
+    }
+    
+    // Update the template code display
+    document.getElementById('template-code').textContent = templateConfig;
+}
+
+/**
+ * Search templates by keyword
+ * @param {string} query - The search query
+ */
+function searchTemplates(query) {
+    query = query.toLowerCase();
+    
+    document.querySelectorAll('.template-item').forEach(item => {
+        const templateName = item.textContent.toLowerCase();
+        const templateCategory = item.getAttribute('data-category').toLowerCase();
         
-        if (name.includes(lowerQuery) || vendor.includes(lowerQuery) || 
-            platform.includes(lowerQuery) || type.includes(lowerQuery)) {
-            item.style.display = 'block';
+        if (templateName.includes(query) || templateCategory.includes(query)) {
+            item.style.display = '';
         } else {
             item.style.display = 'none';
         }
@@ -154,783 +152,1782 @@ function filterTemplates(query) {
 }
 
 /**
- * Load template details for the selected template
+ * Create a new template
  */
-function loadTemplateDetails(templateId) {
-    const templateTitle = document.getElementById('template-title');
-    const templateDescription = document.getElementById('template-description');
-    const templateContent = document.getElementById('template-content');
-    const templateConfiguration = document.getElementById('template-configuration');
+function createNewTemplate() {
+    // Show a dialog to name the template and select category
+    const templateName = prompt('Enter a name for the new template:');
     
-    if (!templateTitle || !templateDescription || !templateContent || !templateConfiguration) return;
-    
-    // Show template configuration section
-    templateConfiguration.classList.remove('hidden');
-    
-    // Set template title
-    const selectedTemplate = document.querySelector(`.template-item[data-id="${templateId}"]`);
-    if (selectedTemplate) {
-        templateTitle.textContent = selectedTemplate.textContent;
+    if (!templateName) {
+        return; // User cancelled
     }
     
-    // Set template description based on template ID
-    let description = '';
-    let content = '';
+    // Get the current configuration from the main configuration editor
+    const config = document.getElementById('config-result').textContent;
     
-    switch (templateId) {
-        case 'cisco-ios-dot1x-mab':
-            description = `
-                <p>This template configures 802.1X with MAC Authentication Bypass (MAB) on Cisco IOS devices. It includes:</p>
-                <ul>
-                    <li>Global AAA and RADIUS configuration</li>
-                    <li>802.1X with MAB fallback</li>
-                    <li>Guest VLAN for failed authentications</li>
-                    <li>Critical VLAN for RADIUS server failures</li>
-                    <li>Voice VLAN support</li>
-                    <li>Best practice security settings</li>
-                </ul>
-                <p>This template is recommended for environments with mixed clients, including legacy devices that don't support 802.1X.</p>
-            `;
-            
-            content = `! Cisco IOS 802.1X with MAB Configuration Template
-! Generated by Dot1Xer Supreme
-! Description: Standard configuration for 802.1X with MAB fallback
+    if (config === '# Configuration will appear here after generation.') {
+        alert('Please generate a configuration first.');
+        return;
+    }
+    
+    // Get the vendor for category
+    const vendor = document.getElementById('vendor').value || 'multi-vendor';
+    
+    // Create a new template item in the list
+    const templateList = document.querySelector('.template-list');
+    const newTemplateItem = document.createElement('li');
+    newTemplateItem.classList.add('template-item');
+    newTemplateItem.setAttribute('data-category', vendor);
+    newTemplateItem.textContent = templateName;
+    
+    // Add click event listener to the new template item
+    newTemplateItem.addEventListener('click', function() {
+        selectTemplate(this);
+    });
+    
+    // Add the new template to the list
+    templateList.appendChild(newTemplateItem);
+    
+    // Save the template to storage (simulated)
+    saveTemplate(templateName, vendor, config);
+    
+    // Select the new template
+    selectTemplate(newTemplateItem);
+    
+    alert(`Template "${templateName}" created successfully!`);
+}
 
-! Global AAA Configuration
-aaa new-model
-aaa authentication dot1x default group RADIUS-SERVERS
-aaa authorization network default group RADIUS-SERVERS
-aaa accounting dot1x default start-stop group RADIUS-SERVERS
+/**
+ * Save a template to storage or API
+ * @param {string} name - The name of the template
+ * @param {string} category - The category of the template
+ * @param {string} config - The template configuration
+ */
+function saveTemplate(name, category, config) {
+    // This function would normally save the template to localStorage, IndexedDB, or a server API
+    // For this example, we'll just simulate saving
+    console.log(`Template "${name}" saved in category "${category}"`);
+}
+
+/**
+ * Copy template configuration to clipboard
+ */
+function copyTemplateToClipboard() {
+    const templateCode = document.getElementById('template-code').textContent;
+    
+    // Create a temporary textarea to copy from
+    const textarea = document.createElement('textarea');
+    textarea.value = templateCode;
+    document.body.appendChild(textarea);
+    
+    // Select and copy
+    textarea.select();
+    document.execCommand('copy');
+    
+    // Clean up
+    document.body.removeChild(textarea);
+    
+    // Show success message
+    alert('Template configuration copied to clipboard!');
+}
+
+/**
+ * Load template to main configuration editor
+ */
+function loadTemplateToEditor() {
+    const templateCode = document.getElementById('template-code').textContent;
+    
+    // Load the template code to the main configuration editor
+    document.getElementById('config-result').textContent = templateCode;
+    
+    // Switch to the Configuration tab
+    document.querySelector('nav a[data-tab="config"]').click();
+    
+    // Show success message
+    alert('Template loaded to configuration editor!');
+}
+
+/**
+ * Edit the selected template
+ */
+function editTemplate() {
+    const templateName = document.getElementById('template-title').textContent;
+    const templateCode = document.getElementById('template-code').textContent;
+    
+    // In a real app, this would open an editor dialog
+    // For this example, we'll just show a prompt with the current code
+    const newCode = prompt('Edit template configuration:', templateCode);
+    
+    if (newCode !== null) {
+        // Update the template code display
+        document.getElementById('template-code').textContent = newCode;
+        
+        // Save the updated template (simulated)
+        const category = document.querySelector('.template-item.active').getAttribute('data-category');
+        saveTemplate(templateName, category, newCode);
+        
+        alert(`Template "${templateName}" updated successfully!`);
+    }
+}
+
+/**
+ * Delete the selected template
+ */
+function deleteTemplate() {
+    const templateName = document.getElementById('template-title').textContent;
+    
+    // Confirm deletion
+    if (!confirm(`Are you sure you want to delete the template "${templateName}"?`)) {
+        return;
+    }
+    
+    // Remove the template item from the list
+    const activeTemplate = document.querySelector('.template-item.active');
+    activeTemplate.remove();
+    
+    // Show the template description and hide configuration
+    document.getElementById('template-description').style.display = '';
+    document.getElementById('template-config').classList.add('hidden');
+    document.getElementById('template-title').textContent = 'Select a Template';
+    
+    // Select the first template if available
+    const firstTemplate = document.querySelector('.template-item');
+    if (firstTemplate) {
+        selectTemplate(firstTemplate);
+    }
+    
+    // Show success message
+    alert(`Template "${templateName}" deleted successfully!`);
+}
+
+/**
+ * The following functions return example template configurations
+ * In a real implementation, these would be loaded from storage or an API
+ */
+
+function getCiscoGeneralTemplate() {
+    return `! Cisco General Purpose 802.1X Configuration
+! Generated by Dot1Xer Supreme
+! Last updated: 2023-10-15
 
 ! RADIUS Server Configuration
 radius server PRIMARY
- address ipv4 <RADIUS_IP_PRIMARY> auth-port 1812 acct-port 1813
- key <RADIUS_KEY_PRIMARY>
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key SecureRadiusKey123
  timeout 5
  retransmit 3
-
-! Backup RADIUS Server Configuration (if specified)
+ 
 radius server BACKUP
- address ipv4 <RADIUS_IP_SECONDARY> auth-port 1812 acct-port 1813
- key <RADIUS_KEY_SECONDARY>
+ address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
+ key SecureRadiusKey123
  timeout 5
  retransmit 3
 
-! RADIUS Server Group
-aaa group server radius RADIUS-SERVERS
- server name PRIMARY
- server name BACKUP
+aaa new-model
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+
+! Global 802.1X Configuration
+dot1x system-auth-control
+authentication mac-move permit
+
+! Interface Configuration Template
+interface range GigabitEthernet1/0/1 - 48
+ switchport mode access
+ switchport access vlan 10
+ authentication event fail action authorize vlan 999
+ authentication event server dead action authorize vlan 999
+ authentication event server alive action reinitialize
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate 3600
+ dot1x pae authenticator
+ mab
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ spanning-tree portfast
+ 
+! RADIUS CoA Support
+aaa server radius dynamic-author
+ client 10.1.1.100 server-key SecureRadiusKey123
+ client 10.1.1.101 server-key SecureRadiusKey123`;
+}
+
+function getCiscoISETemplate() {
+    return `! Cisco ISE Integration 802.1X Configuration
+! Generated by Dot1Xer Supreme
+! Last updated: 2023-10-15
+
+! ISE RADIUS Server Configuration
+radius server ISE-1
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key ISEradiusKey123!
+ timeout 5
+ retransmit 3
+ automate-tester username probe-user password 7 0214055F5A545C
+ 
+radius server ISE-2
+ address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
+ key ISEradiusKey123!
+ timeout 5
+ retransmit 3
+ automate-tester username probe-user password 7 0214055F5A545C
+
+aaa group server radius ISE-SERVERS
+ server name ISE-1
+ server name ISE-2
+ deadtime 15
+ load-balance method least-outstanding
+
+aaa new-model
+aaa authentication dot1x default group ISE-SERVERS
+aaa authorization network default group ISE-SERVERS
+aaa accounting dot1x default start-stop group ISE-SERVERS
+aaa accounting update newinfo periodic 2880
+
+! Global 802.1X Configuration
+dot1x system-auth-control
+dot1x critical eapol
+authentication mac-move permit
+device-tracking tracking
+ip device tracking
+
+! Interface Configuration Template
+interface range GigabitEthernet1/0/1 - 48
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 20
+ authentication event fail action authorize vlan 999
+ authentication event server dead action authorize vlan 999
+ authentication event server alive action reinitialize
+ authentication host-mode multi-domain
+ authentication open
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ authentication violation replace
+ mab
+ dot1x pae authenticator
+ dot1x timeout tx-period 10
+ dot1x max-reauth-req 2
+ spanning-tree portfast
+ 
+! RADIUS Change of Authorization (CoA) Support
+aaa server radius dynamic-author
+ client 10.1.1.100 server-key ISEradiusKey123!
+ client 10.1.1.101 server-key ISEradiusKey123!
+ auth-type any
+ port 1700
+ 
+! Profiling Configuration
+device-sensor filter-spec dhcp include list DHCP-PARAMS
+device-sensor filter-spec http include list HTTP-PARAMS
+device-sensor filter-list dhcp list DHCP-PARAMS
+ option name host-name
+ option name class-identifier
+ option name client-identifier
+device-sensor filter-list http list HTTP-PARAMS
+ signature field user-agent
+device-sensor notify all-changes
+
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,999`;
+}
+
+function getArubaClearPassTemplate() {
+    return `! Aruba ClearPass Integration Configuration
+! Generated by Dot1Xer Supreme
+! Last updated: 2023-10-15
+
+! ClearPass RADIUS Server Configuration
+aaa authentication-server radius "ClearPass-1"
+ host 10.1.1.100
+ key ClearPassKey123!
+ timeout 5
+ retransmit 3
+ cppm username "aruba-switch" password 8e77c296e9e86cf
+
+aaa authentication-server radius "ClearPass-2"
+ host 10.1.1.101
+ key ClearPassKey123!
+ timeout 5
+ retransmit 3
+ cppm username "aruba-switch" password 8e77c296e9e86cf
+
+aaa server-group "ClearPass-Servers"
+ auth-server "ClearPass-1"
+ auth-server "ClearPass-2"
+ load-balance
  deadtime 15
 
-! Enable 802.1X System-wide
-dot1x system-auth-control
+! Authentication Configuration
+aaa authentication dot1x "dot1x-auth"
+ server-group "ClearPass-Servers"
+ reauthentication
+ timer reauth-period server
+ max-requests 2
+ quiet-period 5
+ tx-period 10
 
-! Change of Authorization (CoA) Configuration
-aaa server radius dynamic-author
- client <RADIUS_IP_PRIMARY> server-key <RADIUS_KEY_PRIMARY>
- client <RADIUS_IP_SECONDARY> server-key <RADIUS_KEY_SECONDARY>
- auth-type any
- port 3799
+aaa authentication mac-auth "mac-auth"
+ server-group "ClearPass-Servers"
+ delimiter colon
+ case upper
+ 
+aaa authentication port-access
+ dot1x authenticator
+ reauthenticate
+ enable
 
-! VLAN Configuration
-vlan <DATA_VLAN>
- name DATA_VLAN
-vlan <VOICE_VLAN>
- name VOICE_VLAN
-vlan <GUEST_VLAN>
- name GUEST_VLAN
-vlan <CRITICAL_VLAN>
- name CRITICAL_VLAN
+! User Roles
+aaa authorization user-role "auth-role"
+ vlan 10
+ 
+aaa authorization user-role "unauth-role"
+ vlan 999
+ 
+aaa authorization user-role "guest-role"
+ vlan 20
+ captive-portal
 
 ! Interface Configuration
-interface <INTERFACE>
- description 802.1X + MAB Authentication Port
- switchport mode access
- switchport access vlan <DATA_VLAN>
- switchport voice vlan <VOICE_VLAN>
- switchport nonegotiate
+interface range 1/1-1/48
+ aaa authentication port-access dot1x authenticator
+ aaa authentication port-access mab
+ aaa port-access authentication 1
+ aaa port-access mac-auth 1
+ aaa port-access authenticator active
+ aaa port-access authenticator port-control auto
+ aaa port-access authenticator reauthenticate
+ aaa port-access authenticator logoff-period 300
+ aaa port-access mac-auth 1
+ spanning-tree port-config admin-edge
+
+! Global 802.1X Configuration
+port-access role-based
+device-profile enable
+device-profile role-based-mode
+
+! ClearPass CoA Configuration
+aaa authentication-server radius "ClearPass-1" dynamic-authorization
+aaa authentication-server radius "ClearPass-2" dynamic-authorization
+aaa port-access dynamic-authorization
+radius-server-group "ClearPass-Servers" dynamic-authorization`;
+}
+
+function getJuniperBasicTemplate() {
+    return `# Juniper Basic 802.1X Configuration
+# Generated by Dot1Xer Supreme
+# Last updated: 2023-10-15
+
+system {
+    radius-server {
+        10.1.1.100 {
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "JuniperRadiusKey123"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
+            port 1812;
+            accounting-port 1813;
+        }
+        10.1.1.101 {
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "JuniperRadiusKey123"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
+            port 1812;
+            accounting-port 1813;
+        }
+    }
+}
+
+access {
+    radius-server {
+        10.1.1.100 {
+            port 1812;
+            accounting-port 1813;
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "JuniperRadiusKey123"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
+        }
+        10.1.1.101 {
+            port 1812;
+            accounting-port 1813;
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "JuniperRadiusKey123"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
+        }
+    }
+    profile dot1x-profile {
+        authentication-protocol dot1x;
+        supplicant multiple;
+        transmit-period 5;
+        mac-radius {
+            restrict;
+        }
+        retries 3;
+        quiet-period 5;
+        supplicant-timeout 30;
+        server-timeout 30;
+        server-reject-vlan 999;
+        server-fail-vlan 999;
+        guest-vlan 20;
+        eapol-block;
+    }
+}
+
+protocols {
+    dot1x {
+        authenticator {
+            authentication-profile-name dot1x-profile;
+            interface {
+                ge-0/0/0.0 {
+                    supplicant multiple;
+                    retries 3;
+                    quiet-period 5;
+                    transmit-period 5;
+                    mac-radius;
+                    server-fail vlan-name fail-vlan;
+                    guest-vlan guest-vlan;
+                }
+                # Apply to other interfaces as needed
+            }
+        }
+    }
+}
+
+class-of-service {
+    interfaces {
+        ge-0/0/0 {
+            unit 0 {
+                classifiers {
+                    ieee-802.1 voice-classifier forwarding-class voice-traffic;
+                }
+            }
+        }
+    }
+}`;
+}
+
+function getFortinetNACTemplate() {
+    return `# FortiGate NAC Configuration
+# Generated by Dot1Xer Supreme
+# Last updated: 2023-10-15
+
+config user radius
+    edit "FortiAuthServer"
+        set server "10.1.1.100"
+        set secret ENC TH1s+i5_@_53CRE+
+        set auth-type auto
+        set source-ip 192.168.1.1
+        set nas-ip 192.168.1.1
+        set acct-interim-interval 600
+    next
+end
+
+config user group
+    edit "NAC-Users"
+        set member "FortiAuthServer"
+    next
+    edit "Guest-Users"
+        set member "FortiAuthServer"
+    next
+end
+
+config user nac-policy
+    edit 1
+        set name "Corporate-Policy"
+        set description "Policy for corporate devices"
+        set category device
+        set status enable
+        set user-groups "NAC-Users"
+        set host-type windows-pc
+        set ems-tag enable
+        set switch-fortilink "FortiSwitch-Link"
+        set switch-mac 00:01:02:03:04:05
+        set switch-ports "port1" "port2" "port3"
+        set switch-port-mode 802.1x
+        set switch-auth-type 802.1x-mac
+        set auth-vlan-id 10
+        set unauth-vlan-id 999
+    next
+    edit 2
+        set name "Guest-Policy"
+        set description "Policy for guest devices"
+        set category device
+        set status enable
+        set user-groups "Guest-Users"
+        set host-type unknown
+        set switch-fortilink "FortiSwitch-Link"
+        set switch-mac 00:01:02:03:04:05
+        set switch-ports "port4" "port5" "port6"
+        set switch-port-mode 802.1x
+        set switch-auth-type 802.1x-mac
+        set auth-vlan-id 20
+        set unauth-vlan-id 999
+    next
+end
+
+config system interface
+    edit "port1"
+        set vdom "root"
+        set mode static
+        set ip 192.168.1.1 255.255.255.0
+        set allowaccess ping https ssh snmp
+        set type physical
+        set nac enable
+        set nac-policy "Corporate-Policy"
+    next
+end
+
+config system global
+    set radius-port 1812
+    set admin-radius-timeout 10
+    set admin-lockout-threshold 3
+    set admin-lockout-duration 300
+end
+
+# FortiSwitch Configuration (managed by FortiGate)
+config switch-controller managed-switch
+    edit "S124DP12345678"
+        config ports
+            edit "port1"
+                set poe-status enable
+                set vlan-mode tagged
+                set native-vlan 10
+                set allowed-vlans 10 20 999
+                set nac enable
+                set nac-profile "Corporate-Policy"
+                set security-policy "port-security-policy"
+                set dhcp-snooping enable
+                set arp-inspection enable
+            next
+        end
+    next
+end
+
+config switch-controller security-policy 802-1X
+    edit "port-security-policy"
+        set security-mode 802.1X
+        set user-group "NAC-Users"
+        set mac-auth-bypass enable
+        set eap-passthrough enable
+        set guest-vlan enable
+        set guest-vlan-id 20
+        set auth-fail-vlan enable
+        set auth-fail-vlan-id 999
+        set radius-timeout-overwrite enable
+        set auth-max-users 3
+    next
+end`;
+}
+
+function getMultiVendorHealthcareTemplate() {
+    return `# Multi-Vendor Healthcare 802.1X Configuration
+# Generated by Dot1Xer Supreme
+# Last updated: 2023-10-15
+
+##############################################
+# RADIUS Server Configuration
+##############################################
+
+# Cisco Configuration
+radius server PRIMARY
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key HealthcareRad1us!
+ timeout 5
+ retransmit 3
  
- ! Authentication settings
+radius server BACKUP
+ address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
+ key HealthcareRad1us!
+ timeout 5
+ retransmit 3
+
+aaa new-model
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+
+aaa server radius dynamic-author
+ client 10.1.1.100 server-key HealthcareRad1us!
+ client 10.1.1.101 server-key HealthcareRad1us!
+ auth-type any
+ port 1700
+
+# Aruba Configuration
+aaa authentication-server radius "PRIMARY"
+ host 10.1.1.100
+ key HealthcareRad1us!
+ timeout 5
+ retransmit 3
+
+aaa authentication-server radius "BACKUP"
+ host 10.1.1.101
+ key HealthcareRad1us!
+ timeout 5
+ retransmit 3
+
+aaa server-group "RADIUS-SERVERS"
+ auth-server "PRIMARY"
+ auth-server "BACKUP"
+ load-balance
+ deadtime 15
+
+# Juniper Configuration
+system {
+    radius-server {
+        10.1.1.100 {
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "HealthcareRad1us!"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
+            port 1812;
+            accounting-port 1813;
+        }
+        10.1.1.101 {
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "HealthcareRad1us!"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
+            port 1812;
+            accounting-port 1813;
+        }
+    }
+}
+
+##############################################
+# Healthcare Specific VLANs
+##############################################
+# VLAN 10: Staff Network
+# VLAN 20: Clinical Devices
+# VLAN 30: Medical Equipment
+# VLAN 40: Guest Access
+# VLAN 999: Quarantine
+
+##############################################
+# Device Categories and MAB Rules
+##############################################
+# Category 1: Staff Computers (802.1X)
+# Category 2: Clinical Tablets (802.1X)
+# Category 3: Medical Devices (MAB)
+# Category 4: IoT Devices (MAB)
+# Category 5: Guest Devices (802.1X)
+
+##############################################
+# Cisco Interface Template - Medical Devices
+##############################################
+interface range GigabitEthernet1/0/1 - 24
+ description Medical Devices
+ switchport mode access
+ switchport access vlan 30
+ switchport voice vlan 20
+ authentication event fail action authorize vlan 999
+ authentication event server dead action authorize vlan 999
+ authentication event server alive action reinitialize
+ authentication host-mode multi-auth
+ authentication open
+ authentication order mab dot1x
+ authentication priority mab dot1x
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate 10800
+ authentication violation replace
+ mab
+ dot1x pae authenticator
+ dot1x timeout tx-period 5
+ spanning-tree portfast
+
+##############################################
+# Aruba Interface Template - Staff Access
+##############################################
+interface range 1/1-1/24
+ description Staff Access
+ aaa authentication port-access dot1x authenticator
+ aaa authentication port-access mab
+ aaa port-access authentication 1
+ aaa port-access mac-auth 1
+ aaa port-access authenticator active
+ aaa port-access authenticator port-control auto
+ aaa port-access authenticator reauthenticate
+ aaa port-access authenticator logoff-period 300
+ vlan access 10
+ spanning-tree admin-edge
+
+##############################################
+# Juniper Interface Template - Clinical Devices
+##############################################
+interfaces {
+    ge-0/0/0 {
+        description "Clinical Devices";
+        unit 0 {
+            family ethernet-switching {
+                port-mode access;
+                vlan members 20;
+                authentication {
+                    dot1x {
+                        supplicant multiple;
+                        transmit-period 5;
+                        mac-radius {
+                            restrict;
+                        }
+                        guest-vlan {
+                            vlan-name guest-vlan;
+                        }
+                        server-fail {
+                            vlan-name quarantine-vlan;
+                        }
+                        authentication-order [dot1x mac-radius];
+                    }
+                }
+            }
+        }
+    }
+}`;
+}
+
+function getMultiVendorEducationTemplate() {
+    return `# Multi-Vendor Education 802.1X Configuration
+# Generated by Dot1Xer Supreme
+# Last updated: 2023-10-15
+
+##############################################
+# RADIUS Server Configuration
+##############################################
+
+# Cisco Configuration
+radius server PRIMARY
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key EduSecureR@d1u$
+ timeout 5
+ retransmit 3
+ 
+radius server BACKUP
+ address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
+ key EduSecureR@d1u$
+ timeout 5
+ retransmit 3
+
+aaa new-model
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+
+# Aruba Configuration
+aaa authentication-server radius "PRIMARY"
+ host 10.1.1.100
+ key EduSecureR@d1u$
+ timeout 5
+ retransmit 3
+
+aaa authentication-server radius "BACKUP"
+ host 10.1.1.101
+ key EduSecureR@d1u$
+ timeout 5
+ retransmit 3
+
+aaa server-group "RADIUS-SERVERS"
+ auth-server "PRIMARY"
+ auth-server "BACKUP"
+ load-balance
+ deadtime 15
+
+##############################################
+# Education Specific VLANs
+##############################################
+# VLAN 10: Faculty/Staff 
+# VLAN 20: Student
+# VLAN 30: Computer Labs
+# VLAN 40: Guest/BYOD
+# VLAN 50: IoT Devices
+# VLAN 999: Quarantine
+
+##############################################
+# Cisco Interface Template - Classroom
+##############################################
+interface range GigabitEthernet1/0/1 - 24
+ description Classroom Access
+ switchport mode access
+ switchport access vlan 10
+ authentication event fail action authorize vlan 999
+ authentication event server dead action authorize vlan 999
+ authentication event server alive action reinitialize
  authentication host-mode multi-auth
  authentication open
  authentication order dot1x mab
  authentication priority dot1x mab
  authentication port-control auto
  authentication periodic
- authentication timer reauthenticate 7200
- authentication timer restart 10
- authentication violation restrict
- 
- ! 802.1X configuration
- dot1x pae authenticator
- dot1x timeout tx-period 10
- dot1x max-reauth-req 3
- 
- ! MAB configuration
+ authentication timer reauthenticate 14400
+ authentication violation replace
  mab
- 
- ! Guest VLAN for authentication failures
- authentication event fail action authorize vlan <GUEST_VLAN>
- 
- ! Critical VLAN for RADIUS server unavailability
- authentication event server dead action authorize vlan <CRITICAL_VLAN>
- authentication event server alive action reinitialize
- 
- ! Spanning tree configuration
+ dot1x pae authenticator
+ dot1x timeout tx-period 5
  spanning-tree portfast
- spanning-tree bpduguard enable
 
-! End of Configuration`;
-            break;
-            
-        case 'aruba-aoscx-dot1x-mab':
-            description = `
-                <p>This template configures 802.1X with MAC Authentication Bypass (MAB) on Aruba AOS-CX switches. It includes:</p>
-                <ul>
-                    <li>RADIUS server configuration</li>
-                    <li>802.1X and MAC authentication settings</li>
-                    <li>Role-based access control for different authentication states</li>
-                    <li>VLAN assignments for authenticated, guest, and critical access</li>
-                    <li>Voice VLAN support</li>
-                </ul>
-                <p>This configuration is designed for Aruba AOS-CX switches (6000, 8000, and 10000 series).</p>
-            `;
-            
-            content = `! Aruba AOS-CX 802.1X with MAB Configuration Template
-! Generated by Dot1Xer Supreme
-! Description: Standard configuration for 802.1X with MAB fallback on AOS-CX
+##############################################
+# Aruba Interface Template - Computer Lab
+##############################################
+interface range 1/1-1/24
+ description Computer Lab
+ aaa authentication port-access dot1x authenticator
+ aaa authentication port-access mab
+ aaa port-access authentication 1
+ aaa port-access mac-auth 1
+ aaa port-access authenticator active
+ aaa port-access authenticator port-control auto
+ aaa port-access authenticator reauthenticate
+ aaa port-access authenticator logoff-period 300
+ vlan access 30
+ spanning-tree admin-edge
 
-! RADIUS Server Configuration
-radius-server host <RADIUS_IP_PRIMARY> key <RADIUS_KEY_PRIMARY>
-radius-server host <RADIUS_IP_SECONDARY> key <RADIUS_KEY_SECONDARY>
+##############################################
+# BYOD Onboarding Configuration
+##############################################
+# Cisco Wireless Controller Configuration
+config radius auth add 1 10.1.1.100 1812 ascii EduSecureR@d1u$
+config radius auth add 2 10.1.1.101 1812 ascii EduSecureR@d1u$
+config radius acct add 1 10.1.1.100 1813 ascii EduSecureR@d1u$
+config radius acct add 2 10.1.1.101 1813 ascii EduSecureR@d1u$
 
-! 802.1X Configuration
-aaa authentication port-access dot1x authenticator
-aaa authentication port-access dot1x authenticator cached-reauth
-aaa authentication port-access dot1x authenticator reauthentication
-aaa authentication port-access dot1x authenticator timeout quiet-period 10
-aaa authentication port-access dot1x authenticator timeout reauth-period 7200
-aaa authentication port-access dot1x authenticator timeout supp-timeout 30
-aaa authentication port-access dot1x authenticator timeout server-timeout 30
-aaa authentication port-access dot1x authenticator max-retries 3
-aaa authentication port-access dot1x authenticator max-requests 3
+config wlan create 1 "BYOD-Onboarding" "BYOD-Onboarding"
+config wlan security wpa wpa2 enable 1
+config wlan security wpa wpa2 ciphers aes enable 1
+config wlan security 802.1X enable 1
+config wlan radius_server auth add 1 1
+config wlan radius_server auth add 1 2
+config wlan radius_server acct add 1 1
+config wlan radius_server acct add 1 2
+config wlan security web-auth enable 1
+config wlan security web-auth acl add 1 "BYOD-ACL"
+config wlan security web-auth captive-bypass enable 1
+config wlan security web-auth on-macauth-failure enable 1
+config wlan security pmf mandatory 1
 
-! MAC Authentication Configuration
-aaa authentication port-access mac-auth
-aaa authentication port-access mac-auth cache-mode
-aaa authentication port-access mac-auth cache-timeout 14400
-aaa authentication port-access mac-auth max-retries 3
-aaa authentication port-access mac-auth timeout quiet-period 10
-aaa authentication port-access mac-auth timeout server-timeout 30
-aaa authentication port-access mac-auth timeout reauth-period 7200
+config wlan create 2 "Student-Access" "Student-Access"
+config wlan security wpa wpa2 enable 2
+config wlan security wpa wpa2 ciphers aes enable 2
+config wlan security 802.1X enable 2
+config wlan radius_server auth add 2 1
+config wlan radius_server auth add 2 2
+config wlan radius_server acct add 2 1
+config wlan radius_server acct add 2 2
+config wlan security web-auth disable 2
+config wlan security pmf mandatory 2
 
-! VLAN Configuration
-vlan <DATA_VLAN>
-    name "AUTH_VLAN"
-vlan <VOICE_VLAN>
-    name "VOICE_VLAN"
-vlan <GUEST_VLAN>
-    name "GUEST_VLAN"
-vlan <CRITICAL_VLAN>
-    name "CRITICAL_VLAN"
+config wlan create 3 "Faculty-Access" "Faculty-Access"
+config wlan security wpa wpa2 enable 3
+config wlan security wpa wpa2 ciphers aes enable 3
+config wlan security 802.1X enable 3
+config wlan radius_server auth add 3 1
+config wlan radius_server auth add 3 2
+config wlan radius_server acct add 3 1
+config wlan radius_server acct add 3 2
+config wlan security web-auth disable 3
+config wlan security pmf mandatory 3
 
-! Interface Configuration
-interface <INTERFACE>
-    description "802.1X Authentication Port"
-    no shutdown
-    aaa authentication port-access dot1x authenticator
-    aaa authentication port-access dot1x authenticator logoff-period 300
-    aaa authentication port-access dot1x authenticator client-limit 5
-    aaa authentication port-access mac-auth
-    aaa authentication port-access mac-auth addr-format no-delimiter uppercase
-    aaa authentication port-access authenticator active
-    aaa authentication port-access authenticator critical-auth
-    aaa authentication port-access authenticator auth-priority dot1x mac-auth
-    aaa authentication port-access authenticator reauth-period 7200
-    aaa port-access role-based unauth-role <GUEST_VLAN>
-    aaa port-access role-based auth-role <DATA_VLAN>
-    aaa port-access role-based critical-role <CRITICAL_VLAN>
-    aaa port-access role-based voice-role <VOICE_VLAN>
-    spanning-tree port-type admin-edge
-    spanning-tree bpdu-protection
+##############################################
+# ACL for Guest Access
+##############################################
+# Cisco ACL
+ip access-list extended GUEST-ACL
+ permit udp any any eq domain
+ permit tcp any any eq domain
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit udp any any eq ntp
+ deny   ip any 10.0.0.0 0.255.255.255
+ permit ip any any`;
+}
 
-! End of Configuration`;
-            break;
-            
-        case 'juniper-ex-dot1x-mab':
-            description = `
-                <p>This template configures 802.1X with MAC Authentication Bypass (MAB) on Juniper EX Series switches. It includes:</p>
-                <ul>
-                    <li>RADIUS server configuration</li>
-                    <li>Access profile for authentication</li>
-                    <li>802.1X protocol configuration</li>
-                    <li>Multiple authentication methods (802.1X and MAC-RADIUS)</li>
-                    <li>Guest and server-fail VLAN assignment</li>
-                    <li>Interface configuration with VLAN assignments</li>
-                </ul>
-                <p>This configuration is suitable for Juniper EX Series switches in environments with mixed client types.</p>
-            `;
-            
-            content = `# Juniper EX Series 802.1X with MAB Configuration Template
+function getMultiVendorEnterpriseTemplate() {
+    return `# Multi-Vendor Enterprise 802.1X Configuration
 # Generated by Dot1Xer Supreme
-# Description: Standard configuration for 802.1X with MAB fallback on Juniper EX
+# Last updated: 2023-10-15
 
+##############################################
 # RADIUS Server Configuration
-system {
-    radius-server {
-        <RADIUS_IP_PRIMARY> {
-            port 1812;
-            accounting-port 1813;
-            secret "<RADIUS_KEY_PRIMARY>";
-            retry 3;
-            timeout 5;
-        }
-        <RADIUS_IP_SECONDARY> {
-            port 1812;
-            accounting-port 1813;
-            secret "<RADIUS_KEY_SECONDARY>";
-            retry 3;
-            timeout 5;
-        }
-    }
-}
+##############################################
 
-# Access Profile Configuration
-access {
-    profile dot1x-profile {
-        authentication-order [ dot1x mac-radius ];
-        radius {
-            authentication-server [ <RADIUS_IP_PRIMARY> <RADIUS_IP_SECONDARY> ];
-            accounting-server [ <RADIUS_IP_PRIMARY> <RADIUS_IP_SECONDARY> ];
-            options {
-                revert-interval 300;
-            }
-        }
-        accounting {
-            order radius;
-            accounting-stop-on-failure;
-            accounting-stop-on-access-deny;
-        }
-    }
-}
+# Cisco Configuration
+radius server PRIMARY
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key Enterprise8021X!
+ timeout 5
+ retransmit 3
+ 
+radius server BACKUP
+ address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
+ key Enterprise8021X!
+ timeout 5
+ retransmit 3
 
-# VLAN Configuration
-vlans {
-    data-vlan {
-        vlan-id <DATA_VLAN>;
-    }
-    voice-vlan {
-        vlan-id <VOICE_VLAN>;
-    }
-    guest-vlan {
-        vlan-id <GUEST_VLAN>;
-    }
-    critical-vlan {
-        vlan-id <CRITICAL_VLAN>;
-    }
-}
-
-# 802.1X Protocol Configuration
-protocols {
-    dot1x {
-        authenticator {
-            authentication-profile-name dot1x-profile;
-            interface {
-                <INTERFACE> {
-                    supplicant multiple;
-                    transmit-period 5;
-                    mac-radius {
-                        restrict;
-                    }
-                    reauthentication 7200;
-                    guest-vlan <GUEST_VLAN>;
-                    server-fail vlan-name <CRITICAL_VLAN>;
-                    server-reject-vlan <GUEST_VLAN>;
-                    eapol-block;
-                }
-            }
-        }
-    }
-}
-
-# Interface Configuration
-interfaces {
-    <INTERFACE> {
-        unit 0 {
-            family ethernet-switching {
-                port-mode access;
-                vlan {
-                    members <DATA_VLAN>;
-                }
-                voip {
-                    vlan <VOICE_VLAN>;
-                }
-            }
-        }
-    }
-}
-
-# End of Configuration`;
-            break;
-            
-        case 'multi-vendor-deployment':
-            description = `
-                <p>This comprehensive template provides configuration guidelines for 802.1X deployment across multiple vendor platforms. It includes:</p>
-                <ul>
-                    <li>RADIUS server configuration for FreeRADIUS</li>
-                    <li>Configuration examples for Cisco, Aruba, Juniper, and other devices</li>
-                    <li>RADIUS attribute-value pairs for VLAN assignment</li>
-                    <li>Change of Authorization (CoA) requirements</li>
-                    <li>Best practices and implementation notes</li>
-                </ul>
-                <p>This guide is ideal for heterogeneous network environments with multiple switch vendors.</p>
-            `;
-            
-            content = `# Multi-Vendor 802.1X Deployment Guide
-# Generated by Dot1Xer Supreme
-# Description: Comprehensive guide for 802.1X deployment across multiple vendors
-
-############################################################
-# RADIUS SERVER CONFIGURATION
-############################################################
-
-# FreeRADIUS Configuration
-# -----------------------
-# In /etc/freeradius/3.0/clients.conf:
-
-client CiscoSwitches {
-    ipaddr = 192.168.1.0/24
-    secret = <RADIUS_SECRET>
-    nas_type = cisco
-}
-
-client ArubaControllers {
-    ipaddr = 192.168.2.0/24
-    secret = <RADIUS_SECRET>
-    nas_type = other
-}
-
-client JuniperSwitches {
-    ipaddr = 192.168.3.0/24
-    secret = <RADIUS_SECRET>
-    nas_type = other
-}
-
-client OtherSwitches {
-    ipaddr = 192.168.4.0/24
-    secret = <RADIUS_SECRET>
-    nas_type = other
-}
-
-############################################################
-# CISCO IOS CONFIGURATION
-############################################################
-
-! Global AAA Configuration
 aaa new-model
 aaa authentication dot1x default group radius
 aaa authorization network default group radius
 aaa accounting dot1x default start-stop group radius
 
-! RADIUS Server Configuration
-radius server PRIMARY
- address ipv4 <RADIUS_IP_PRIMARY> auth-port 1812 acct-port 1813
- key <RADIUS_SECRET>
+# Aruba Configuration
+aaa authentication-server radius "PRIMARY"
+ host 10.1.1.100
+ key Enterprise8021X!
+ timeout 5
+ retransmit 3
 
-radius server BACKUP
- address ipv4 <RADIUS_IP_SECONDARY> auth-port 1812 acct-port 1813
- key <RADIUS_SECRET>
+aaa authentication-server radius "BACKUP"
+ host 10.1.1.101
+ key Enterprise8021X!
+ timeout 5
+ retransmit 3
 
-! Interface Configuration
-interface GigabitEthernet1/0/1
- switchport mode access
- switchport access vlan <DATA_VLAN>
- authentication host-mode multi-auth
- authentication port-control auto
- authentication periodic
- dot1x pae authenticator
- spanning-tree portfast
+aaa server-group "RADIUS-SERVERS"
+ auth-server "PRIMARY"
+ auth-server "BACKUP"
+ load-balance
+ deadtime 15
 
-############################################################
-# ARUBA AOS-CX CONFIGURATION
-############################################################
-
-! RADIUS Server Configuration
-radius-server host <RADIUS_IP_PRIMARY> key <RADIUS_SECRET>
-radius-server host <RADIUS_IP_SECONDARY> key <RADIUS_SECRET>
-
-! Interface Configuration
-interface 1/1/1
- aaa authentication port-access dot1x authenticator
- aaa authentication port-access mac-auth
- aaa authentication port-access authenticator active
- aaa port-access role-based auth-role <DATA_VLAN>
- aaa port-access role-based unauth-role <GUEST_VLAN>
-
-############################################################
-# JUNIPER EX CONFIGURATION
-############################################################
-
-# RADIUS Server Configuration
+# Juniper Configuration
 system {
     radius-server {
-        <RADIUS_IP_PRIMARY> {
+        10.1.1.100 {
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "Enterprise8021X!"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
             port 1812;
             accounting-port 1813;
-            secret "<RADIUS_SECRET>";
+        }
+        10.1.1.101 {
+            secret "$9$gg4JD.P5Q/AtOcyrev"; # "Enterprise8021X!"
+            timeout 5;
+            retry 3;
+            source-address 10.0.0.1;
+            port 1812;
+            accounting-port 1813;
         }
     }
 }
 
-# Interface Configuration
-protocols {
-    dot1x {
-        authenticator {
-            authentication-profile-name dot1x-profile;
-            interface {
-                ge-0/0/1 {
-                    supplicant multiple;
-                    guest-vlan <GUEST_VLAN>;
+##############################################
+# Enterprise Network VLANs
+##############################################
+# VLAN 10: Employee Network
+# VLAN 20: Conference Rooms
+# VLAN 30: IoT Devices
+# VLAN 40: BYOD
+# VLAN 50: Guest Access
+# VLAN 60: Voice VLAN
+# VLAN 999: Quarantine
+
+##############################################
+# Cisco Interface Template - Office Area
+##############################################
+interface range GigabitEthernet1/0/1 - 48
+ description Office Area Access
+ switchport mode access
+ switchport access vlan 10
+ switchport voice vlan 60
+ authentication event fail action authorize vlan 999
+ authentication event server dead action authorize vlan 999
+ authentication event server alive action reinitialize
+ authentication host-mode multi-domain
+ authentication open
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate 28800
+ authentication violation replace
+ mab
+ dot1x pae authenticator
+ dot1x timeout tx-period 5
+ spanning-tree portfast
+
+##############################################
+# Aruba Interface Template - Conference Rooms
+##############################################
+interface range 1/1-1/24
+ description Conference Rooms
+ aaa authentication port-access dot1x authenticator
+ aaa authentication port-access mab
+ aaa port-access authentication 1
+ aaa port-access mac-auth 1
+ aaa port-access authenticator active
+ aaa port-access authenticator port-control auto
+ aaa port-access authenticator reauthenticate
+ aaa port-access authenticator logoff-period 300
+ vlan access 20
+ spanning-tree admin-edge
+
+##############################################
+# Juniper Interface Template - IoT Devices
+##############################################
+interfaces {
+    ge-0/0/0 {
+        description "IoT Devices";
+        unit 0 {
+            family ethernet-switching {
+                port-mode access;
+                vlan members 30;
+                authentication {
+                    dot1x {
+                        supplicant multiple;
+                        transmit-period 5;
+                        mac-radius {
+                            restrict;
+                        }
+                        guest-vlan {
+                            vlan-name guest-vlan;
+                        }
+                        server-fail {
+                            vlan-name quarantine-vlan;
+                        }
+                        authentication-order [dot1x mac-radius];
+                    }
                 }
             }
         }
     }
 }
 
-############################################################
-# HP PROCURVE CONFIGURATION
-############################################################
+##############################################
+# FortiGate Interface Template - BYOD/Guest
+##############################################
+config system interface
+    edit "port1"
+        set vdom "root"
+        set mode static
+        set ip 192.168.1.1 255.255.255.0
+        set allowaccess ping https ssh snmp
+        set type physical
+        set nac enable
+        set nac-policy "BYOD-Policy"
+    next
+end
 
-; RADIUS Server Configuration
-radius-server host <RADIUS_IP_PRIMARY> key <RADIUS_SECRET>
+config user radius
+    edit "FortiAuthServer"
+        set server "10.1.1.100"
+        set secret Enterprise8021X!
+        set auth-type auto
+        set source-ip 192.168.1.1
+        set nas-ip 192.168.1.1
+    next
+end
 
-; AAA Configuration
-aaa authentication port-access eap-radius
-aaa port-access authenticator 1
-aaa port-access authenticator 1 auth-vid <DATA_VLAN>
-aaa port-access authenticator 1 unauth-vid <GUEST_VLAN>
+config user nac-policy
+    edit 1
+        set name "BYOD-Policy"
+        set description "Policy for BYOD devices"
+        set category device
+        set status enable
+        set user-groups "BYOD-Users"
+        set auth-vlan-id 40
+        set unauth-vlan-id 999
+    next
+    edit 2
+        set name "Guest-Policy"
+        set description "Policy for guest devices"
+        set category device
+        set status enable
+        set user-groups "Guest-Users"
+        set auth-vlan-id 50
+        set unauth-vlan-id 999
+    next
+end`;
+}
 
-############################################################
-# COMMON CONFIGURATION NOTES
-############################################################
+function getWirelessControllerTemplate() {
+    return `# Wireless Controller 802.1X Configuration
+# Generated by Dot1Xer Supreme
+# Last updated: 2023-10-15
 
-# RADIUS Attribute-Value Pairs for VLAN Assignment:
-# ------------------------------------------------
-# Tunnel-Type = VLAN (13)
-# Tunnel-Medium-Type = IEEE-802 (6)
-# Tunnel-Private-Group-ID = <DATA_VLAN> (for authenticated users)
-# Tunnel-Private-Group-ID = <GUEST_VLAN> (for guest/unauthenticated users)
-# Tunnel-Private-Group-ID = <VOICE_VLAN> (for voice devices)
+##############################################
+# Cisco WLC Configuration
+##############################################
 
-# RADIUS Change of Authorization (CoA) Requirements:
-# -------------------------------------------------
-# - Enable CoA on RADIUS server
-# - Configure network devices to accept CoA packets from RADIUS server IP
-# - Use the same shared secret for CoA as for authentication
-# - Ensure UDP port 3799 is open between RADIUS server and network devices
+# RADIUS Server Configuration
+config radius auth add 1 10.1.1.100 1812 ascii WirelessSecure123!
+config radius auth add 2 10.1.1.101 1812 ascii WirelessSecure123!
+config radius acct add 1 10.1.1.100 1813 ascii WirelessSecure123!
+config radius acct add 2 10.1.1.101 1813 ascii WirelessSecure123!
 
-# Deployment Best Practices:
-# -------------------------
-# 1. Deploy in monitor mode initially to identify authentication issues
-# 2. Roll out to a small pilot group before full deployment
-# 3. Ensure backup authentication servers are configured and tested
-# 4. Implement Critical VLAN functionality for RADIUS server failures
-# 5. Document MAC addresses for devices that require MAB
-# 6. Configure appropriate timeouts and retries based on network conditions
-# 7. Monitor authentication successes and failures during deployment
+config radius auth callStationIdType ap-macaddr-ssid
+config radius auth rfc3576 enable
+config radius auth management 1 disable
+config radius auth management 2 disable
 
-# End of Multi-Vendor Deployment Guide`;
-            break;
-            
-        default:
-            description = '<p>Select a template to view its details.</p>';
-            content = '';
+config radius fallback-test mode passive
+config radius fallback-test username "probe"
+config radius fallback-test interval 300
+
+# Corporate WLAN Configuration
+config wlan create 1 "Corporate" "Corporate"
+config wlan security wpa wpa2 enable 1
+config wlan security wpa wpa2 ciphers aes enable 1
+config wlan security 802.1X enable 1
+config wlan radius_server auth add 1 1
+config wlan radius_server auth add 1 2
+config wlan radius_server acct add 1 1
+config wlan radius_server acct add 1 2
+config wlan security web-auth disable 1
+config wlan security pmf mandatory 1
+config wlan aaa-override enable 1
+config wlan session-timeout 1 43200
+config wlan exclusionlist 1 enabled 180
+config wlan max-associated-clients 1 500
+config wlan load-balance allow enable 1
+config wlan ccx aironetIeSupport enable 1
+config wlan security ft enable 1
+config wlan security wpa wpa2 gtk-randomize enable 1
+config wlan mdns disable 1
+config wlan interface 1 "corp-interface"
+
+# Guest WLAN Configuration
+config wlan create 2 "Guest" "Guest"
+config wlan security wpa wpa2 enable 2
+config wlan security wpa wpa2 ciphers aes enable 2
+config wlan security 802.1X enable 2
+config wlan radius_server auth add 2 1
+config wlan radius_server auth add 2 2
+config wlan radius_server acct add 2 1
+config wlan radius_server acct add 2 2
+config wlan security web-auth enable 2
+config wlan security web-auth acl add 2 "GUEST-ACL"
+config wlan security web-auth captive-bypass disable 2
+config wlan security web-auth on-macauth-failure enable 2
+config wlan security pmf optional 2
+config wlan aaa-override enable 2
+config wlan session-timeout 2 10800
+config wlan exclusionlist 2 enabled 180
+config wlan max-associated-clients 2 300
+config wlan load-balance allow enable 2
+config wlan interface 2 "guest-interface"
+
+# BYOD WLAN Configuration
+config wlan create 3 "BYOD" "BYOD"
+config wlan security wpa wpa2 enable 3
+config wlan security wpa wpa2 ciphers aes enable 3
+config wlan security 802.1X enable 3
+config wlan radius_server auth add 3 1
+config wlan radius_server auth add 3 2
+config wlan radius_server acct add 3 1
+config wlan radius_server acct add 3 2
+config wlan security web-auth disable 3
+config wlan security pmf optional 3
+config wlan aaa-override enable 3
+config wlan session-timeout 3 28800
+config wlan exclusionlist 3 enabled 180
+config wlan max-associated-clients 3 400
+config wlan load-balance allow enable 3
+config wlan interface 3 "byod-interface"
+
+##############################################
+# Aruba Mobility Controller Configuration
+##############################################
+
+# RADIUS Server Configuration
+aaa authentication-server radius "PRIMARY"
+ host 10.1.1.100
+ key WirelessSecure123!
+ timeout 5
+ retransmit 3
+ nas-ip 10.0.0.1
+ rfc3576
+
+aaa authentication-server radius "BACKUP"
+ host 10.1.1.101
+ key WirelessSecure123!
+ timeout 5
+ retransmit 3
+ nas-ip 10.0.0.1
+ rfc3576
+
+aaa server-group "RADIUS-SERVERS"
+ auth-server "PRIMARY"
+ auth-server "BACKUP"
+ load-balance
+ deadtime 15
+
+# Corporate WLAN Configuration
+wlan ssid-profile "Corporate-SSID"
+ essid "Corporate"
+ opmode wpa2-aes
+ max-authentication-retries 3
+ rf-band all
+ dtim-period 1
+ 802.11a-max-tx-power 15
+ 802.11g-max-tx-power 15
+ wmm
+ wmm-uapsd
+ dot11k
+ dot11r
+ wlan-rts-threshold 2333
+ wlan-cts-threshold 2333
+ edca-parameters-profile station default
+ deny-bcast
+ enforce-user-vlan
+ 
+wlan authentication-server "Corporate-Auth"
+ server-group "RADIUS-SERVERS"
+ 
+wlan access-rule "Corporate-ACL"
+ captive-portal disable
+ ipv4 permit any any "any"
+ 
+wlan virtual-ap "Corporate-VAP"
+ aaa-profile "Corporate-AAA"
+ vlan 10
+ forward-mode tunnel
+ ssid-profile "Corporate-SSID"
+ rap-operation forward
+
+aaa profile "Corporate-AAA"
+ authentication-dot1x "Corporate-Auth"
+ dot1x-default-role "authenticated"
+ dot1x-server-group "RADIUS-SERVERS"
+ radius-accounting "RADIUS-SERVERS"
+ radius-interim-accounting
+ mac-authentication-profile "Corporate-MAC"
+ rfc3576-server "10.1.1.100"
+ rfc3576-server "10.1.1.101"
+ 
+# Guest WLAN Configuration
+wlan ssid-profile "Guest-SSID"
+ essid "Guest"
+ opmode wpa2-aes
+ max-authentication-retries 3
+ rf-band all
+ dtim-period 1
+ 802.11a-max-tx-power 15
+ 802.11g-max-tx-power 15
+ wmm
+ wmm-uapsd
+ dot11k
+ dot11r
+ wlan-rts-threshold 2333
+ wlan-cts-threshold 2333
+ edca-parameters-profile station default
+ 
+wlan authentication-server "Guest-Auth"
+ server-group "RADIUS-SERVERS"
+ 
+wlan access-rule "Guest-ACL"
+ captive-portal enable
+ ipv4 permit tcp 80 80 any any "http"
+ ipv4 permit tcp 443 443 any any "https"
+ ipv4 permit udp 53 53 any any "dns"
+ ipv4 deny any any "any"
+ 
+wlan virtual-ap "Guest-VAP"
+ aaa-profile "Guest-AAA"
+ vlan 20
+ forward-mode tunnel
+ ssid-profile "Guest-SSID"
+ rap-operation forward
+
+aaa profile "Guest-AAA"
+ authentication-dot1x "Guest-Auth"
+ dot1x-default-role "guest"
+ dot1x-server-group "RADIUS-SERVERS"
+ radius-accounting "RADIUS-SERVERS"
+ radius-interim-accounting
+ captive-portal "Guest-Portal"
+ mac-authentication-profile "Guest-MAC"
+ rfc3576-server "10.1.1.100"
+ rfc3576-server "10.1.1.101"`;
+}
+
+function getGuestAccessTemplate() {
+    return `# Guest Access Portal Configuration
+# Generated by Dot1Xer Supreme
+# Last updated: 2023-10-15
+
+##############################################
+# Cisco Guest Access Configuration
+##############################################
+
+# RADIUS Server Configuration
+radius server GUEST-RADIUS
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key GuestPortal123!
+ timeout 5
+ retransmit 3
+
+aaa new-model
+aaa authentication dot1x default group radius
+aaa authorization network default group radius
+aaa accounting dot1x default start-stop group radius
+
+# Guest VLAN Configuration
+vlan 50
+ name GUEST_VLAN
+
+# Guest Access ACL
+ip access-list extended GUEST-ACL
+ permit udp any any eq domain
+ permit tcp any any eq domain
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ permit udp any any eq ntp
+ deny   ip any 10.0.0.0 0.255.255.255
+ permit ip any any
+
+# Web Authentication Configuration
+ip admission name GUEST-WEBAUTH-RULE proxy http
+ip admission proxy http login page file disk0:guest-login.html
+ip admission proxy http success page file disk0:guest-success.html
+ip admission proxy http failure page file disk0:guest-fail.html
+ip admission proxy http redirect disk0:guest-redirect.html
+
+# Interface Configuration for Guest Access
+interface GigabitEthernet1/0/10
+ description Guest Access
+ switchport mode access
+ switchport access vlan 50
+ ip access-group GUEST-ACL in
+ authentication fallback GUEST-WEBAUTH-RULE
+ authentication host-mode single-host
+ authentication open
+ authentication order webauth
+ authentication priority webauth
+ authentication port-control auto
+ authentication violation restrict
+ authentication timer inactivity 3600
+ mab
+ dot1x pae authenticator
+ spanning-tree portfast
+
+##############################################
+# Aruba Guest Access Configuration
+##############################################
+
+# ClearPass Guest Portal Configuration
+# (Configuration would be done in ClearPass GUI)
+
+# RADIUS Server Configuration
+aaa authentication-server radius "GUEST-RADIUS"
+ host 10.1.1.100
+ key GuestPortal123!
+ timeout 5
+ retransmit 3
+
+aaa server-group "GUEST-SERVERS"
+ auth-server "GUEST-RADIUS"
+ 
+# Guest VLAN Configuration
+vlan 50
+ name "Guest-Network"
+
+# Guest Roles and Policies
+user-role guest
+ access-list session guest-logon-access
+ access-list session block-internal-access
+ access-list session captive-portal-access
+ access-list session dhcp-acl
+ access-list session dns-acl
+ captive-portal "Guest-Portal"
+ 
+# Interface Configuration for Guest Access
+interface gigabitethernet 1/10
+ description "Guest Access"
+ trusted vlan 50
+ captive-portal profile "Guest-Portal"
+
+##############################################
+# FortiGate Guest Access Configuration
+##############################################
+
+# Guest VLAN Configuration
+config system interface
+    edit "guest-vlan"
+        set vdom "root"
+        set ip 192.168.50.1 255.255.255.0
+        set allowaccess ping https ssh http
+        set description "Guest Network"
+        set role lan
+        set interface "internal"
+        set vlanid 50
+    next
+end
+
+# Captive Portal Configuration
+config user local
+    edit "guest"
+        set type password
+        set passwd guestaccess123
+    next
+end
+
+config user group
+    edit "guest-group"
+        set member "guest"
+    next
+end
+
+config firewall policy
+    edit 1
+        set name "Guest Access Policy"
+        set srcintf "guest-vlan"
+        set dstintf "wan1"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "HTTP" "HTTPS" "DNS" "NTP"
+        set nat enable
+        set groups "guest-group"
+        set captive-portal enable
+    next
+end
+
+config authentication scheme
+    edit "guest-portal"
+        set method form
+        set user-database "local"
+    next
+end
+
+config authentication rule
+    edit "guest-rule"
+        set srcintf "guest-vlan"
+        set srcaddr "all"
+        set ip-based disable
+        set active-auth-method "guest-portal"
+        set web-auth-cookie enable
+    next
+end
+
+##############################################
+# Guest Portal HTML Templates
+##############################################
+
+# Login Page HTML
+<html>
+<head>
+    <title>Guest WiFi Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .container { max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-top: 0; }
+        input[type="text"], input[type="email"], input[type="password"] { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 3px; box-sizing: border-box; }
+        button { background-color: #0077cc; color: white; border: none; padding: 10px 15px; border-radius: 3px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #005fa3; }
+        .terms { font-size: 12px; color: #666; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Guest WiFi</h1>
+        <p>Please sign in to access our guest network.</p>
+        <form method="post" action="$PORTAL_ACTION$">
+            <div>
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div>
+                <label for="name">Full Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div>
+                <label for="company">Company (Optional):</label>
+                <input type="text" id="company" name="company">
+            </div>
+            <div>
+                <button type="submit">Connect</button>
+            </div>
+            <div class="terms">
+                By connecting to our guest network, you agree to our <a href="#">Terms of Service</a> and <a href="#">Acceptable Use Policy</a>.
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
+# Success Page HTML
+<html>
+<head>
+    <title>Connection Successful</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .container { max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #333; margin-top: 0; }
+        .success-icon { font-size: 60px; color: #4CAF50; margin-bottom: 20px; }
+        button { background-color: #0077cc; color: white; border: none; padding: 10px 15px; border-radius: 3px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #005fa3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✓</div>
+        <h1>Connection Successful</h1>
+        <p>You have successfully connected to our guest network.</p>
+        <p>Your session will expire in 12 hours.</p>
+        <p>If you have any issues, please contact the front desk.</p>
+        <a href="http://www.example.com"><button>Continue to Internet</button></a>
+    </div>
+</body>
+</html>`;
+}
+
+function getBYODOnboardingTemplate() {
+    return `# BYOD Onboarding Configuration
+# Generated by Dot1Xer Supreme
+# Last updated: 2023-10-15
+
+##############################################
+# Cisco ISE BYOD Onboarding Configuration
+##############################################
+
+# ISE Configuration (GUI-based, commands shown for reference)
+
+# 1. Configure BYOD Portal
+# Navigate to: Work Centers > BYOD > Portals & Components > BYOD Portals
+# Configure: Portal Settings, BYOD Settings, Support Information, etc.
+
+# 2. Configure Client Provisioning Portal
+# Navigate to: Work Centers > BYOD > Portals & Components > Client Provisioning Portal
+# Configure: Portal Settings, Portal Page Customization, etc.
+
+# 3. Configure Client Provisioning Policy
+# Navigate to: Work Centers > BYOD > Client Provisioning > Client Provisioning Policy
+# Configure policies for different operating systems: Windows, macOS, iOS, Android
+
+# 4. Configure Authorization Profiles
+# Navigate to: Work Centers > BYOD > Policy Elements > Results > Authorization Profiles
+# Create profiles: NSP_Onboarding, BYOD_Registered, etc.
+
+# 5. Configure Authorization Policy
+# Navigate to: Work Centers > BYOD > Policy Sets
+# Configure rules for BYOD onboarding flow and post-registration access
+
+# 6. Configure BYOD Settings
+# Navigate to: Work Centers > BYOD > Settings
+# Configure: Policies, MDM Integration, etc.
+
+##############################################
+# Cisco Wireless Controller Configuration for BYOD
+##############################################
+
+# RADIUS Server Configuration (ISE)
+config radius auth add 1 10.1.1.100 1812 ascii ISEradiusKey123!
+config radius auth add 2 10.1.1.101 1812 ascii ISEradiusKey123!
+config radius acct add 1 10.1.1.100 1813 ascii ISEradiusKey123!
+config radius acct add 2 10.1.1.101 1813 ascii ISEradiusKey123!
+
+# BYOD WLAN Configuration
+config wlan create 1 "BYOD" "BYOD"
+config wlan security wpa wpa2 enable 1
+config wlan security wpa wpa2 ciphers aes enable 1
+config wlan security 802.1X enable 1
+config wlan radius_server auth add 1 1
+config wlan radius_server auth add 1 2
+config wlan radius_server acct add 1 1
+config wlan radius_server acct add 1 2
+config wlan security web-auth disable 1
+config wlan aaa-override enable 1
+config wlan nac radius enable 1
+config wlan security wpa gtk-random enable 1
+config wlan security pmf mandatory 1
+config wlan ccx aironetIeSupport enable 1
+config wlan interface 1 "byod-interface"
+
+# Onboarding WLAN Configuration
+config wlan create 2 "Onboarding" "Onboarding"
+config wlan security wpa wpa2 enable 2
+config wlan security wpa wpa2 ciphers aes enable 2
+config wlan security 802.1X enable 2
+config wlan radius_server auth add 2 1
+config wlan radius_server auth add 2 2
+config wlan radius_server acct add 2 1
+config wlan radius_server acct add 2 2
+config wlan security web-auth enable 2
+config wlan security web-auth acl add 2 "ONBOARDING-ACL"
+config wlan security web-auth captive-bypass enable 2
+config wlan aaa-override enable 2
+config wlan interface 2 "onboarding-interface"
+
+# ACL for Onboarding
+config acl create "ONBOARDING-ACL"
+config acl rule add "ONBOARDING-ACL" 1
+config acl rule protocol "ONBOARDING-ACL" 1 17
+config acl rule source port range "ONBOARDING-ACL" 1 0 65535
+config acl rule destination port range "ONBOARDING-ACL" 1 53 53
+config acl rule action "ONBOARDING-ACL" 1 permit
+
+config acl rule add "ONBOARDING-ACL" 2
+config acl rule protocol "ONBOARDING-ACL" 2 6
+config acl rule source port range "ONBOARDING-ACL" 2 0 65535
+config acl rule destination port range "ONBOARDING-ACL" 2 80 80
+config acl rule action "ONBOARDING-ACL" 2 permit
+
+config acl rule add "ONBOARDING-ACL" 3
+config acl rule protocol "ONBOARDING-ACL" 3 6
+config acl rule source port range "ONBOARDING-ACL" 3 0 65535
+config acl rule destination port range "ONBOARDING-ACL" 3 443 443
+config acl rule action "ONBOARDING-ACL" 3 permit
+
+config acl rule add "ONBOARDING-ACL" 4
+config acl rule protocol "ONBOARDING-ACL" 4 6
+config acl rule source port range "ONBOARDING-ACL" 4 0 65535
+config acl rule destination port range "ONBOARDING-ACL" 4 8443 8443
+config acl rule action "ONBOARDING-ACL" 4 permit
+
+config acl rule add "ONBOARDING-ACL" 5
+config acl rule destination address "ONBOARDING-ACL" 5 10.1.1.100 255.255.255.255
+config acl rule action "ONBOARDING-ACL" 5 permit
+
+config acl rule add "ONBOARDING-ACL" 6
+config acl rule destination address "ONBOARDING-ACL" 6 10.1.1.101 255.255.255.255
+config acl rule action "ONBOARDING-ACL" 6 permit
+
+config acl rule add "ONBOARDING-ACL" 7
+config acl rule action "ONBOARDING-ACL" 7 deny
+
+##############################################
+# Cisco Switch Configuration for BYOD
+##############################################
+
+# RADIUS Server Configuration (ISE)
+radius server ISE-1
+ address ipv4 10.1.1.100 auth-port 1812 acct-port 1813
+ key ISEradiusKey123!
+ timeout 5
+ retransmit 3
+ 
+radius server ISE-2
+ address ipv4 10.1.1.101 auth-port 1812 acct-port 1813
+ key ISEradiusKey123!
+ timeout 5
+ retransmit 3
+
+aaa group server radius ISE-SERVERS
+ server name ISE-1
+ server name ISE-2
+ deadtime 15
+ load-balance method least-outstanding
+
+aaa new-model
+aaa authentication dot1x default group ISE-SERVERS
+aaa authorization network default group ISE-SERVERS
+aaa accounting dot1x default start-stop group ISE-SERVERS
+
+# BYOD VLAN Configuration
+vlan 40
+ name BYOD_VLAN
+vlan 41
+ name BYOD_ONBOARDING
+
+# URL Redirect ACL for BYOD
+ip access-list extended ACL-REDIRECT
+ permit tcp any any eq 80
+ permit tcp any any eq 443
+ deny tcp any host 10.1.1.100 eq 80
+ deny tcp any host 10.1.1.100 eq 443
+ deny tcp any host 10.1.1.101 eq 80
+ deny tcp any host 10.1.1.101 eq 443
+ deny ip any any
+
+# DNS/DHCP ACL for BYOD
+ip access-list extended ACL-DEFAULT
+ permit udp any any eq domain
+ permit udp any any eq bootps
+ permit udp any any eq bootpc
+ deny ip any any
+
+# Interface Configuration for BYOD Access
+interface GigabitEthernet1/0/10
+ description BYOD Access
+ switchport mode access
+ switchport access vlan 40
+ authentication event fail action authorize vlan 41
+ authentication event server dead action authorize vlan 41
+ authentication event server alive action reinitialize
+ authentication host-mode multi-auth
+ authentication open
+ authentication order dot1x mab
+ authentication priority dot1x mab
+ authentication port-control auto
+ authentication periodic
+ authentication timer reauthenticate server
+ authentication violation replace
+ mab
+ dot1x pae authenticator
+ dot1x timeout tx-period 5
+ spanning-tree portfast
+
+# Enable Change of Authorization (CoA)
+aaa server radius dynamic-author
+ client 10.1.1.100 server-key ISEradiusKey123!
+ client 10.1.1.101 server-key ISEradiusKey123!
+ auth-type any
+ port 1700
+
+##############################################
+# MDM Integration Configuration Example
+##############################################
+
+# Cisco ISE MDM Integration (GUI-based, commands shown for reference)
+
+# 1. Configure MDM Server
+# Navigate to: Administration > Network Resources > External MDM
+# Configure: Server Name, Type (AirWatch, MobileIron, etc.), API Information
+
+# 2. Configure MDM Authorization Conditions
+# Navigate to: Work Centers > BYOD > Policy Elements > Conditions > MDM
+# Create conditions based on MDM attributes: Compliant, Registered, etc.
+
+# 3. Configure Authorization Policies
+# Navigate to: Work Centers > BYOD > Policy Sets
+# Add rules for MDM compliance checking
+
+##############################################
+# Certificate Templates
+##############################################
+
+# Windows Certificate Template (AD CS)
+# Template Name: BYOD-User-Authentication
+# Compatibility: Windows Server 2012 R2
+# Template Type: User Certificate
+# Validity Period: 1 Year
+# Renewal Period: 6 Weeks
+# Subject Name: CN={UserPrincipalName}
+# Extensions: Client Authentication, Smart Card Logon
+# Issuance Requirements: CA Certificate Manager Approval
+
+# iOS/macOS Certificate Profile (MDM)
+{
+  "PayloadContent": [
+    {
+      "PayloadType": "com.apple.security.pkcs12",
+      "PayloadVersion": 1,
+      "PayloadIdentifier": "com.example.byod.credentials",
+      "PayloadUUID": "3C83B947-9B44-4AF3-9AC7-69B900B28A63",
+      "PayloadDisplayName": "BYOD Certificate",
+      "PayloadDescription": "Configures BYOD certificate for network authentication",
+      "PayloadContent": {
+        "URL": "https://onboarding.example.com/certificate",
+        "Name": "BYOD-Certificate"
+      },
+      "SubjectAltName": {
+        "AltNameType": "RFC822Name",
+        "AltName": "{EMAIL}"
+      }
     }
-    
-    // Update template description and content
-    templateDescription.innerHTML = description;
-    templateContent.textContent = content;
-}
-
-/**
- * Copy text to clipboard
- */
-function copyToClipboard(text) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(text)
-            .catch(err => {
-                console.error('Error copying text: ', err);
-                fallbackCopyToClipboard(text);
-            });
-    } else {
-        fallbackCopyToClipboard(text);
-    }
-}
-
-/**
- * Fallback method to copy to clipboard
- */
-function fallbackCopyToClipboard(text) {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
-    
-    try {
-        document.execCommand('copy');
-    } catch (err) {
-        console.error('Error copying text: ', err);
-        alert('Failed to copy to clipboard. Please select and copy the text manually.');
-    }
-    
-    document.body.removeChild(textArea);
-}
-
-/**
- * Download text as a file
- */
-function downloadTextFile(text, filename) {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-    
-    element.style.display = 'none';
-    document.body.appendChild(element);
-    
-    element.click();
-    
-    document.body.removeChild(element);
-}
-
-/**
- * Show modal for adding a new template
- */
-function showAddTemplateModal() {
-    // Create modal element
-    const modalContainer = document.createElement('div');
-    modalContainer.className = 'modal-container';
-    modalContainer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    `;
-    
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-    modalContent.style.cssText = `
-        background-color: var(--card-background);
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        width: 80%;
-        max-width: 800px;
-        max-height: 80vh;
-        overflow-y: auto;
-    `;
-    
-    modalContent.innerHTML = `
-        <h3>Add New Template</h3>
-        
-        <div class="input-group">
-            <label for="template-name">Template Name</label>
-            <input type="text" id="template-name" placeholder="e.g., Cisco IOS Custom Template">
-        </div>
-        
-        <div class="input-group">
-            <label for="template-vendor">Vendor</label>
-            <select id="template-vendor">
-                <option value="">Select Vendor</option>
-                <option value="cisco">Cisco</option>
-                <option value="aruba">Aruba</option>
-                <option value="juniper">Juniper</option>
-                <option value="extreme">Extreme</option>
-                <option value="hp">HP</option>
-                <option value="multi-vendor">Multi-Vendor</option>
-            </select>
-        </div>
-        
-        <div class="input-group">
-            <label for="template-platform">Platform</label>
-            <select id="template-platform">
-                <option value="">Select Platform</option>
-                <!-- Will be populated based on vendor selection -->
-            </select>
-        </div>
-        
-        <div class="input-group">
-            <label for="template-type">Template Type</label>
-            <select id="template-type">
-                <option value="">Select Type</option>
-                <option value="dot1x-only">802.1X Only</option>
-                <option value="mab-only">MAB Only</option>
-                <option value="dot1x-mab">802.1X + MAB</option>
-                <option value="multi-auth">Multi-Auth</option>
-                <option value="multi-domain">Multi-Domain</option>
-                <option value="deployment">Deployment Guide</option>
-            </select>
-        </div>
-        
-        <div class="input-group">
-            <label for="template-content-input">Template Content</label>
-            <textarea id="template-content-input" rows="15" placeholder="Enter template configuration..."></textarea>
-        </div>
-        
-        <div class="modal-actions">
-            <button id="cancel-template" class="secondary-button">Cancel</button>
-            <button id="save-template" class="primary-button">Save Template</button>
-        </div>
-    `;
-    
-    modalContainer.appendChild(modalContent);
-    document.body.appendChild(modalContainer);
-    
-    // Add event listeners
-    document.getElementById('cancel-template').addEventListener('click', function() {
-        document.body.removeChild(modalContainer);
-    });
-    
-    document.getElementById('save-template').addEventListener('click', function() {
-        // In a real implementation, this would save the template to a database or local storage
-        alert('Template saving functionality would be implemented here.');
-        document.body.removeChild(modalContainer);
-    });
-    
-    // Handle vendor change to update platform options
-    document.getElementById('template-vendor').addEventListener('change', function() {
-        const platformSelect = document.getElementById('template-platform');
-        const vendor = this.value;
-        
-        // Clear existing options
-        platformSelect.innerHTML = '<option value="">Select Platform</option>';
-        
-        // Add platform options based on vendor
-        if (vendor === 'cisco') {
-            addPlatformOption(platformSelect, 'ios', 'IOS');
-            addPlatformOption(platformSelect, 'ios-xe', 'IOS-XE');
-            addPlatformOption(platformSelect, 'nxos', 'NX-OS');
-            addPlatformOption(platformSelect, 'wlc', 'Wireless LAN Controller');
-        } else if (vendor === 'aruba') {
-            addPlatformOption(platformSelect, 'aoscx', 'AOS-CX');
-            addPlatformOption(platformSelect, 'aos-switch', 'AOS-Switch');
-            addPlatformOption(platformSelect, 'controller', 'Mobility Controller');
-        } else if (vendor === 'juniper') {
-            addPlatformOption(platformSelect, 'ex', 'EX Series');
-            addPlatformOption(platformSelect, 'srx', 'SRX Series');
-        } else if (vendor === 'extreme') {
-            addPlatformOption(platformSelect, 'exos', 'EXOS');
-            addPlatformOption(platformSelect, 'voss', 'VOSS');
-        } else if (vendor === 'hp') {
-            addPlatformOption(platformSelect, 'procurve', 'ProCurve');
-            addPlatformOption(platformSelect, 'comware', 'Comware');
-        } else if (vendor === 'multi-vendor') {
-            addPlatformOption(platformSelect, 'mixed', 'Mixed Environment');
-            addPlatformOption(platformSelect, 'deployment', 'Deployment Guide');
-        }
-    });
-    
-    // Helper function to add platform options
-    function addPlatformOption(select, value, text) {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = text;
-        select.appendChild(option);
-    }
-    
-    // Close modal when clicking outside
-    modalContainer.addEventListener('click', function(e) {
-        if (e.target === modalContainer) {
-            document.body.removeChild(modalContainer);
-        }
-    });
-}
-
-/**
- * Show modal for editing a template
- */
-function showEditTemplateModal(templateName, templateContent) {
-    // Create modal element
-    const modalContainer = document.createElement('div');
-    modalContainer.className = 'modal-container';
-    modalContainer.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    `;
-    
-    const modalContent = document.createElement('div');
-    modalContent.className = 'modal-content';
-    modalContent.style.cssText = `
-        background-color: var(--card-background);
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        width: 80%;
-        max-width: 800px;
-        max-height: 80vh;
-        overflow-y: auto;
-    `;
-    
-    modalContent.innerHTML = `
-        <h3>Edit Template</h3>
-        
-        <div class="input-group">
-            <label for="edit-template-name">Template Name</label>
-            <input type="text" id="edit-template-name" value="${templateName}">
-        </div>
-        
-        <div class="input-group">
-            <label for="edit-template-content">Template Content</label>
-            <textarea id="edit-template-content" rows="20">${templateContent}</textarea>
-        </div>
-        
-        <div class="modal-actions">
-            <button id="cancel-edit" class="secondary-button">Cancel</button>
-            <button id="save-edit" class="primary-button">Save Changes</button>
-        </div>
-    `;
-    
-    modalContainer.appendChild(modalContent);
-    document.body.appendChild(modalContainer);
-    
-    // Add event listeners
-    document.getElementById('cancel-edit').addEventListener('click', function() {
-        document.body.removeChild(modalContainer);
-    });
-    
-    document.getElementById('save-edit').addEventListener('click', function() {
-        // In a real implementation, this would save the updated template
-        const newName = document.getElementById('edit-template-name').value;
-        const newContent = document.getElementById('edit-template-content').value;
-        
-        // Update the displayed template
-        document.getElementById('template-title').textContent = newName;
-        document.getElementById('template-content').textContent = newContent;
-        
-        // Close the modal
-        document.body.removeChild(modalContainer);
-        
-        // Show success message
-        alert('Template updated successfully!');
-    });
-    
-    // Close modal when clicking outside
-    modalContainer.addEventListener('click', function(e) {
-        if (e.target === modalContainer) {
-            document.body.removeChild(modalContainer);
-        }
-    });
+  ],
+  "PayloadVersion": 1,
+  "PayloadType": "Configuration",
+  "PayloadIdentifier": "com.example.byod.profile",
+  "PayloadUUID": "A1B2C3D4-E5F6-1234-5678-9ABCDEF01234",
+  "PayloadDisplayName": "BYOD Certificate Profile",
+  "PayloadDescription": "Installs certificate for BYOD access",
+  "PayloadOrganization": "Example Corp"
+}`;
 }

@@ -3,580 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dot1Xer Supreme - Advanced 802.1X Configuration</title>
+    <title>Dot1Xer Supreme - Enterprise 802.1X Configuration Tool</title>
+    <meta name="description" content="Comprehensive web-based tool for creating, managing, and deploying 802.1X configurations across multi-vendor environments">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/help_tips.css">
-    <link rel="stylesheet" href="css/dark-theme.css" id="dark-theme" disabled>
+    <link rel="stylesheet" href="css/environment_discovery.css">
+    <link rel="stylesheet" href="css/ai_integration.css">
+    <link rel="stylesheet" href="css/portnox_integration.css">
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <!-- Banner Section -->
-    <div class="banner-container">
-        <!-- Try MP4 video first with fallback to HTML animation -->
-        <video class="banner-video" autoplay loop muted playsinline>
-            <source src="assets/banner/banner.mp4" type="video/mp4">
-            <!-- Fallback to HTML banner if MP4 not available -->
-            <iframe class="banner-iframe" src="assets/banner/banner.html"></iframe>
-        </video>
-    </div>
-
-    <!-- Header Section -->
     <header>
         <div class="logo">
             <h1>Dot1Xer Supreme</h1>
-            <p class="tagline">Advanced 802.1X Configuration Management</p>
+            <p class="tagline">Enterprise 802.1X Configuration Tool</p>
         </div>
         <nav>
             <ul>
-                <li><a href="#config" class="active">Configure</a></li>
-                <li><a href="#templates">Templates</a></li>
-                <li><a href="#discovery">Discovery</a></li>
-                <li><a href="#deployment">Deployment</a></li>
-                <li><a href="#ai">AI Assist</a></li>
-                <li><a href="#help">Help</a></li>
+                <li><a href="#" class="active" data-tab="config">Configuration</a></li>
+                <li><a href="#" data-tab="templates">Templates</a></li>
+                <li><a href="#" data-tab="discovery">Environment Discovery</a></li>
+                <li><a href="#" data-tab="deployment">Deployment</a></li>
+                <li><a href="#" data-tab="ai-assist">AI Assist</a></li>
+                <li><a href="#" data-tab="help">Help</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Main Content -->
     <main>
-        <!-- Config Tab -->
         <div id="config" class="tab-content active">
-            <h2>802.1X Configuration Generator</h2>
-            
-            <div class="vendor-selector">
-                <!-- Vendor selection cards will be populated by JavaScript -->
-            </div>
-            
             <div class="config-options">
-                <h3>Configuration Options</h3>
+                <h2>802.1X Configuration Generator</h2>
                 
-                <div class="option-row">
-                    <div class="option-group">
-                        <label for="platform">Platform</label>
-                        <select id="platform">
-                            <option value="">Select Platform</option>
-                            <!-- Platform options will be populated by JavaScript based on vendor selection -->
-                        </select>
-                        <div class="help-tip" data-tip="platform">
-                            <div class="tooltip">Select the specific operating system or platform version. Different platforms from the same vendor may have different configuration syntax and capabilities.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="option-group">
-                        <label for="auth-method">Authentication Method</label>
-                        <select id="auth-method">
-                            <option value="dot1x">802.1X Only</option>
-                            <option value="mab">MAB Only</option>
-                            <option value="dot1x-mab">802.1X + MAB</option>
-                            <option value="multi-auth">Multi-Auth</option>
-                            <option value="multi-domain">Multi-Domain</option>
-                            <option value="multi-host">Multi-Host</option>
-                        </select>
-                        <div class="help-tip" data-tip="auth-method">
-                            <div class="tooltip">Choose the authentication method to use:
-                                <ul>
-                                    <li><strong>802.1X Only</strong>: Authenticates devices using 802.1X protocol only</li>
-                                    <li><strong>MAB Only</strong>: Authenticates devices by MAC address only</li>
-                                    <li><strong>802.1X + MAB</strong>: Tries 802.1X first, then falls back to MAB if 802.1X fails</li>
-                                    <li><strong>Multi-Auth</strong>: Allows multiple authentication methods simultaneously</li>
-                                    <li><strong>Multi-Domain</strong>: Separate authentication for voice and data devices</li>
-                                    <li><strong>Multi-Host</strong>: Authenticate one device and allow multiple others on same port</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="option-row">
-                    <div class="option-group">
-                        <label for="radius-server">RADIUS Server IP</label>
-                        <input type="text" id="radius-server" placeholder="e.g., 10.1.1.100">
-                        <div class="help-tip" data-tip="radius-server">
-                            <div class="tooltip">IP address of the primary RADIUS authentication server. This server will be tried first for all authentication requests.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="option-group">
-                        <label for="radius-secret">RADIUS Shared Secret</label>
-                        <input type="password" id="radius-secret" placeholder="Enter shared secret">
-                        <div class="help-tip" data-tip="radius-secret">
-                            <div class="tooltip">Shared secret used to encrypt RADIUS communications. Should be a strong, unique key at least 16 characters long with mixed case, numbers, and special characters.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="option-row">
-                    <div class="option-group">
-                        <label for="backup-server">Backup RADIUS Server IP (Optional)</label>
-                        <input type="text" id="backup-server" placeholder="e.g., 10.1.1.101">
-                        <div class="help-tip" data-tip="backup-server">
-                            <div class="tooltip">IP address of the backup RADIUS server. Used if the primary server is unreachable.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="option-group">
-                        <label for="backup-secret">Backup RADIUS Secret (Optional)</label>
-                        <input type="password" id="backup-secret" placeholder="Enter backup secret">
-                        <div class="help-tip" data-tip="backup-secret">
-                            <div class="tooltip">Shared secret for the backup RADIUS server. For security, use a different secret than the primary server.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="option-row">
-                    <div class="option-group">
-                        <label for="vlan-auth">Authenticated VLAN</label>
-                        <input type="number" id="vlan-auth" placeholder="e.g., 10" min="1" max="4094">
-                        <div class="help-tip" data-tip="vlan-auth">
-                            <div class="tooltip">VLAN ID for successfully authenticated devices. This is the main production VLAN for authorized users.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="option-group">
-                        <label for="vlan-voice">Voice VLAN (Optional)</label>
-                        <input type="number" id="vlan-voice" placeholder="e.g., 20" min="1" max="4094">
-                        <div class="help-tip" data-tip="vlan-voice">
-                            <div class="tooltip">VLAN ID for voice devices (IP phones). This allows separate handling of voice traffic for QoS purposes.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="option-row">
-                    <div class="option-group">
-                        <label for="vlan-guest">Guest VLAN</label>
-                        <input type="number" id="vlan-guest" placeholder="e.g., 30" min="1" max="4094">
-                        <div class="help-tip" data-tip="vlan-guest">
-                            <div class="tooltip">VLAN ID for guest devices or failed authentications. Typically provides limited network access.</div>
-                        </div>
-                    </div>
-                    
-                    <div class="option-group">
-                        <label for="vlan-critical">Critical VLAN (Optional)</label>
-                        <input type="number" id="vlan-critical" placeholder="e.g., 40" min="1" max="4094">
-                        <div class="help-tip" data-tip="vlan-critical">
-                            <div class="tooltip">VLAN ID when authentication servers are unreachable. Used to maintain basic network access during outages.</div>
-                        </div>
-                    </div>
+                <div class="option-group">
+                    <label for="vendor">Vendor:</label>
+                    <select id="vendor" name="vendor">
+                        <option value="">-- Select Vendor --</option>
+                        <option value="cisco">Cisco</option>
+                        <option value="aruba">Aruba</option>
+                        <option value="juniper">Juniper</option>
+                        <option value="fortinet">Fortinet</option>
+                        <option value="arista">Arista</option>
+                        <option value="extreme">Extreme Networks</option>
+                        <option value="huawei">Huawei</option>
+                        <option value="dell">Dell</option>
+                        <option value="hp">HP</option>
+                        <option value="alcatel">Alcatel-Lucent</option>
+                        <option value="ubiquiti">Ubiquiti</option>
+                        <option value="ruckus">Ruckus</option>
+                        <option value="brocade">Brocade</option>
+                        <option value="paloalto">Palo Alto</option>
+                        <option value="checkpoint">Check Point</option>
+                        <option value="sonicwall">SonicWall</option>
+                    </select>
+                    <div class="help-tip" data-tip="Select the network equipment vendor for which you want to generate a configuration."></div>
                 </div>
                 
                 <div class="option-group">
-                    <label for="interface">Interface(s)</label>
-                    <input type="text" id="interface" placeholder="e.g., GigabitEthernet1/0/1 or range: GigabitEthernet1/0/1-24">
-                    <div class="help-tip" data-tip="interface">
-                        <div class="tooltip">The network interface(s) where 802.1X will be enabled. You can specify a single interface, multiple interfaces separated by commas, or a range using a hyphen.</div>
-                    </div>
+                    <label for="platform">Platform:</label>
+                    <select id="platform" name="platform" disabled>
+                        <option value="">-- Select Platform --</option>
+                    </select>
+                    <div class="help-tip" data-tip="Select the specific platform or operating system version."></div>
                 </div>
                 
-                <h4>Advanced Options</h4>
+                <div class="option-group">
+                    <label for="auth-method">Authentication Method:</label>
+                    <select id="auth-method" name="auth-method">
+                        <option value="">-- Select Method --</option>
+                        <option value="eap-tls">EAP-TLS</option>
+                        <option value="peap">PEAP</option>
+                        <option value="eap-ttls">EAP-TTLS</option>
+                        <option value="eap-fast">EAP-FAST</option>
+                        <option value="eap-md5">EAP-MD5</option>
+                        <option value="mab">MAC Authentication Bypass</option>
+                        <option value="multi">Multiple Methods</option>
+                    </select>
+                    <div class="help-tip" data-tip="Select the 802.1X authentication method to use."></div>
+                </div>
                 
-                <div class="option-row">
+                <div class="option-group">
+                    <label for="radius-server">RADIUS Server:</label>
+                    <input type="text" id="radius-server" name="radius-server" placeholder="e.g., 10.1.1.100">
+                    <div class="help-tip" data-tip="Enter the IP address or hostname of your RADIUS server."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="radius-secret">RADIUS Secret:</label>
+                    <input type="password" id="radius-secret" name="radius-secret" placeholder="shared secret">
+                    <div class="help-tip" data-tip="Enter the shared secret used to authenticate with the RADIUS server."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="backup-server">Backup RADIUS Server (Optional):</label>
+                    <input type="text" id="backup-server" name="backup-server" placeholder="e.g., 10.1.1.101">
+                    <div class="help-tip" data-tip="Enter the IP address or hostname of your backup RADIUS server (if applicable)."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="backup-secret">Backup RADIUS Secret (Optional):</label>
+                    <input type="password" id="backup-secret" name="backup-secret" placeholder="shared secret">
+                    <div class="help-tip" data-tip="Enter the shared secret for the backup RADIUS server."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="vlan-auth">Authenticated VLAN ID:</label>
+                    <input type="number" id="vlan-auth" name="vlan-auth" min="1" max="4094" placeholder="e.g., 10">
+                    <div class="help-tip" data-tip="Enter the VLAN ID to assign to authenticated devices."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="vlan-unauth">Unauthenticated VLAN ID:</label>
+                    <input type="number" id="vlan-unauth" name="vlan-unauth" min="1" max="4094" placeholder="e.g., 999">
+                    <div class="help-tip" data-tip="Enter the VLAN ID to assign to unauthenticated devices."></div>
+                </div>
+                
+                <div class="option-group">
+                    <label for="vlan-guest">Guest VLAN ID (Optional):</label>
+                    <input type="number" id="vlan-guest" name="vlan-guest" min="1" max="4094" placeholder="e.g., 20">
+                    <div class="help-tip" data-tip="Enter the VLAN ID to assign to guest devices (if applicable)."></div>
+                </div>
+                
+                <div class="option-group checkboxes">
+                    <label>Advanced Options:</label>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="enable-mab">
+                        <input type="checkbox" id="enable-mab" name="enable-mab">
                         <label for="enable-mab">Enable MAC Authentication Bypass</label>
-                        <div class="help-tip" data-tip="enable-mab">
-                            <div class="tooltip">Allow MAC Authentication Bypass if 802.1X fails. Useful for devices that don't support 802.1X.</div>
-                        </div>
+                        <div class="help-tip" data-tip="Enable MAC Authentication Bypass for devices that don't support 802.1X."></div>
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" id="enable-coa">
-                        <label for="enable-coa">Enable Change of Authorization (CoA)</label>
-                        <div class="help-tip" data-tip="enable-coa">
-                            <div class="tooltip">Change of Authorization (CoA) allows the RADIUS server to dynamically change authorization parameters (like VLAN) during a session.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="option-row">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="enable-monitor">
+                        <input type="checkbox" id="enable-monitor" name="enable-monitor">
                         <label for="enable-monitor">Enable Monitor Mode</label>
-                        <div class="help-tip" data-tip="enable-monitor">
-                            <div class="tooltip">Monitor mode allows the switch to perform 802.1X authentication but not enforce it. Useful for testing or gradual deployment.</div>
-                        </div>
+                        <div class="help-tip" data-tip="Enable monitor mode to log authentication attempts without enforcing access control."></div>
                     </div>
                     
                     <div class="checkbox-group">
-                        <input type="checkbox" id="enable-radsec">
-                        <label for="enable-radsec">Enable RADIUS over TLS (RadSec)</label>
-                        <div class="help-tip" data-tip="enable-radsec">
-                            <div class="tooltip">RadSec (RADIUS over TLS) encrypts RADIUS traffic over TLS, providing stronger security than the standard RADIUS shared secret.</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="option-row">
-                    <div class="option-group">
-                        <label for="auth-timer-restart">Authentication Timer (Restart) in seconds</label>
-                        <input type="number" id="auth-timer-restart" placeholder="e.g., 60" min="1" max="65535" value="60">
-                        <div class="help-tip" data-tip="auth-timer-restart">
-                            <div class="tooltip">How long (in seconds) to wait before restarting authentication after a failure.</div>
-                        </div>
+                        <input type="checkbox" id="enable-critical" name="enable-critical">
+                        <label for="enable-critical">Enable Critical VLAN</label>
+                        <div class="help-tip" data-tip="Configure behavior when RADIUS servers are unavailable."></div>
                     </div>
                     
-                    <div class="option-group">
-                        <label for="auth-timer-reauthenticate">Authentication Timer (Reauthenticate) in seconds</label>
-                        <input type="number" id="auth-timer-reauthenticate" placeholder="e.g., 3600" min="1" max="65535" value="3600">
-                        <div class="help-tip" data-tip="auth-timer-reauthenticate">
-                            <div class="tooltip">How often (in seconds) to reauthenticate already authenticated clients. Recommended values: 3600-86400 (1-24 hours).</div>
-                        </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enable-voice" name="enable-voice">
+                        <label for="enable-voice">Enable Voice VLAN</label>
+                        <div class="help-tip" data-tip="Enable voice VLAN for VoIP devices."></div>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enable-accounting" name="enable-accounting">
+                        <label for="enable-accounting">Enable RADIUS Accounting</label>
+                        <div class="help-tip" data-tip="Enable RADIUS accounting to log session information."></div>
                     </div>
                 </div>
                 
                 <button id="generate-config" class="primary-button">Generate Configuration</button>
+                <button id="save-template" class="secondary-button">Save as Template</button>
             </div>
             
             <div class="config-output">
                 <div class="output-header">
-                    <h3>Generated Configuration</h3>
+                    <h3>Configuration Output</h3>
                     <div class="output-controls">
-                        <button id="copy-output" class="secondary-button">Copy</button>
-                        <button id="download-output" class="secondary-button">Download</button>
+                        <button id="copy-config" title="Copy to clipboard">Copy</button>
+                        <button id="download-config" title="Download as file">Download</button>
+                        <button id="ai-review" title="AI Review & Suggestions">AI Review</button>
                     </div>
                 </div>
-                
-                <pre><code id="config-output">Select options and click "Generate Configuration" to create your 802.1X configuration.</code></pre>
+                <pre id="config-result"><code># Configuration will appear here after generation.</code></pre>
             </div>
         </div>
         
-        <!-- Templates Tab -->
         <div id="templates" class="tab-content">
             <h2>Configuration Templates</h2>
-            
             <div class="templates-container">
                 <div class="templates-sidebar">
+                    <h3>Available Templates</h3>
                     <div class="search-box">
                         <input type="text" id="template-search" placeholder="Search templates...">
                     </div>
-                    
-                    <div class="template-list" id="template-list">
-                        <!-- Template list will be populated by JavaScript -->
-                    </div>
-                    
-                    <button id="add-template" class="secondary-button">Add New Template</button>
+                    <ul class="template-list">
+                        <li data-category="cisco" class="template-item">Cisco General Purpose</li>
+                        <li data-category="cisco" class="template-item">Cisco ISE Integration</li>
+                        <li data-category="aruba" class="template-item">Aruba ClearPass Integration</li>
+                        <li data-category="juniper" class="template-item">Juniper Basic 802.1X</li>
+                        <li data-category="fortinet" class="template-item">FortiGate NAC</li>
+                        <li data-category="multi-vendor" class="template-item">Multi-Vendor Healthcare</li>
+                        <li data-category="multi-vendor" class="template-item">Multi-Vendor Education</li>
+                        <li data-category="multi-vendor" class="template-item">Multi-Vendor Enterprise</li>
+                        <li data-category="wireless" class="template-item">Wireless Controller 802.1X</li>
+                        <li data-category="guest" class="template-item">Guest Access Portal</li>
+                        <li data-category="byod" class="template-item">BYOD Onboarding</li>
+                    </ul>
+                    <button id="new-template" class="primary-button">Create New Template</button>
                 </div>
-                
                 <div class="template-details">
                     <h3 id="template-title">Select a Template</h3>
                     <div id="template-description">
-                        <p>Select a template from the sidebar to view its details and configuration.</p>
+                        <p>Select a template from the list to view details and configuration.</p>
                     </div>
-                    
-                    <div id="template-configuration" class="hidden">
+                    <div id="template-config" class="hidden">
                         <div class="output-header">
-                            <h3>Template Configuration</h3>
+                            <h4>Template Configuration</h4>
                             <div class="output-controls">
-                                <button id="edit-template" class="secondary-button">Edit</button>
-                                <button id="copy-template" class="secondary-button">Copy</button>
-                                <button id="download-template" class="secondary-button">Download</button>
+                                <button id="copy-template" title="Copy to clipboard">Copy</button>
+                                <button id="load-template" title="Load to editor">Load to Editor</button>
+                                <button id="edit-template" title="Edit template">Edit</button>
+                                <button id="delete-template" title="Delete template">Delete</button>
                             </div>
                         </div>
-                        
-                        <pre><code id="template-content">Template content will appear here</code></pre>
+                        <pre><code id="template-code"># Template configuration will appear here.</code></pre>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Discovery Tab -->
         <div id="discovery" class="tab-content">
-            <h2>Network Discovery</h2>
-            
+            <h2>Environment Discovery</h2>
             <div class="discovery-container">
                 <div class="discovery-controls">
-                    <h3>Discovery Options</h3>
-                    
+                    <h3>Network Environment Analysis</h3>
                     <div class="input-group">
-                        <label for="discovery-range">IP Range</label>
-                        <input type="text" id="discovery-range" placeholder="e.g., 192.168.1.0/24">
-                        <div class="help-tip" data-tip="discovery-range">
-                            <div class="tooltip">Specify the IP range to scan in CIDR notation (e.g., 192.168.1.0/24) or as a range (e.g., 192.168.1.1-192.168.1.254).</div>
+                        <label for="network-range">Network Range:</label>
+                        <input type="text" id="network-range" placeholder="e.g., 192.168.1.0/24">
+                        <div class="help-tip" data-tip="Enter the IP range to scan in CIDR notation."></div>
+                    </div>
+                    <div class="input-group">
+                        <label for="discovery-method">Discovery Method:</label>
+                        <select id="discovery-method">
+                            <option value="passive">Passive Discovery</option>
+                            <option value="active">Active Scanning</option>
+                            <option value="import">Import Device List</option>
+                        </select>
+                        <div class="help-tip" data-tip="Select the method to discover devices in your network."></div>
+                    </div>
+                    <div id="import-section" class="hidden">
+                        <div class="input-group">
+                            <label for="import-file">Import File:</label>
+                            <input type="file" id="import-file">
+                        </div>
+                        <div class="input-group">
+                            <label for="file-format">File Format:</label>
+                            <select id="file-format">
+                                <option value="csv">CSV</option>
+                                <option value="json">JSON</option>
+                                <option value="xml">XML</option>
+                            </select>
                         </div>
                     </div>
-                    
-                    <div class="input-group">
-                        <label for="discovery-method">Discovery Method</label>
-                        <select id="discovery-method">
-                            <option value="snmp">SNMP (v2c)</option>
-                            <option value="snmpv3">SNMP (v3)</option>
-                            <option value="ssh">SSH</option>
-                            <option value="telnet">Telnet</option>
-                            <option value="ping">Ping Sweep</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group" id="snmp-community-group">
-                        <label for="snmp-community">SNMP Community</label>
-                        <input type="text" id="snmp-community" placeholder="e.g., public">
-                    </div>
-                    
-                    <div class="input-group hidden" id="snmpv3-group">
-                        <label for="snmpv3-user">SNMP v3 Username</label>
-                        <input type="text" id="snmpv3-user" placeholder="Enter username">
-                        
-                        <label for="snmpv3-auth">Authentication Protocol</label>
-                        <select id="snmpv3-auth">
-                            <option value="sha">SHA</option>
-                            <option value="md5">MD5</option>
-                        </select>
-                        
-                        <label for="snmpv3-auth-pass">Authentication Password</label>
-                        <input type="password" id="snmpv3-auth-pass" placeholder="Enter auth password">
-                        
-                        <label for="snmpv3-priv">Privacy Protocol</label>
-                        <select id="snmpv3-priv">
-                            <option value="aes">AES</option>
-                            <option value="des">DES</option>
-                        </select>
-                        
-                        <label for="snmpv3-priv-pass">Privacy Password</label>
-                        <input type="password" id="snmpv3-priv-pass" placeholder="Enter privacy password">
-                    </div>
-                    
-                    <div class="input-group hidden" id="cred-group">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" placeholder="Enter username">
-                        
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="Enter password">
-                    </div>
-                    
                     <div class="checkbox-group">
-                        <input type="checkbox" id="save-credentials">
-                        <label for="save-credentials">Save credentials for deployment</label>
+                        <input type="checkbox" id="identify-devices" checked>
+                        <label for="identify-devices">Identify Device Types</label>
+                        <div class="help-tip" data-tip="Attempt to identify device types based on fingerprinting."></div>
                     </div>
-                    
-                    <div class="input-group">
-                        <label for="discovery-timeout">Timeout (seconds)</label>
-                        <input type="number" id="discovery-timeout" min="1" max="60" value="5">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="group-recommendation" checked>
+                        <label for="group-recommendation">Generate Group Recommendations</label>
+                        <div class="help-tip" data-tip="Suggest device groupings for authentication policies."></div>
                     </div>
-                    
                     <button id="start-discovery" class="primary-button">Start Discovery</button>
                 </div>
-                
                 <div class="discovery-results">
                     <div class="results-header">
                         <h3>Discovery Results</h3>
                         <div class="result-stats">
-                            <span id="discovery-count">0</span> devices found
+                            <span id="device-count">0</span> devices found
+                        </div>
+                        <div class="output-controls">
+                            <button id="export-results" title="Export results" disabled>Export</button>
+                            <button id="generate-policy" title="Generate policy recommendations" disabled>Generate Policy</button>
                         </div>
                     </div>
-                    
                     <div class="result-filters">
-                        <input type="text" id="filter-results" placeholder="Filter results...">
-                        <select id="vendor-filter">
-                            <option value="">All Vendors</option>
-                            <!-- Will be populated with discovered vendors -->
-                        </select>
-                        <select id="platform-filter">
-                            <option value="">All Platforms</option>
-                            <!-- Will be populated with discovered platforms -->
+                        <input type="text" id="result-search" placeholder="Search devices...">
+                        <select id="device-type-filter">
+                            <option value="all">All Device Types</option>
+                            <option value="workstation">Workstations</option>
+                            <option value="server">Servers</option>
+                            <option value="phone">IP Phones</option>
+                            <option value="printer">Printers</option>
+                            <option value="network">Network Equipment</option>
+                            <option value="iot">IoT Devices</option>
+                            <option value="unknown">Unknown</option>
                         </select>
                     </div>
-                    
                     <div class="results-table-container">
                         <table id="discovery-results-table">
                             <thead>
                                 <tr>
                                     <th>IP Address</th>
-                                    <th>Hostname</th>
+                                    <th>MAC Address</th>
+                                    <th>Device Type</th>
                                     <th>Vendor</th>
-                                    <th>Platform</th>
-                                    <th>802.1X Status</th>
-                                    <th>Actions</th>
+                                    <th>Auth Support</th>
+                                    <th>Recommendation</th>
                                 </tr>
                             </thead>
-                            <tbody id="discovery-results-body">
+                            <tbody>
                                 <!-- Results will be populated here -->
+                                <tr>
+                                    <td colspan="6" class="empty-results">No devices discovered yet. Start a discovery scan to populate results.</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
-                    
-                    <div class="discovery-actions">
-                        <button id="export-results" class="secondary-button">Export Results</button>
-                        <button id="create-deployment" class="primary-button">Create Deployment Plan</button>
-                    </div>
                 </div>
             </div>
         </div>
         
-        <!-- Deployment Tab -->
         <div id="deployment" class="tab-content">
-            <h2>Deployment Management</h2>
-            
-            <div class="deployment-stages">
-                <div class="deployment-stage">
-                    <div class="stage-circle active">1</div>
-                    <div class="stage-title">Plan</div>
-                </div>
-                <div class="deployment-stage">
-                    <div class="stage-circle">2</div>
-                    <div class="stage-title">Prerequisites</div>
-                </div>
-                <div class="deployment-stage">
-                    <div class="stage-circle">3</div>
-                    <div class="stage-title">Configure</div>
-                </div>
-                <div class="deployment-stage">
-                    <div class="stage-circle">4</div>
-                    <div class="stage-title">Validate</div>
-                </div>
-                <div class="deployment-stage">
-                    <div class="stage-circle">5</div>
-                    <div class="stage-title">Monitor</div>
-                </div>
-            </div>
-            
+            <h2>Deployment Planning</h2>
             <div class="deployment-container">
-                <div class="deployment-step" id="deployment-step-1">
-                    <h3>Deployment Planning</h3>
-                    
-                    <div class="input-group">
-                        <label for="deployment-name">Deployment Name</label>
-                        <input type="text" id="deployment-name" placeholder="e.g., HQ 802.1X Deployment">
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="deployment-description">Description</label>
-                        <textarea id="deployment-description" placeholder="Enter deployment description" rows="3"></textarea>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="deployment-scope">Deployment Scope</label>
-                        <select id="deployment-scope">
-                            <option value="pilot">Pilot (Limited Devices)</option>
-                            <option value="phased">Phased Rollout</option>
-                            <option value="full">Full Deployment</option>
-                        </select>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="deployment-devices">Target Devices</label>
-                        <select id="deployment-devices" multiple size="5">
-                            <!-- Will be populated from discovery results -->
-                        </select>
-                        <p class="note">Devices can be imported from Discovery tab or added manually</p>
-                    </div>
-                    
-                    <div class="deployment-actions">
-                        <button id="import-devices" class="secondary-button">Import from Discovery</button>
-                        <button id="add-device-manual" class="secondary-button">Add Device Manually</button>
-                        <button id="generate-plan" class="primary-button">Generate Deployment Plan</button>
+                <div class="deployment-types">
+                    <h3>Deployment Options</h3>
+                    <div class="deployment-type-list">
+                        <div class="deployment-type-item active" data-type="phased">
+                            <h4>Phased Deployment</h4>
+                            <p>Gradually roll out 802.1X across your network in stages.</p>
+                        </div>
+                        <div class="deployment-type-item" data-type="pilot">
+                            <h4>Pilot Deployment</h4>
+                            <p>Test 802.1X on a small subset of your network before full deployment.</p>
+                        </div>
+                        <div class="deployment-type-item" data-type="monitor">
+                            <h4>Monitor Mode</h4>
+                            <p>Run 802.1X in monitoring mode without enforcing access control.</p>
+                        </div>
+                        <div class="deployment-type-item" data-type="full">
+                            <h4>Full Deployment</h4>
+                            <p>Deploy 802.1X across your entire network at once.</p>
+                        </div>
+                        <div class="deployment-type-item" data-type="custom">
+                            <h4>Custom Deployment</h4>
+                            <p>Create a customized deployment strategy.</p>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Additional deployment steps would be shown/hidden based on the progress -->
+                <div class="deployment-details">
+                    <div class="deployment-header">
+                        <h3 id="deployment-type-title">Phased Deployment</h3>
+                        <div class="output-controls">
+                            <button id="download-plan" title="Download deployment plan">Download Plan</button>
+                            <button id="generate-checklist" title="Generate checklist">Generate Checklist</button>
+                        </div>
+                    </div>
+                    <div id="deployment-description">
+                        <h4>Overview</h4>
+                        <p>A phased deployment allows for a gradual implementation of 802.1X across your network. This approach minimizes disruption and allows for adjustments as you learn from each phase.</p>
+                        
+                        <h4>Recommended Phases</h4>
+                        <ol>
+                            <li><strong>Preparation and Planning (2-4 weeks)</strong>
+                                <ul>
+                                    <li>Complete environment discovery and assessment</li>
+                                    <li>Configure RADIUS infrastructure</li>
+                                    <li>Prepare user communication plan</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phase 1: Monitor Mode (2-3 weeks)</strong>
+                                <ul>
+                                    <li>Deploy 802.1X in monitor mode on selected switches</li>
+                                    <li>Analyze authentication logs</li>
+                                    <li>Identify and resolve issues</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phase 2: Limited Enforcement (2-3 weeks)</strong>
+                                <ul>
+                                    <li>Enable enforcement on non-critical areas</li>
+                                    <li>Implement user/helpdesk support processes</li>
+                                    <li>Refine configuration based on feedback</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phase 3: Full Deployment (2-4 weeks)</strong>
+                                <ul>
+                                    <li>Roll out to remaining network segments</li>
+                                    <li>Implement ongoing monitoring</li>
+                                    <li>Document final configuration and processes</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        
+                        <h4>Prerequisites</h4>
+                        <ul>
+                            <li>RADIUS server infrastructure</li>
+                            <li>Network device inventory with 802.1X capability assessment</li>
+                            <li>User/endpoint database for authentication</li>
+                            <li>Change management process</li>
+                            <li>Backup and rollback plan</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <!-- AI Assist Tab -->
-        <div id="ai" class="tab-content">
-            <h2>AI Configuration Assistant</h2>
-            
+        <div id="ai-assist" class="tab-content">
+            <h2>AI-Assisted Configuration</h2>
             <div class="ai-container">
                 <div class="ai-controls">
-                    <h3>Configuration Analysis & Recommendations</h3>
-                    
-                    <div class="ai-prompt-area">
-                        <textarea id="ai-input" class="ai-prompt-input" placeholder="Paste your existing configuration here or describe what you want to configure..."></textarea>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="ai-mode">Assistant Mode</label>
-                        <select id="ai-mode">
-                            <option value="analyze">Analyze Configuration</option>
-                            <option value="improve">Recommend Improvements</option>
-                            <option value="generate">Generate Configuration</option>
-                            <option value="explain">Explain Configuration</option>
-                            <option value="compare">Compare Configurations</option>
-                        </select>
-                    </div>
-                    
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="ai-best-practices" checked>
-                        <label for="ai-best-practices">Include security best practices</label>
-                    </div>
-                    
-                    <button id="ai-analyze" class="primary-button">Analyze with AI</button>
-                </div>
-                
-                <div class="ai-chat-container">
-                    <div class="ai-chat-messages" id="ai-chat-messages">
-                        <!-- AI messages will appear here -->
-                        <div class="ai-message assistant">
-                            Hello! I'm your 802.1X configuration assistant. I can help analyze your existing configurations, suggest improvements, or generate new configurations based on your requirements. Paste your configuration or ask a question to get started.
+                    <h3>AI Configuration Assistant</h3>
+                    <div class="ai-providers">
+                        <h4>Select AI Provider</h4>
+                        <div class="provider-options">
+                            <div class="provider-option active" data-provider="builtin">
+                                <img src="assets/logos/openai-logo.png" alt="Built-in AI">
+                                <span>Built-in AI</span>
+                            </div>
+                            <div class="provider-option" data-provider="openai">
+                                <img src="assets/logos/openai-logo.png" alt="OpenAI">
+                                <span>OpenAI</span>
+                            </div>
+                            <div class="provider-option" data-provider="anthropic">
+                                <img src="assets/logos/anthropic-logo.png" alt="Anthropic">
+                                <span>Anthropic</span>
+                            </div>
+                            <div class="provider-option" data-provider="huggingface">
+                                <img src="assets/logos/hf-logo.png" alt="Hugging Face">
+                                <span>Hugging Face</span>
+                            </div>
+                        </div>
+                        <div id="api-key-section" class="hidden">
+                            <label for="api-key">API Key:</label>
+                            <input type="password" id="api-key" placeholder="Enter your API key">
+                            <button id="save-api-key" class="small-button">Save</button>
                         </div>
                     </div>
                     
-                    <div class="ai-input-area">
-                        <textarea id="ai-message-input" placeholder="Ask a follow-up question..."></textarea>
-                        <button id="ai-send" class="primary-button">Send</button>
+                    <div class="ai-tasks">
+                        <h4>Select Task</h4>
+                        <div class="task-options">
+                            <div class="task-option active" data-task="generate">
+                                <span class="task-icon">✏️</span>
+                                <span class="task-label">Generate Configuration</span>
+                            </div>
+                            <div class="task-option" data-task="review">
+                                <span class="task-icon">🔍</span>
+                                <span class="task-label">Review Configuration</span>
+                            </div>
+                            <div class="task-option" data-task="optimize">
+                                <span class="task-icon">⚙️</span>
+                                <span class="task-label">Optimize Configuration</span>
+                            </div>
+                            <div class="task-option" data-task="explain">
+                                <span class="task-icon">📝</span>
+                                <span class="task-label">Explain Configuration</span>
+                            </div>
+                            <div class="task-option" data-task="troubleshoot">
+                                <span class="task-icon">🔧</span>
+                                <span class="task-label">Troubleshooting Help</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-input">
+                        <label for="ai-prompt">Input/Instructions:</label>
+                        <textarea id="ai-prompt" placeholder="Enter your configuration details, requirements, or paste existing configuration for review..."></textarea>
+                    </div>
+                    
+                    <div class="ai-parameters">
+                        <h4>AI Parameters</h4>
+                        <div class="parameter-group">
+                            <label for="detail-level">Detail Level:</label>
+                            <select id="detail-level">
+                                <option value="basic">Basic</option>
+                                <option value="standard" selected>Standard</option>
+                                <option value="detailed">Detailed</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="security-focus">Security Focus:</label>
+                            <select id="security-focus">
+                                <option value="balanced" selected>Balanced</option>
+                                <option value="high-security">High Security</option>
+                                <option value="compliance">Compliance-Focused</option>
+                                <option value="usability">Usability-Focused</option>
+                            </select>
+                        </div>
+                        <div class="parameter-group">
+                            <label for="include-comments">Include Comments:</label>
+                            <input type="checkbox" id="include-comments" checked>
+                        </div>
+                    </div>
+                    
+                    <button id="execute-ai-task" class="primary-button">Generate</button>
+                </div>
+                
+                <div class="ai-output">
+                    <div class="output-header">
+                        <h3>AI Output</h3>
+                        <div class="output-controls">
+                            <button id="copy-ai-output" title="Copy to clipboard">Copy</button>
+                            <button id="save-ai-output" title="Save output">Save</button>
+                            <button id="load-to-editor" title="Load to configuration editor">Load to Editor</button>
+                        </div>
+                    </div>
+                    <div id="ai-thinking" class="hidden">
+                        <div class="thinking-indicator">AI is working...</div>
+                    </div>
+                    <div id="ai-result">
+                        <p class="ai-placeholder">AI output will appear here after you submit your request.</p>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- Help Tab -->
         <div id="help" class="tab-content">
-            <h2>Documentation & Help</h2>
-            
+            <h2>Help & Documentation</h2>
             <div class="help-container">
                 <div class="help-sidebar">
-                    <div class="search-box">
-                        <input type="text" id="help-search" placeholder="Search help...">
-                    </div>
-                    
-                    <div class="help-categories">
-                        <h3>Categories</h3>
-                        <ul>
-                            <li><a href="#getting-started" class="help-link active">Getting Started</a></li>
-                            <li><a href="#configuration-guides" class="help-link">Configuration Guides</a></li>
-                            <li><a href="#vendor-specific" class="help-link">Vendor Specific</a></li>
-                            <li><a href="#troubleshooting" class="help-link">Troubleshooting</a></li>
-                            <li><a href="#best-practices" class="help-link">Best Practices</a></li>
-                            <li><a href="#faq" class="help-link">FAQ</a></li>
-                        </ul>
-                    </div>
+                    <h3>Topics</h3>
+                    <ul class="help-topics">
+                        <li data-topic="getting-started" class="active">Getting Started</li>
+                        <li data-topic="802.1x-basics">802.1X Basics</li>
+                        <li data-topic="config-generator">Configuration Generator</li>
+                        <li data-topic="templates">Using Templates</li>
+                        <li data-topic="discovery">Environment Discovery</li>
+                        <li data-topic="deployment">Deployment Planning</li>
+                        <li data-topic="ai-assist">AI Assistance</li>
+                        <li data-topic="vendors">Vendor-Specific Guides</li>
+                        <li data-topic="troubleshooting">Troubleshooting</li>
+                        <li data-topic="best-practices">Best Practices</li>
+                        <li data-topic="faq">FAQ</li>
+                    </ul>
                 </div>
-                
                 <div class="help-content">
-                    <div id="getting-started" class="help-section active">
+                    <div id="help-getting-started" class="help-section active">
                         <h3>Getting Started with Dot1Xer Supreme</h3>
                         
-                        <p>Welcome to Dot1Xer Supreme, the comprehensive tool for 802.1X configuration management. This guide will help you get started using the application.</p>
+                        <p>Welcome to Dot1Xer Supreme, your comprehensive tool for creating, managing, and deploying 802.1X configurations across multi-vendor environments.</p>
                         
-                        <h4>Introduction to 802.1X</h4>
-                        <p>IEEE 802.1X is a standard for port-based network access control that provides an authentication mechanism for devices wishing to connect to a LAN or WLAN.</p>
-                        
-                        <p>The main components in an 802.1X deployment are:</p>
-                        <ul>
-                            <li><strong>Supplicant</strong>: The client device requesting access to the network</li>
-                            <li><strong>Authenticator</strong>: The network device (switch or access point) that enforces authentication</li>
-                            <li><strong>Authentication Server</strong>: Typically a RADIUS server that validates credentials</li>
-                        </ul>
-                        
-                        <h4>Using the Configuration Tab</h4>
-                        <p>The Configuration tab is where you'll generate 802.1X configurations for your network devices:</p>
+                        <h4>Quick Start Guide</h4>
                         <ol>
-                            <li>Select your network device vendor (Cisco, Aruba, etc.)</li>
-                            <li>Choose the specific platform or OS version</li>
-                            <li>Enter your RADIUS server details</li>
-                            <li>Configure VLANs for authenticated, guest, and voice devices</li>
-                            <li>Specify the interfaces where 802.1X will be enabled</li>
-                            <li>Adjust advanced options as needed</li>
-                            <li>Click "Generate Configuration" to create your configuration</li>
+                            <li><strong>Select a Vendor</strong> - Choose your network equipment vendor from the Configuration tab.</li>
+                            <li><strong>Choose a Platform</strong> - Select the specific platform or OS version.</li>
+                            <li><strong>Configure Authentication</strong> - Enter your RADIUS server details and authentication parameters.</li>
+                            <li><strong>Generate Configuration</strong> - Click the "Generate Configuration" button to create your 802.1X configuration.</li>
+                            <li><strong>Review and Deploy</strong> - Review the generated configuration, make any necessary adjustments, and deploy to your devices.</li>
                         </ol>
                         
-                        <h4>Next Steps</h4>
-                        <p>After generating your basic configuration, explore these features:</p>
+                        <h4>Key Features</h4>
                         <ul>
-                            <li>Use the Templates tab to access pre-built configurations</li>
-                            <li>Try the Discovery tab to identify devices on your network</li>
-                            <li>Use the AI Assist feature to analyze and improve your configurations</li>
+                            <li><strong>Multi-Vendor Support</strong> - Generate configurations for Cisco, Aruba, Juniper, Fortinet, and many other vendors.</li>
+                            <li><strong>Comprehensive AAA Options</strong> - Configure RADIUS, TACACS+, and RadSec with ease.</li>
+                            <li><strong>Environment Discovery</strong> - Scan your network to identify devices and their 802.1X capabilities.</li>
+                            <li><strong>Deployment Planning</strong> - Create phased deployment plans with checklists and prerequisites.</li>
+                            <li><strong>AI Assistance</strong> - Get intelligent configuration recommendations and reviews.</li>
+                            <li><strong>Template Library</strong> - Save and reuse common configurations.</li>
                         </ul>
+                        
+                        <p>For more detailed information, please explore the other help topics or refer to the documentation.</p>
                     </div>
                     
-                    <!-- Other help sections would be added here -->
+                    <!-- Other help sections would be here but are hidden by default -->
                 </div>
             </div>
         </div>
@@ -585,48 +564,40 @@
     <footer>
         <div class="footer-content">
             <div class="footer-section">
-                <h4>About Dot1Xer Supreme</h4>
-                <p>Advanced 802.1X configuration management tool for network professionals.</p>
-            </div>
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="#config">Configure</a></li>
-                    <li><a href="#templates">Templates</a></li>
-                    <li><a href="#discovery">Discovery</a></li>
-                    <li><a href="#deployment">Deployment</a></li>
-                    <li><a href="#ai">AI Assist</a></li>
-                </ul>
+                <h4>Dot1Xer Supreme</h4>
+                <p>Enterprise 802.1X Configuration Tool</p>
+                <p>Version 2.5.0</p>
             </div>
             <div class="footer-section">
                 <h4>Resources</h4>
                 <ul>
-                    <li><a href="#help">Documentation</a></li>
-                    <li><a href="#help/faq">FAQ</a></li>
-                    <li><a href="#help/support">Support</a></li>
+                    <li><a href="#" id="open-documentation">Documentation</a></li>
+                    <li><a href="#" id="check-updates">Check for Updates</a></li>
+                    <li><a href="#" id="report-issue">Report Issue</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>Settings</h4>
-                <div class="theme-toggle">
-                    <label for="dark-mode-toggle" class="toggle-label">Dark Mode</label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="dark-mode-toggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                </div>
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#" id="show-privacy">Privacy Policy</a></li>
+                    <li><a href="#" id="show-terms">Terms of Use</a></li>
+                    <li><a href="#" id="show-license">License Information</a></li>
+                </ul>
             </div>
         </div>
         <div class="copyright">
-            &copy; 2025 Dot1Xer Supreme. All rights reserved.
+            <p>&copy; 2025 Dot1Xer Supreme Team. All rights reserved.</p>
         </div>
     </footer>
 
-    <script src="js/help_tips.js"></script>
+    <!-- Modal dialogs would be here -->
+    
+    <!-- Scripts -->
     <script src="js/main.js"></script>
+    <script src="js/vendor-data.js"></script>
     <script src="js/templates.js"></script>
-    <script src="js/discovery.js"></script>
-    <script src="js/deployment.js"></script>
-    <script src="js/ai.js"></script>
+    <script src="js/discovery/network-scanner.js"></script>
+    <script src="js/ai/ai-integration.js"></script>
+    <script src="js/cloud/portnox-integration.js"></script>
 </body>
 </html>
